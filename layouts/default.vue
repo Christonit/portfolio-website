@@ -70,12 +70,20 @@ function onKeydown(e: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
-// ── Nav items ────────────────────────────────────────────────────
+// ── Desktop nav items ─────────────────────────────────────────────
 const navItems = [
   { label: 'STATS', path: '/' },
   { label: 'BIO', path: '/bio' },
   { label: 'GET_IN_TOUCH', path: '/contact' },
 ]
+
+// ── Mobile bottom nav items ───────────────────────────────────────
+const mobileNavItems = [
+  { label: 'STATS',   path: '/',        icon: 'analytics'    },
+  { label: 'BIO',     path: '/bio',     icon: 'fingerprint'  },
+  { label: 'CONNECT', path: '/contact', icon: 'sensors'      },
+]
+
 const isActive = (path: string) => route.path === path
 </script>
 
@@ -88,11 +96,12 @@ const isActive = (path: string) => route.path === path
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
     <nav class="fixed top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10">
 
+      <!-- Logo: always visible -->
       <div class="text-white font-semibold text-sm xl:text-lg tracking-tighter uppercase select-none mr-auto">
         CH_SANTANA_OS_V2
       </div>
 
-      <!-- L button → previous tab (desktop only) -->
+      <!-- L button (desktop only) -->
       <button
         class="hidden xl:block mr-6 transition-all duration-100 focus:outline-none"
         :class="isPressed('ArrowLeft') ? 'opacity-100 scale-90' : 'opacity-60 hover:opacity-100'"
@@ -102,13 +111,13 @@ const isActive = (path: string) => route.path === path
         <img src="/images/left-btn-icon.png" alt="L" class="w-[21px] h-[21px]" draggable="false" />
       </button>
 
-      <!-- Page links -->
-      <ul class="flex items-center gap-5 xl:gap-10">
+      <!-- Page links (desktop only — mobile uses bottom nav) -->
+      <ul class="hidden xl:flex items-center gap-10">
         <li v-for="item in navItems" :key="item.path">
           <NuxtLink
             :to="item.path"
             :class="[
-              'font-mono text-[10px] xl:text-xs tracking-[0.15em] xl:tracking-[0.2em] uppercase transition-colors duration-150',
+              'font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
               isActive(item.path)
                 ? 'text-white border-b border-white pb-px'
                 : 'text-[#919191] hover:text-white',
@@ -119,7 +128,7 @@ const isActive = (path: string) => route.path === path
         </li>
       </ul>
 
-      <!-- R button → next tab (desktop only) -->
+      <!-- R button (desktop only) -->
       <button
         class="hidden xl:block ml-6 transition-all duration-100 focus:outline-none"
         :class="isPressed('ArrowRight') ? 'opacity-100 scale-90' : 'opacity-60 hover:opacity-100'"
@@ -135,11 +144,35 @@ const isActive = (path: string) => route.path === path
     </nav>
 
     <!-- ── MAIN CONTENT ────────────────────────────────────── -->
-    <!-- Mobile: scrollable, stops above footer only -->
-    <!-- Desktop: overflow-hidden, stops above both keyboard bar + footer -->
-    <main class="absolute inset-x-0 top-14 z-10 bottom-10 overflow-y-auto xl:bottom-[72px] xl:overflow-hidden">
+    <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
+    <!-- Desktop: overflow-hidden, sits between top nav and keyboard+footer bars -->
+    <main class="absolute inset-x-0 top-14 z-10
+                 bottom-16 overflow-y-auto
+                 xl:bottom-[72px] xl:overflow-hidden">
       <slot />
     </main>
+
+    <!-- ── MOBILE BOTTOM NAVIGATION ───────────────────────── -->
+    <nav
+      class="xl:hidden fixed bottom-0 inset-x-0 z-50 flex h-16
+             bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/10
+             shadow-[0_-8px_32px_rgba(0,0,0,0.6)]"
+    >
+      <NuxtLink
+        v-for="item in mobileNavItems"
+        :key="item.path"
+        :to="item.path"
+        :class="[
+          'flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-150',
+          isActive(item.path)
+            ? 'bg-white text-black'
+            : 'text-[#919191] hover:text-white hover:bg-[#1f1f1f]',
+        ]"
+      >
+        <span class="material-symbols-outlined text-xl leading-none">{{ item.icon }}</span>
+        <span class="font-mono text-[8px] uppercase tracking-widest font-bold">{{ item.label }}</span>
+      </NuxtLink>
+    </nav>
 
     <!-- ── KEYBOARD NAVIGATION BAR (desktop only) ─────────── -->
     <div class="hidden xl:flex fixed bottom-10 inset-x-0 h-9 z-50 items-center gap-4 px-8 bg-black border-t border-white/5">
@@ -208,25 +241,21 @@ const isActive = (path: string) => route.path === path
       </button>
     </div>
 
-    <!-- ── BOTTOM STATUS BAR ──────────────────────────────── -->
-    <footer class="fixed bottom-0 inset-x-0 h-10 z-50 flex items-center justify-between px-4 xl:px-8 bg-black border-t border-white/10">
-      <div class="flex items-center gap-3 xl:gap-6">
+    <!-- ── BOTTOM STATUS BAR (desktop only) ──────────────────── -->
+    <footer class="hidden xl:flex fixed bottom-0 inset-x-0 h-10 z-50 items-center justify-between px-8 bg-black border-t border-white/10">
+      <div class="flex items-center gap-6">
         <div class="flex items-center gap-2">
           <div class="w-2 h-2 bg-white animate-pulse" />
           <span class="font-mono text-[8px] text-white uppercase tracking-[0.15em]">SYSTEM SYNCHRONIZED</span>
         </div>
-        <span class="hidden xl:block font-mono text-[8px] text-[#919191]">LOC: 40.7128° N, 74.0060° W</span>
+        <span class="font-mono text-[8px] text-[#919191]">LOC: 40.7128° N, 74.0060° W</span>
       </div>
-      <div class="hidden xl:flex items-center gap-4">
+      <div class="flex items-center gap-4">
         <span class="font-mono text-[8px] text-[#919191]">RAM: 128GB // NEURAL_LINK: 1.2TBPS</span>
         <div class="w-32 h-1.5 bg-[#353535] relative">
           <div class="absolute inset-y-0 left-0 bg-white" style="width: 70%" />
         </div>
       </div>
-      <!-- Mobile: current page indicator -->
-      <span class="xl:hidden font-mono text-[8px] text-[#919191] uppercase tracking-widest">
-        {{ navItems[currentIndex]?.label }}
-      </span>
     </footer>
 
   </div>
