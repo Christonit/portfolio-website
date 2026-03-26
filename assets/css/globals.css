@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  .dark {
+    --background: 0 0% 7.5%;
+    --foreground: 0 0% 88.6%;
+    --card: 0 0% 7.5%;
+    --card-foreground: 0 0% 88.6%;
+    --popover: 0 0% 7.5%;
+    --popover-foreground: 0 0% 88.6%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 7.5%;
+    --secondary: 0 0% 27.8%;
+    --secondary-foreground: 0 0% 88.6%;
+    --muted: 0 0% 27.8%;
+    --muted-foreground: 0 0% 57%;
+    --accent: 0 0% 16.5%;
+    --accent-foreground: 0 0% 88.6%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 88.6%;
+    --border: 0 0% 27.8%;
+    --input: 0 0% 27.8%;
+    --ring: 0 0% 100%;
+    --radius: 0px;
+  }
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Tomorrow', 'Cuisine', sans-serif;
+    background-color: #131313;
+    color: #e2e2e2;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar { width: 2px; height: 2px; }
+  ::-webkit-scrollbar-track { background: #131313; }
+  ::-webkit-scrollbar-thumb { background: #474747; }
+  ::-webkit-scrollbar-thumb:hover { background: #919191; }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    vertical-align: middle;
+  }
+}
+
+@layer components {
+  .hud-label {
+    @apply block font-mono text-[9px] tracking-[0.2em] uppercase text-[#919191];
+  }
+
+  .hud-kbd {
+    @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] font-mono text-[8px] text-[#919191] leading-none;
+  }
+}
+
+@layer utilities {
+  .scanline-overlay {
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(255, 255, 255, 0.025) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+  }
+
+  .grid-bg {
+    background-image: radial-gradient(circle, #474747 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .corner-tl { position: absolute; top: 0; left: 0;     width: 8px; height: 8px; border-top: 1px solid #474747; border-left: 1px solid #474747; }
+  .corner-tr { position: absolute; top: 0; right: 0;    width: 8px; height: 8px; border-top: 1px solid #474747; border-right: 1px solid #474747; }
+  .corner-bl { position: absolute; bottom: 0; left: 0;  width: 8px; height: 8px; border-bottom: 1px solid #474747; border-left: 1px solid #474747; }
+  .corner-br { position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; border-bottom: 1px solid #474747; border-right: 1px solid #474747; }
+
+  .corner-tl-w { position: absolute; top: 0; left: 0;     width: 10px; height: 10px; border-top: 1px solid rgba(255,255,255,0.4); border-left: 1px solid rgba(255,255,255,0.4); }
+  .corner-tr-w { position: absolute; top: 0; right: 0;    width: 10px; height: 10px; border-top: 1px solid rgba(255,255,255,0.4); border-right: 1px solid rgba(255,255,255,0.4); }
+  .corner-bl-w { position: absolute; bottom: 0; left: 0;  width: 10px; height: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); border-left: 1px solid rgba(255,255,255,0.4); }
+  .corner-br-w { position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); border-right: 1px solid rgba(255,255,255,0.4); }
+}
