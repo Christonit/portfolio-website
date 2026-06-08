@@ -37,7 +37,9 @@ const timeline = [
 </script>
 
 <template>
-  <div class="h-full flex flex-col px-8 py-5 gap-6 overflow-hidden">
+  <div
+    class="lg:h-full flex flex-col px-8 py-5 gap-6 lg:overflow-hidden pb-16 lg:pb-0"
+  >
     <div class="flex items-center gap-4 flex-shrink-0">
       <span
         class="font-mono text-[10px] text-[#919191] tracking-widest uppercase"
@@ -49,7 +51,9 @@ const timeline = [
       <div class="flex-1 h-px bg-[#474747]/40 max-w-xs" />
     </div>
 
-    <div class="grid grid-cols-12 gap-8 flex-1 min-h-0 overflow-hidden">
+    <div
+      class="flex flex-col gap-4 lg:grid grid-cols-12 gap-8 flex-1 lg:min-h-0 lg:overflow-hidden"
+    >
       <div class="col-span-5 flex flex-col gap-5 overflow-y-auto pr-2">
         <div class="relative border-l-[3px] border-white pl-5 pr-3 py-2">
           <div class="corner-tr-w" />
@@ -129,7 +133,7 @@ const timeline = [
         </div>
       </div>
 
-      <div class="col-span-7 flex flex-col min-h-0 overflow-y-auto">
+      <div class="lg:col-span-7 flex flex-col lg:min-h-0 overflow-y-auto">
         <span class="hud-label mb-4 flex-shrink-0">TIMELINE_LOGS</span>
         <div class="space-y-6 pl-2">
           <div
