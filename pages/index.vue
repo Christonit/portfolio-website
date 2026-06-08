@@ -347,9 +347,18 @@ onUnmounted(() => {
           <div>
             <span class="hud-label">LATEST MISSION</span>
             <div
-              class="border-l border-white/20 pl-2 mt-1 text-[#c6c6c6] leading-snug text-xs"
+              class="hidden lg:block mt-1 text-[#c6c6c6] leading-snug text-xs"
             >
-              SENIOR_FULL_STACK_DEVELOPER //<br />STOCKS_TO_TRADE
+              <span class="text-white">
+                AI, FRONTEND, DATA_PIPELINES & SUTFF</span
+              >
+              //<br />@STOCKS_TO_TRADE
+            </div>
+            <div class="lg:hidden mt-1 text-[#c6c6c6] leading-snug text-xs">
+              <span class="text-white">
+                AI / FRONTEND / DATA_PIPELINES & SUTFF</span
+              >
+              //<br />@ STOCKS_TO_TRADE
             </div>
           </div>
         </div>
@@ -660,7 +669,7 @@ onUnmounted(() => {
       </div>
 
       <!-- ── MISSION LOGS ── -->
-      <div class="xl:flex xl:flex-col xl:flex-1 xl:min-h-0">
+      <div class="xl:flex xl:flex-col xl:flex-1 xl:min-h-0 lg:mb-0 mb-16">
         <span class="hud-label mb-2 xl:flex-shrink-0">MISSION_LOGS</span>
         <!-- Desktop: grows to fill remaining space + scrolls; Mobile: full list -->
         <div class="xl:flex-1 xl:overflow-y-auto">
