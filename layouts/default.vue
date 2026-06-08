@@ -67,8 +67,38 @@ function onKeydown(e: KeyboardEvent) {
   }
 }
 
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+// ── Animated CRT displacement warp (SVG filter) ──────────────────
+const turbEl = ref<SVGFETurbulenceElement | null>(null)
+const dispEl = ref<SVGFEDisplacementMapElement | null>(null)
+let warpRaf = 0
+let warpStart = 0
+
+function animateWarp(now: number) {
+  if (!warpStart) warpStart = now
+  const t = (now - warpStart) / 1000
+
+  // Slow vertical "swim" — the picture gently wobbles like bad sync.
+  const fy = 0.0006 + 0.0006 * (0.5 + 0.5 * Math.sin(t * 0.9))
+  turbEl.value?.setAttribute('baseFrequency', `0 ${fy.toFixed(5)}`)
+
+  // Mostly tiny displacement, with brief horizontal "tears".
+  const chaos = Math.sin(t * 13.0) * Math.sin(t * 7.3)
+  const scale = chaos > 0.92 ? 16 : 2.5
+  dispEl.value?.setAttribute('scale', String(scale))
+
+  warpRaf = requestAnimationFrame(animateWarp)
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeydown)
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!reduce) warpRaf = requestAnimationFrame(animateWarp)
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydown)
+  cancelAnimationFrame(warpRaf)
+})
 
 // ── Desktop nav items ─────────────────────────────────────────────
 const navItems = [
@@ -90,8 +120,43 @@ const isActive = (path: string) => route.path === path
 <template>
   <div class="relative h-screen overflow-hidden bg-[#131313] text-[#e2e2e2]">
 
+    <!-- CRT displacement filter (animated via JS, applied to <main>) -->
+    <svg class="crt-svg-filter" aria-hidden="true" focusable="false">
+      <filter
+        id="crt-distort"
+        x="-5%"
+        y="-5%"
+        width="110%"
+        height="110%"
+        color-interpolation-filters="sRGB"
+      >
+        <feTurbulence
+          ref="turbEl"
+          type="fractalNoise"
+          baseFrequency="0 0.0007"
+          numOctaves="1"
+          seed="7"
+          result="noise"
+        />
+        <feDisplacementMap
+          ref="dispEl"
+          in="SourceGraphic"
+          in2="noise"
+          scale="2.5"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </svg>
+
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
-    <div class="fixed inset-0 scanline-overlay z-[999] pointer-events-none" />
+
+    <!-- ── Animated CRT / old-TV overlay ─────────────────────── -->
+    <div class="crt-overlay fixed inset-0 z-[999]">
+      <div class="absolute inset-0 crt-scanlines" />
+      <div class="absolute inset-0 overflow-hidden crt-roll" />
+      <div class="absolute inset-0 crt-flicker" />
+    </div>
 
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
     <nav class="fixed top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10">
@@ -146,7 +211,7 @@ const isActive = (path: string) => route.path === path
     <!-- ── MAIN CONTENT ────────────────────────────────────── -->
     <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
     <!-- Desktop: overflow-hidden, sits between top nav and keyboard+footer bars -->
-    <main class="absolute inset-x-0 top-14 z-10
+    <main class="crt-warp absolute inset-x-0 top-14 z-10
                  bottom-16 overflow-y-auto
                  xl:bottom-[72px] xl:overflow-hidden">
       <slot />

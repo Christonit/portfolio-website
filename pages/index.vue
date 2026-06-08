@@ -36,8 +36,6 @@ const upgrades: Upgrade[] = [
     tooltip: [
       "MS INFORMATION SYSTEMS",
       "// BARUCH COLLEGE",
-      "BS ADVERTISING",
-      "// APEC UNIVERSITY",
       "AS MULTIMEDIA TECH",
       "// ITLA",
     ],
@@ -46,7 +44,7 @@ const upgrades: Upgrade[] = [
     icon: "design_services",
     label: "UI_UX_DESIGN",
     tooltip: [
-      "FIGMA MASTERY",
+      "FIGMA PROTOTYPING",
       "DESIGN SYSTEMS",
       "INTERFACE ARCHITECTURE",
       "COMPONENT LIBRARIES",
@@ -55,22 +53,12 @@ const upgrades: Upgrade[] = [
   {
     icon: "layers",
     label: "FRONTEND_ARCH",
-    tooltip: [
-      "HEADLESS CMS",
-      "MICRO-FRONTENDS",
-      "PERFORMANCE OPS",
-      "A11Y COMPLIANCE",
-    ],
+    tooltip: ["HEADLESS CMS", "MICRO-FRONTENDS", "PERFORMANCE OPS"],
   },
   {
     icon: "phone_iphone",
     label: "MOBILE_DEV",
-    tooltip: [
-      "iOS // SWIFT",
-      "SWIFTUI",
-      "APP STORE PUBLISHING",
-      "REACT NATIVE",
-    ],
+    tooltip: ["iOS // SWIFT", "SWIFTUI", "APP STORE PUBLISHING"],
   },
   {
     icon: "cloud",
@@ -80,6 +68,7 @@ const upgrades: Upgrade[] = [
       "CI/CD PIPELINES",
       "WEBSOCKETS",
       "SERVERLESS",
+      "WORDPRESS",
     ],
   },
   {
@@ -90,12 +79,12 @@ const upgrades: Upgrade[] = [
   {
     icon: "translate",
     label: "BILINGUAL_OPS",
-    tooltip: ["ENGLISH // NATIVE", "SPANISH // FLUENT"],
+    tooltip: ["ENGLISH // FLUENT", "SPANISH // NATIVE"],
   },
   {
     icon: "security",
     label: "CYBERSECURITY",
-    tooltip: ["MS CONCENTRATION", "NETWORK SECURITY", "CYBER SYSTEMS"],
+    tooltip: ["MS CONCENTRATION"],
   },
 ];
 
@@ -450,6 +439,7 @@ onUnmounted(() => {
          Hidden on mobile; mobile photo lives in the left section above
     ════════════════════════════════════════════════════════ -->
     <section
+      id="3d-model-area"
       class="hidden xl:flex xl:col-span-4 xl:flex-col xl:min-h-0 xl:relative"
     >
       <div
@@ -466,43 +456,15 @@ onUnmounted(() => {
       <div
         class="relative flex-1 border border-white/10 bg-black/50 overflow-hidden"
       >
-        <!--
-          Replace placeholder with your photo:
-          <img src="/photo.jpg" class="w-full h-full object-cover object-top grayscale contrast-125 opacity-90" alt="Christopher Santana" />
-        -->
-        <div
-          class="w-full h-full flex flex-col items-center justify-center select-none"
-        >
-          <div
-            class="font-semibold text-[#2a2a2a] tracking-tighter leading-none"
-            style="font-size: clamp(5rem, 14vw, 10rem)"
-          >
-            CS
-          </div>
-          <p
-            class="font-mono text-[8px] text-[#474747] mt-3 tracking-widest uppercase"
-          >
-            // place photo.jpg in /public/ //
-          </p>
-        </div>
+        <!-- Faint holo-grid backdrop -->
+        <div class="absolute inset-0 grid-bg opacity-[0.15] z-0" />
+
+        <!-- THREE.js holographic 3D model -->
+        <ClientOnly>
+          <ModelViewer class="absolute inset-0 z-[5]" />
+        </ClientOnly>
 
         <div class="absolute inset-0 scanline-overlay z-10" />
-
-        <div class="absolute top-[30%] right-5 flex items-center gap-2 z-20">
-          <div class="w-10 h-px bg-white/60" />
-          <span
-            class="font-mono text-[8px] bg-white text-black px-1 py-px uppercase"
-            >SUIT_METRICS</span
-          >
-        </div>
-
-        <div class="absolute bottom-[35%] left-5 flex items-center gap-2 z-20">
-          <span
-            class="font-mono text-[8px] bg-white text-black px-1 py-px uppercase"
-            >NEURAL_ACTIVE</span
-          >
-          <div class="w-10 h-px bg-white/60" />
-        </div>
 
         <div
           class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent pt-8 pb-3 text-center z-20"
