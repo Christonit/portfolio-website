@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: "CH_SANTANA_OS_V2 // STATS",
+  title: "CH_SANTANA_OS_V3 // STATS",
   description: "Christopher Santana — Full Stack Engineer. STATS page.",
 });
 
@@ -21,6 +21,7 @@ interface Skill {
 interface Mission {
   name: string;
   tags: string;
+  link: string;
 }
 
 interface Biometric {
@@ -105,11 +106,28 @@ const skills: Skill[] = [
 ];
 
 const missions: Mission[] = [
-  { name: "CANOPY SUPER APP", tags: "FRONT END ARCHITECTURE // WEB3" },
-  { name: "SLATEMARK", tags: "iOS APP" },
-  { name: "STOCKSTOTRADE", tags: "NUXT // AWS // NODE.JS // AI" },
-  { name: "ENCORO", tags: "iOS APP // NODE.JS // AI" },
-  { name: "HOW TO IMPROVE YOUR WEBSITES PERFOR...", tags: "ARTICLE" },
+  {
+    name: "CANOPY SUPER APP",
+    tags: "FRONT END ARCHITECTURE // WEB3",
+    link: "https://testnet.app.canopynetwork.org/",
+  },
+  // { name: "SLATEMARK", tags: "iOS APP" },
+  {
+    name: "TIMOTHY SYKES",
+    tags: "NUXT // AWS // NODE.JS // AI",
+    link: "https://www.timothysykes.com/",
+  },
+  {
+    name: "STOCKSTOTRADE",
+    tags: "NUXT // AWS // NODE.JS // AI",
+    link: "https://stockstotrade.com/",
+  },
+  // { name: "ENCORO", tags: "iOS APP // NODE.JS // AI" },
+  {
+    name: "HOW TO IMPROVE YOUR WEBSITES PERFORMANCE",
+    tags: "ARTICLE",
+    link: "https://www.linkedin.com/posts/chrisalesant_how-to-improve-page-load-times-and-web-core-activity-7165369185630425088-arOu?utm_source=share&utm_medium=member_desktop&rcm=ACoAABeuFBAB5t8zhgkSJO8kmWvEE1MK-4WMRqs",
+  },
 ];
 
 const biometrics: Biometric[] = [
@@ -126,6 +144,16 @@ const isMobile = ref(false);
 const tooltipIndex = ref<number | null>(null);
 const mouseX = ref(0);
 const mouseY = ref(0);
+
+// The HUD is uniformly scaled via CSS `zoom` on large displays (see
+// globals.css). Pointer coords are in real viewport px, but a fixed
+// element's left/top are interpreted in the zoomed coordinate space,
+// so we divide by the active zoom to keep the tooltip under the cursor.
+const rootZoom = ref(1);
+function readRootZoom() {
+  const z = parseFloat(getComputedStyle(document.documentElement).zoom);
+  rootZoom.value = Number.isFinite(z) && z > 0 ? z : 1;
+}
 
 const activeUpgrade = computed(() =>
   tooltipIndex.value !== null ? upgrades[tooltipIndex.value] : null,
@@ -144,15 +172,17 @@ function onMouseMove(e: MouseEvent) {
 }
 
 const tooltipStyle = computed(() => {
+  const zoom = rootZoom.value;
   const gap = 14;
   const w = 190;
-  const x =
-    mouseX.value + gap + w > window.innerWidth
-      ? mouseX.value - gap - w
-      : mouseX.value + gap;
+  // Convert real-viewport coords into the zoomed coordinate space.
+  const mx = mouseX.value / zoom;
+  const my = mouseY.value / zoom;
+  const viewportW = window.innerWidth / zoom;
+  const x = mx + gap + w > viewportW ? mx - gap - w : mx + gap;
   return {
     left: x + "px",
-    top: mouseY.value - 8 + "px",
+    top: my - 8 + "px",
     minWidth: w + "px",
   };
 });
@@ -256,6 +286,7 @@ onMounted(() => {
   const checkMobile = () => {
     isMobile.value = window.innerWidth < 1200;
     if (!isMobile.value) expandedUpgradeIndex.value = null;
+    readRootZoom();
   };
   checkMobile();
   window.addEventListener("resize", checkMobile);
@@ -286,7 +317,7 @@ onUnmounted(() => {
          Desktop: col 1–3, flex-col
     ════════════════════════════════════════════════════════ -->
     <section
-      class="flex flex-col gap-4 4 xl:gap-5 xl:overflow-hidden xl:min-h-0 xl:col-span-4"
+      class="flex flex-col gap-4 xl:gap-5 xl:overflow-y-auto xl:min-h-0 xl:col-span-4"
     >
       <!-- Identity card -->
       <div
@@ -314,7 +345,7 @@ onUnmounted(() => {
             </div>
           </div>
           <div>
-            <span class="hud-label">CURRENT OBJECTIVE</span>
+            <span class="hud-label">LATEST MISSION</span>
             <div
               class="border-l border-white/20 pl-2 mt-1 text-[#c6c6c6] leading-snug text-xs"
             >
@@ -324,9 +355,9 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- ── MOBILE-ONLY PHOTO ── (desktop version is in center section) -->
+      <!-- ── MOBILE-ONLY 3D MODEL ── (desktop version is in center section) -->
       <div
-        class="xl:hidden relative border border-white/10 bg-black/50 overflow-hidden h-64 sm:h-80 flex-shrink-0"
+        class="xl:hidden relative border border-white/10 bg-black/50 overflow-hidden h-80 sm:h-96 flex-shrink-0"
       >
         <div
           class="absolute top-2 left-2 z-10 border-l border-t border-white/15 px-2 py-0.5"
@@ -336,21 +367,11 @@ onUnmounted(() => {
           >
         </div>
 
-        <div
-          class="w-full h-full flex flex-col items-center justify-center select-none"
-        >
-          <div
-            class="font-semibold text-[#2a2a2a] tracking-tighter leading-none"
-            style="font-size: 5rem"
-          >
-            CS
-          </div>
-          <p
-            class="font-mono text-[8px] text-[#474747] mt-3 tracking-widest uppercase"
-          >
-            // place photo.jpg in /public/ //
-          </p>
-        </div>
+        <div class="absolute inset-0 grid-bg opacity-[0.15] z-0" />
+
+        <ClientOnly>
+          <ModelViewer class="absolute inset-0 z-[5]" />
+        </ClientOnly>
 
         <div class="absolute inset-0 scanline-overlay z-10" />
 
@@ -643,7 +664,7 @@ onUnmounted(() => {
         <span class="hud-label mb-2 xl:flex-shrink-0">MISSION_LOGS</span>
         <!-- Desktop: grows to fill remaining space + scrolls; Mobile: full list -->
         <div class="xl:flex-1 xl:overflow-y-auto">
-          <div
+          <NuxtLink
             v-for="(mission, i) in missions"
             :key="mission.name"
             :ref="
@@ -654,6 +675,7 @@ onUnmounted(() => {
               'flex gap-3 py-2.5 border-b border-[#474747]/20 px-1 cursor-pointer transition-colors group',
               focusedMission === i ? 'bg-[#2a2a2a]' : 'hover:bg-[#1f1f1f]/60',
             ]"
+            :to="mission.link"
           >
             <div
               class="w-[2px] shrink-0 self-stretch transition-colors"
@@ -663,9 +685,10 @@ onUnmounted(() => {
                   : 'bg-white/40 group-hover:bg-white'
               "
             />
-            <div>
-              <div
-                class="font-bold text-[11px] uppercase tracking-wider transition-colors"
+            <div class="flex flex-col gap-1">
+              <span
+                target="_blank"
+                class="font-bold text-[11px] leading-none block uppercase tracking-wider transition-colors"
                 :class="
                   focusedMission === i
                     ? 'text-white'
@@ -673,12 +696,14 @@ onUnmounted(() => {
                 "
               >
                 {{ mission.name }}
-              </div>
-              <div class="font-mono text-[8px] text-[#919191] uppercase mt-0.5">
+              </span>
+              <span
+                class="font-mono text-[8px] leading-none text-[#919191] uppercase mt-0.5"
+              >
                 // {{ mission.tags }}
-              </div>
+              </span>
             </div>
-          </div>
+          </NuxtLink>
         </div>
       </div>
     </section>

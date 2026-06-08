@@ -40,6 +40,21 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ── Large-display scaling ──────────────────────────────────
+     The HUD is designed around a Full HD (1920×1080) canvas using
+     fixed-pixel sizing. On larger native displays this leaves big
+     empty gutters, so we uniformly zoom the whole UI to preserve the
+     same proportions. 4K (3840px) = exactly 2× Full HD. */
+  @media (min-width: 2560px) {
+    html { zoom: 1.33; }
+  }
+  @media (min-width: 3200px) {
+    html { zoom: 1.6; }
+  }
+  @media (min-width: 3840px) {
+    html { zoom: 2; }
+  }
+
   ::-webkit-scrollbar { width: 2px; height: 2px; }
   ::-webkit-scrollbar-track { background: #131313; }
   ::-webkit-scrollbar-thumb { background: #474747; }
@@ -65,6 +80,66 @@
 
   .hud-kbd {
     @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] font-mono text-[8px] text-[#919191] leading-none;
+  }
+
+  /* ── WIP inline nav badge ────────────────────────────────────── */
+  .wip-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.45rem;
+    background-color: #22c55e;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.14) 0,
+        rgba(0, 0, 0, 0.14) 1px,
+        transparent 1px,
+        transparent 3px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.06) 0,
+        rgba(255, 255, 255, 0.06) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    border: 2px solid #052e16;
+    box-shadow:
+      0 0 0 1px #052e16,
+      2px 2px 0 rgba(0, 0, 0, 0.55);
+    color: #031a0a;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    image-rendering: pixelated;
+    animation: wip-badge-pulse 2.4s steps(2, end) infinite;
+  }
+
+  @media (min-width: 1280px) {
+    .wip-badge {
+      font-size: 7px;
+      padding: 0.3rem 0.55rem;
+    }
+  }
+
+  @keyframes wip-badge-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.82; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wip-badge {
+      animation: none;
+    }
   }
 }
 

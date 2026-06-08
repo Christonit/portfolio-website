@@ -72,6 +72,7 @@ onMounted(async () => {
   // ── Load the GLB model (keep original textures) ────────────────
   const loader = new GLTFLoader();
   const MODEL_URL = "/images/human+character+3d+model.glb";
+  let reframeModel: ((viewW: number, viewH: number) => void) | null = null;
 
   loader.load(
     MODEL_URL,
@@ -96,33 +97,86 @@ onMounted(async () => {
         if (child.geometry) child.geometry.deleteAttribute("normal");
       });
 
-      // Center on X/Z so it spins in place; normalize height to 2 units.
+      // Center on X/Z for spin; normalize height to 2 units.
       const box = new THREE.Box3().setFromObject(model);
       const size = new THREE.Vector3();
       const center = new THREE.Vector3();
       box.getSize(size);
       box.getCenter(center);
 
-      model.position.sub(center); // center the bounding box at origin
+      model.position.sub(center);
 
       const scale = 2 / (size.y || 1);
       model.scale.setScalar(scale);
 
+      // Recompute bounds after scale — framing anchors from the model base.
+      const scaledBox = new THREE.Box3().setFromObject(model);
+      const localMinY = scaledBox.min.y;
+      const localMaxY = scaledBox.max.y;
+      const modelHeight = localMaxY - localMinY;
+      model.position.x -= (scaledBox.min.x + scaledBox.max.x) / 2;
+      model.position.z -= (scaledBox.min.z + scaledBox.max.z) / 2;
+
       pivot.add(model);
 
-      // ── Frame as a head-and-shoulders bust (matches the mockup) ──
-      // Normalized height is 2 → top of head at +1, base at -1.
-      const fovRad = (camera.fov * Math.PI) / 180;
-      const visibleHeight = 2 * 1.15; // show the full figure with margin (zoomed out 25%)
-      const dist = visibleHeight / 2 / Math.tan(fovRad / 2);
-      const targetY = 1 - 2 * 0.45; // aim near center, with headroom up top
-      camera.position.set(0, targetY, dist);
-      camera.lookAt(0, targetY, 0);
-      camera.updateProjectionMatrix();
+      // ── Bottom-anchored bust framing ─────────────────────────────
+      // The model base stays pinned above the bottom HUD overlay; the
+      // camera targets the face so the head is always in view.
+      const frameModel = (viewW: number, viewH: number) => {
+        const isWideViewport = viewW / viewH >= 0.9;
 
-      // Nudge the model down by ~200px (converted to world units).
-      const worldPerPx = visibleHeight / height;
-      model.position.y -= 200 * worldPerPx;
+        const bottomPadPx = isWideViewport ? 44 : 34;
+        const topPadPx = isWideViewport ? 28 : 22;
+
+        let marginFactor = 1.22;
+        if (window.innerWidth >= 2560) marginFactor = 1.4;
+        else if (isWideViewport) marginFactor = 1.65;
+
+        const fovRad = (camera.fov * Math.PI) / 180;
+        const visibleHeight = modelHeight * marginFactor;
+        const dist = visibleHeight / (2 * Math.tan(fovRad / 2));
+        const halfVisible = visibleHeight / 2;
+        const worldPerPx = visibleHeight / viewH;
+        const bottomPad = bottomPadPx * worldPerPx;
+        const topPad = topPadPx * worldPerPx;
+
+        // Pin the mesh base just above the bottom overlay.
+        const modelBottomY = -halfVisible + bottomPad;
+        model.position.y = modelBottomY - localMinY;
+
+        const modelTop = modelBottomY + modelHeight;
+        // Aim at upper bust / face (always above the anchor point).
+        const faceY = modelBottomY + modelHeight * 0.74;
+
+        camera.position.set(0, faceY, dist);
+        camera.lookAt(0, faceY, 0);
+        camera.updateProjectionMatrix();
+
+        // Safety: if head still clips, pull camera back slightly.
+        if (modelTop > faceY + halfVisible - topPad) {
+          const extra =
+            (modelTop - (faceY + halfVisible - topPad)) / modelHeight;
+          const adjustedMargin = marginFactor + extra + 0.08;
+          const adjustedVisible = modelHeight * adjustedMargin;
+          const adjustedDist =
+            adjustedVisible / (2 * Math.tan(fovRad / 2));
+          const adjustedHalf = adjustedVisible / 2;
+          const adjustedWorldPerPx = adjustedVisible / viewH;
+          const adjustedBottomPad = bottomPadPx * adjustedWorldPerPx;
+
+          const adjustedBottomY = -adjustedHalf + adjustedBottomPad;
+          model.position.y = adjustedBottomY - localMinY;
+          const adjustedFaceY =
+            adjustedBottomY + modelHeight * 0.74;
+
+          camera.position.set(0, adjustedFaceY, adjustedDist);
+          camera.lookAt(0, adjustedFaceY, 0);
+          camera.updateProjectionMatrix();
+        }
+      };
+
+      reframeModel = frameModel;
+      frameModel(width, height);
 
       loading.value = false;
     },
@@ -262,6 +316,7 @@ onMounted(async () => {
     composer.setSize(w, h);
     bloomPass.setSize(w, h);
     scanlinePass.uniforms.uResolution.value.set(w, h);
+    reframeModel?.(w, h);
   };
   const ro = new ResizeObserver(resize);
   ro.observe(el);
