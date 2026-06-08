@@ -91,18 +91,19 @@ const upgrades: Upgrade[] = [
 
 // ── AUGMENTS ─────────────────────────────────────────────────────
 const skills: Skill[] = [
-  { icon: "javascript", name: "TYPESCRIPT_ENGINE", active: true },
+  { icon: "javascript", name: "TYPESCRIPT", active: true },
   { icon: "deployed_code", name: "REACT_FRAMEWORK" },
   { icon: "widgets", name: "VUE_NUXT_STACK" },
   { icon: "terminal", name: "NODE_JS_RUNTIME" },
-  { icon: "cloud", name: "AWS_CLOUD_OPS" },
-  { icon: "brush", name: "FIGMA_INTERFACE_LAB" },
-  { icon: "phone_iphone", name: "SWIFT_SWIFTUI_MODULE" },
-  { icon: "api", name: "GRAPHQL_REST_ENGINE" },
-  { icon: "code", name: "PYTHON_SCRIPT_OPS" },
+  { icon: "cloud", name: "AWS_CLOUD" },
+  { icon: "cloud", name: "GOOGLE_GLOUD_PLATFORM" },
+  { icon: "brush", name: "FIGMA_INTERFACE_DESIGN" },
+  { icon: "phone_iphone", name: "SWIFT_SWIFTUI" },
+  { icon: "api", name: "GRAPHQL_REST_APIs" },
+  { icon: "code", name: "PYTHON" },
   { icon: "storage", name: "DATABASE_SYSTEMS" },
-  { icon: "web", name: "HEADLESS_CMS_OPS" },
-  { icon: "style", name: "CSS_TAILWIND_ENGINE" },
+  { icon: "web", name: "HEADLESS_CMS" },
+  { icon: "style", name: "CSS_TAILWIND" },
 ];
 
 const missions: Mission[] = [
