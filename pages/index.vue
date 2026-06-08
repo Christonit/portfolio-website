@@ -391,7 +391,7 @@ onUnmounted(() => {
           <div
             class="font-mono text-[9px] text-[#919191] uppercase tracking-widest"
           >
-            SUIT INTEGRITY LOW
+            SUIT INTEGRITY HIGH
           </div>
           <div
             class="font-mono text-[7px] text-[#474747] uppercase tracking-widest mt-0.5"
@@ -508,7 +508,7 @@ onUnmounted(() => {
           <div
             class="font-mono text-[9px] text-[#919191] uppercase tracking-widest"
           >
-            SUIT INTEGRITY LOW
+            SUIT INTEGRITY HIGH
           </div>
           <div
             class="font-mono text-[7px] text-[#474747] uppercase tracking-widest mt-0.5"

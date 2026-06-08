@@ -128,9 +128,9 @@ onMounted(async () => {
         const bottomPadPx = isWideViewport ? 44 : 34;
         const topPadPx = isWideViewport ? 28 : 22;
 
-        let marginFactor = 1.22;
-        if (window.innerWidth >= 2560) marginFactor = 1.4;
-        else if (isWideViewport) marginFactor = 1.65;
+        let marginFactor = 1.22 * 0.8;
+        if (window.innerWidth >= 2560) marginFactor = 1.4 * 0.8;
+        else if (isWideViewport) marginFactor = 1.65 * 0.8;
 
         const fovRad = (camera.fov * Math.PI) / 180;
         const visibleHeight = modelHeight * marginFactor;
@@ -212,7 +212,7 @@ onMounted(async () => {
       uScanIntensity: { value: 0.1 },
       uScanCount: { value: 900.0 },
       uSaturation: { value: 0.72 }, // <1 = slightly desaturated
-      uPixelCols: { value: 200.0 }, // horizontal resolution of pixelation grid
+      uPixelCols: { value: 320.0 }, // horizontal resolution of pixelation grid
     },
     vertexShader: /* glsl */ `
       varying vec2 vUv;

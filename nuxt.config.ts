@@ -36,6 +36,18 @@ export default defineNuxtConfig({
           content: "Christopher Santana — Full Stack Engineer. Portfolio OS.",
         },
         { name: "theme-color", content: "#131313" },
+        { property: "og:type", content: "website" },
+        { property: "og:title", content: "CH_SANTANA_OS_V3 // OPERATOR PROFILE" },
+        {
+          property: "og:description",
+          content: "Christopher Santana — Full Stack Engineer. Portfolio OS.",
+        },
+        { property: "og:image", content: "/images/og-image.webp" },
+        { property: "og:image:type", content: "image/webp" },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: "/images/og-image.webp" },
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/images/favicon.ico" },
