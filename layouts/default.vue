@@ -255,7 +255,7 @@ const isActive = (path: string) => route.path === path;
     <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
     <!-- Desktop: overflow-hidden, sits between top nav and keyboard+footer bars -->
     <main
-      class="crt-warp absolute inset-x-0 top-14 z-10 bottom-16 overflow-y-auto xl:bottom-[72px] xl:overflow-hidden"
+      class="crt-warp absolute lg:relative inset-x-0 top-14 z-10 bottom-16 overflow-y-auto xl:bottom-[72px] xl:overflow-hidden"
     >
       <slot />
     </main>

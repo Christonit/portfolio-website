@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+
   :root,
   .dark {
     --background: 0 0% 7.5%;
@@ -29,9 +30,15 @@
 }
 
 @layer base {
-  *, *::before, *::after { box-sizing: border-box; }
 
-  html, body {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
     height: 100%;
     overflow: hidden;
     font-family: 'Tomorrow', 'Cuisine', sans-serif;
@@ -46,19 +53,39 @@
      empty gutters, so we uniformly zoom the whole UI to preserve the
      same proportions. 4K (3840px) = exactly 2× Full HD. */
   @media (min-width: 2560px) {
-    html { zoom: 1.33; }
-  }
-  @media (min-width: 3200px) {
-    html { zoom: 1.6; }
-  }
-  @media (min-width: 3840px) {
-    html { zoom: 2; }
+    html {
+      zoom: 1.33;
+    }
   }
 
-  ::-webkit-scrollbar { width: 2px; height: 2px; }
-  ::-webkit-scrollbar-track { background: #131313; }
-  ::-webkit-scrollbar-thumb { background: #474747; }
-  ::-webkit-scrollbar-thumb:hover { background: #919191; }
+  @media (min-width: 3200px) {
+    html {
+      zoom: 1.6;
+    }
+  }
+
+  @media (min-width: 3840px) {
+    html {
+      zoom: 2;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #131313;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #474747;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #919191;
+  }
 
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
@@ -75,7 +102,7 @@
 
 @layer components {
   .hud-label {
-    @apply block font-mono text-[9px] tracking-[0.2em] uppercase text-[#919191];
+    @apply block font-mono text-[12px] lg:text-[9px] tracking-[0.2em] uppercase text-[#919191];
   }
 
   .hud-kbd {
@@ -90,20 +117,16 @@
     padding: 0.25rem 0.45rem;
     background-color: #22c55e;
     background-image:
-      repeating-linear-gradient(
-        0deg,
+      repeating-linear-gradient(0deg,
         rgba(0, 0, 0, 0.14) 0,
         rgba(0, 0, 0, 0.14) 1px,
         transparent 1px,
-        transparent 3px
-      ),
-      repeating-linear-gradient(
-        90deg,
+        transparent 3px),
+      repeating-linear-gradient(90deg,
         rgba(255, 255, 255, 0.06) 0,
         rgba(255, 255, 255, 0.06) 1px,
         transparent 1px,
-        transparent 3px
-      );
+        transparent 3px);
     border: 2px solid #052e16;
     box-shadow:
       0 0 0 1px #052e16,
@@ -132,8 +155,15 @@
   }
 
   @keyframes wip-badge-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.82; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.82;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -145,11 +175,9 @@
 
 @layer utilities {
   .scanline-overlay {
-    background: linear-gradient(
-      to bottom,
-      transparent 50%,
-      rgba(255, 255, 255, 0.025) 50%
-    );
+    background: linear-gradient(to bottom,
+        transparent 50%,
+        rgba(255, 255, 255, 0.025) 50%);
     background-size: 100% 3px;
     pointer-events: none;
     animation: scanline-crawl 6s linear infinite;
@@ -176,13 +204,11 @@
 
   /* Fine scanlines that slowly crawl, like a CRT raster. */
   .crt-scanlines {
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.035) 0px,
-      rgba(255, 255, 255, 0.035) 1px,
-      transparent 1px,
-      transparent 3px
-    );
+    background: repeating-linear-gradient(to bottom,
+        rgba(255, 255, 255, 0.035) 0px,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 1px,
+        transparent 3px);
     animation: scanline-crawl 5s linear infinite;
   }
 
@@ -193,12 +219,10 @@
     left: 0;
     right: 0;
     height: 140px;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(255, 255, 255, 0.04) 50%,
-      transparent 100%
-    );
+    background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(255, 255, 255, 0.04) 50%,
+        transparent 100%);
     animation: crt-roll-move 7s linear infinite;
   }
 
@@ -212,6 +236,7 @@
     0% {
       background-position: 0 0;
     }
+
     100% {
       background-position: 0 120px;
     }
@@ -221,6 +246,7 @@
     0% {
       top: -140px;
     }
+
     100% {
       top: 100%;
     }
@@ -230,9 +256,11 @@
     0% {
       opacity: 0.55;
     }
+
     50% {
       opacity: 0.9;
     }
+
     100% {
       opacity: 0.45;
     }
@@ -243,13 +271,83 @@
     background-size: 32px 32px;
   }
 
-  .corner-tl { position: absolute; top: 0; left: 0;     width: 8px; height: 8px; border-top: 1px solid #474747; border-left: 1px solid #474747; }
-  .corner-tr { position: absolute; top: 0; right: 0;    width: 8px; height: 8px; border-top: 1px solid #474747; border-right: 1px solid #474747; }
-  .corner-bl { position: absolute; bottom: 0; left: 0;  width: 8px; height: 8px; border-bottom: 1px solid #474747; border-left: 1px solid #474747; }
-  .corner-br { position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; border-bottom: 1px solid #474747; border-right: 1px solid #474747; }
+  .corner-tl {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid #474747;
+    border-left: 1px solid #474747;
+  }
 
-  .corner-tl-w { position: absolute; top: 0; left: 0;     width: 10px; height: 10px; border-top: 1px solid rgba(255,255,255,0.4); border-left: 1px solid rgba(255,255,255,0.4); }
-  .corner-tr-w { position: absolute; top: 0; right: 0;    width: 10px; height: 10px; border-top: 1px solid rgba(255,255,255,0.4); border-right: 1px solid rgba(255,255,255,0.4); }
-  .corner-bl-w { position: absolute; bottom: 0; left: 0;  width: 10px; height: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); border-left: 1px solid rgba(255,255,255,0.4); }
-  .corner-br-w { position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); border-right: 1px solid rgba(255,255,255,0.4); }
+  .corner-tr {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid #474747;
+    border-right: 1px solid #474747;
+  }
+
+  .corner-bl {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-bottom: 1px solid #474747;
+    border-left: 1px solid #474747;
+  }
+
+  .corner-br {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-bottom: 1px solid #474747;
+    border-right: 1px solid #474747;
+  }
+
+  .corner-tl-w {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .corner-tr-w {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .corner-bl-w {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .corner-br-w {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
+  }
 }

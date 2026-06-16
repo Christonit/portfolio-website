@@ -69,6 +69,13 @@ onMounted(async () => {
   const pivot = new THREE.Group();
   scene.add(pivot);
 
+  const ORIGIN_DEG = -60;
+  const LIMIT_DEG = 60; // max excursion toward profile (right) from origin
+  const ORIGIN_Y = (ORIGIN_DEG * Math.PI) / 180;
+  const ROTATION_MIN = ORIGIN_Y;
+  const ROTATION_MAX = ORIGIN_Y + (LIMIT_DEG * Math.PI) / 180;
+  pivot.rotation.y = ORIGIN_Y;
+
   // ── Load the GLB model (keep original textures) ────────────────
   const loader = new GLTFLoader();
   const MODEL_URL = "/images/human+character+3d+model.glb";
@@ -274,7 +281,18 @@ onMounted(async () => {
   let isDragging = false;
   let lastX = 0;
   let velocity = 0; // radians per frame, with inertia
+  let autoDir = 1;
   const AUTO_SPIN = 0.0025;
+
+  function clampRotation() {
+    if (pivot.rotation.y < ROTATION_MIN) {
+      pivot.rotation.y = ROTATION_MIN;
+      if (velocity < 0) velocity = 0;
+    } else if (pivot.rotation.y > ROTATION_MAX) {
+      pivot.rotation.y = ROTATION_MAX;
+      if (velocity > 0) velocity = 0;
+    }
+  }
 
   function onPointerDown(e: PointerEvent) {
     isDragging = true;
@@ -288,8 +306,10 @@ onMounted(async () => {
     const dx = e.clientX - lastX;
     lastX = e.clientX;
     const delta = dx * 0.01;
+    const prevY = pivot.rotation.y;
     pivot.rotation.y += delta;
-    velocity = delta;
+    clampRotation();
+    velocity = pivot.rotation.y - prevY;
   }
   function onPointerUp(e: PointerEvent) {
     isDragging = false;
@@ -330,12 +350,19 @@ onMounted(async () => {
     scanlinePass.uniforms.uTime.value = t;
 
     if (!isDragging) {
-      // inertia after a drag, then settle into a gentle auto-spin
       if (Math.abs(velocity) > 0.0005) {
         pivot.rotation.y += velocity;
+        clampRotation();
         velocity *= 0.95;
       } else {
-        pivot.rotation.y += AUTO_SPIN;
+        pivot.rotation.y += AUTO_SPIN * autoDir;
+        if (pivot.rotation.y >= ROTATION_MAX) {
+          pivot.rotation.y = ROTATION_MAX;
+          autoDir = -1;
+        } else if (pivot.rotation.y <= ROTATION_MIN) {
+          pivot.rotation.y = ROTATION_MIN;
+          autoDir = 1;
+        }
       }
     }
 

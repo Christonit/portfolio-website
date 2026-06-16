@@ -53,7 +53,7 @@ const upgrades: Upgrade[] = [
   },
   {
     icon: "layers",
-    label: "FRONTEND_ARCH",
+    label: "FRONTEND",
     tooltip: ["HEADLESS CMS", "MICRO-FRONTENDS", "PERFORMANCE OPS"],
   },
   {
@@ -74,7 +74,7 @@ const upgrades: Upgrade[] = [
   },
   {
     icon: "storage",
-    label: "DATA_SYSTEMS",
+    label: "DATABASES",
     tooltip: ["SQL // POSTGRESQL", "DYNAMODB", "FIRESTORE", "NOSQL DATABASES"],
   },
   {
@@ -307,10 +307,10 @@ onUnmounted(() => {
 <template>
   <!--
     Mobile  (<xl): flex-col, no height cap — scrolls inside layout's <main>
-    Desktop (xl+): h-full grid, overflow-hidden — matches the fixed-height shell
+    Desktop (xl+): calc(100vh - 132px) grid, overflow-hidden — matches header + footer
   -->
   <div
-    class="flex flex-col gap-5 px-4 py-4 xl:h-full xl:grid xl:grid-cols-12 xl:gap-6 xl:px-8 xl:py-5 xl:overflow-hidden"
+    class="flex flex-col gap-5 px-4 py-4 xl:h-[calc(100vh-132px)] xl:grid xl:grid-cols-12 xl:gap-6 xl:px-8 xl:py-5 xl:overflow-hidden"
   >
     <!-- ════════════════════════════════════════════════════════
          LEFT SECTION
@@ -351,13 +351,13 @@ onUnmounted(() => {
               class="hidden lg:block mt-1 text-[#c6c6c6] leading-snug text-xs"
             >
               <span class="text-white">
-                AI, FRONTEND, DATA_PIPELINES & SUTFF</span
+                AI, FRONTEND, DATA_PIPELINES & STUFF</span
               >
               //<br />@STOCKS_TO_TRADE
             </div>
             <div class="lg:hidden mt-1 text-[#c6c6c6] leading-snug text-xs">
               <span class="text-white">
-                AI / FRONTEND / DATA_PIPELINES & SUTFF</span
+                AI / FRONTEND / DATA_PIPELINES & STUFF</span
               >
               //<br />@ STOCKS_TO_TRADE
             </div>
@@ -471,7 +471,7 @@ onUnmounted(() => {
     ════════════════════════════════════════════════════════ -->
     <section
       id="3d-model-area"
-      class="hidden xl:flex xl:col-span-4 xl:flex-col xl:min-h-0 xl:relative"
+      class="hidden lg:flex lg:col-span-4 lg:flex-col lg:min-h-0 lg:relative"
     >
       <div
         class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-px bg-white/20 z-10"
@@ -535,7 +535,9 @@ onUnmounted(() => {
     >
       <!-- ── PERMANENT UPGRADES ── -->
       <div class="flex-shrink-0">
-        <span class="hud-label mb-2">PERMANENT_UPGRADES</span>
+        <span class="hud-label mb-2 font-semibold lg:font-regular"
+          >CORE_COMPETENCIES</span
+        >
 
         <div class="relative">
           <!-- Desktop: scrollable with max-height; Mobile: plain grid (no cap) -->
@@ -544,13 +546,13 @@ onUnmounted(() => {
             class="xl:overflow-y-auto xl:max-h-[28vh]"
             @scroll="onUpgradesScroll"
           >
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid lg:grid-cols-4 grid-cols-3 gap-2">
               <div
                 v-for="(upgrade, i) in upgrades"
                 :key="upgrade.label"
                 :ref="(el) => setItemRef(el as HTMLElement, i)"
                 :class="[
-                  'relative border flex flex-col items-center justify-center cursor-pointer transition-all duration-150 group',
+                  'relative border flex flex-col h-[112px] lg:h-auto items-center justify-center cursor-pointer transition-all duration-150 group',
                   'py-3 gap-1 xl:aspect-square xl:py-0 xl:gap-0',
                   focusedUpgrade === i ||
                   (isMobile && expandedUpgradeIndex === i)
@@ -563,13 +565,13 @@ onUnmounted(() => {
                 @click="toggleUpgrade(i)"
               >
                 <span
-                  class="material-symbols-outlined text-[18px] leading-none"
+                  class="material-symbols-outlined text-[24px] leading-none"
                   >{{ upgrade.icon }}</span
                 >
 
                 <!-- Label: mobile only, hidden on desktop (tooltip handles it) -->
                 <span
-                  class="xl:hidden font-mono text-[6px] uppercase tracking-normal text-center leading-tight px-0.5 mt-0.5"
+                  class="xl:hidden font-mono text-[12px] lg:text-[6px] uppercase tracking-normal text-center leading-tight px-0.5 mt-0.5"
                   :class="
                     isMobile && expandedUpgradeIndex === i
                       ? 'text-black'
@@ -621,7 +623,9 @@ onUnmounted(() => {
       <!-- ── AUGMENTS ── -->
       <div class="flex-shrink-0 xl:flex xl:flex-col xl:min-h-0">
         <div class="flex justify-between items-center mb-2 flex-shrink-0">
-          <span class="hud-label">AUGMENTS</span>
+          <span class="hud-label font-semibold lg:font-regular"
+            >TECH STACK</span
+          >
           <span class="font-mono text-[8px] text-[#919191]"
             >MOD_{{ String(skills.length).padStart(3, "0") }}</span
           >
@@ -643,7 +647,7 @@ onUnmounted(() => {
           >
             <div class="flex items-center gap-3">
               <span
-                class="material-symbols-outlined text-[13px] leading-none shrink-0"
+                class="material-symbols-outlined text-base lg:text-[16px] leading-none"
                 :class="
                   focusedSkill === i
                     ? 'text-white'
@@ -652,7 +656,7 @@ onUnmounted(() => {
                 >{{ skill.icon }}</span
               >
               <span
-                class="font-bold text-[10px] uppercase tracking-wider"
+                class="lg:font-bold text-[12px] uppercase tracking-wider"
                 :class="focusedSkill === i ? 'text-white' : ''"
                 >{{ skill.name }}</span
               >
@@ -671,7 +675,7 @@ onUnmounted(() => {
 
       <!-- ── MISSION LOGS ── -->
       <div class="xl:flex xl:flex-col xl:flex-1 xl:min-h-0 lg:mb-0 mb-16">
-        <span class="hud-label mb-2 xl:flex-shrink-0">MISSION_LOGS</span>
+        <span class="hud-label mb-2 xl:flex-shrink-0">PROJECTS</span>
         <!-- Desktop: grows to fill remaining space + scrolls; Mobile: full list -->
         <div class="xl:flex-1 xl:overflow-y-auto">
           <NuxtLink
