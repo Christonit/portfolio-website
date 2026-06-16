@@ -118,11 +118,22 @@ const mobileNavItems = [
   {
     label: "CONNECT",
     path: "https://www.linkedin.com/in/chrisalesant/",
-    icon: "sensors",
+    iconSrc: "/images/paper-airplane-svgrepo-com.svg",
   },
 ];
 
 const isActive = (path: string) => route.path === path;
+
+const mainRef = ref<HTMLElement | null>(null);
+
+function scrollMainToTopOnMobile() {
+  if (window.innerWidth >= 1280) return;
+  nextTick(() => {
+    mainRef.value?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  });
+}
+
+watch(() => route.path, scrollMainToTopOnMobile);
 </script>
 
 <template>
@@ -255,6 +266,7 @@ const isActive = (path: string) => route.path === path;
     <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
     <!-- Desktop: overflow-hidden, sits between top nav and keyboard+footer bars -->
     <main
+      ref="mainRef"
       class="crt-warp absolute lg:relative inset-x-0 top-14 z-10 bottom-16 overflow-y-auto xl:bottom-[72px] xl:overflow-hidden"
     >
       <slot />
@@ -269,13 +281,25 @@ const isActive = (path: string) => route.path === path;
         :key="item.path"
         :to="item.path"
         :class="[
-          'flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-150',
+          'group flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-150',
           isActive(item.path)
             ? 'bg-white text-black'
             : 'text-[#919191] hover:text-white hover:bg-[#1f1f1f]',
         ]"
       >
-        <span class="material-symbols-outlined text-xl leading-none">{{
+        <img
+          v-if="item.iconSrc"
+          :src="item.iconSrc"
+          :alt="item.label"
+          class="h-4 w-4 shrink-0"
+          :class="
+            isActive(item.path)
+              ? 'brightness-0'
+              : 'brightness-0 invert opacity-60 group-hover:opacity-100'
+          "
+          draggable="false"
+        />
+        <span v-else class="material-symbols-outlined text-xl leading-none">{{
           item.icon
         }}</span>
         <span

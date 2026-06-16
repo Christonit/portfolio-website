@@ -14,7 +14,9 @@ defineProps<{
 </script>
 
 <template>
-  <div class="xl:flex xl:flex-col xl:flex-1 xl:min-h-0 lg:mb-0 mb-16">
+  <div
+    class="order-1 xl:order-3 xl:flex xl:flex-col xl:flex-1 xl:min-h-0 lg:mb-0"
+  >
     <h3 class="hud-label mb-2 xl:flex-shrink-0 font-semibold lg:font-normal">
       PROJECTS
     </h3>
@@ -25,7 +27,7 @@ defineProps<{
         :key="mission.name"
         :ref="(el) => setItemRef(el as HTMLElement, refOffset + i)"
         :class="[
-          'flex gap-3 py-2.5 border-b border-[#474747]/20 px-1 cursor-pointer transition-colors group',
+          'flex gap-2 lg:gap-3 py-2.5 border-b border-[#474747]/20 lg:px-1 cursor-pointer transition-colors group',
           focusedMission === i ? 'bg-[#2a2a2a]' : 'hover:bg-[#1f1f1f]/60',
         ]"
         :to="mission.link"

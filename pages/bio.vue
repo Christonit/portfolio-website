@@ -38,7 +38,7 @@ const timeline = [
 
 <template>
   <div
-    class="lg:h-full flex flex-col px-8 py-5 gap-6 lg:overflow-hidden pb-16 lg:pb-0"
+    class="lg:h-full flex flex-col px-4 lg:px-8 py-5 gap-6 lg:overflow-hidden pb-16 lg:pb-0"
   >
     <div class="flex items-center gap-4 flex-shrink-0">
       <span
@@ -55,7 +55,7 @@ const timeline = [
       class="flex flex-col gap-4 lg:grid grid-cols-12 gap-8 flex-1 lg:min-h-0 lg:overflow-hidden"
     >
       <div class="col-span-5 flex flex-col gap-5 overflow-y-auto pr-2">
-        <div class="relative border-l-[3px] border-white pl-5 pr-3 py-2">
+        <div class="relative border-l-[3px] border-white pl-4 lg:pr-3 lg:py-2">
           <div class="corner-tr-w" />
           <div class="corner-br-w" />
           <span class="hud-label mb-3">IDENTITY_NARRATIVE</span>

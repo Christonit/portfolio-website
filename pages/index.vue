@@ -357,11 +357,11 @@ onUnmounted(() => {
          Desktop: col 1–3, flex-col
     ════════════════════════════════════════════════════════ -->
     <section
-      class="flex flex-col gap-4 xl:gap-5 xl:overflow-y-auto xl:min-h-0 xl:col-span-4"
+      class="flex flex-col gap-8 xl:gap-5 xl:overflow-y-auto xl:min-h-0 xl:col-span-4"
     >
       <!-- Identity card -->
       <div
-        class="relative border-l-[3px] border-white pl-5 pr-3 py-2 flex-shrink-0"
+        class="relative border-l-[3px] border-white pl-4 lg:pl-5 pr-3 lg:py-2 flex-shrink-0"
       >
         <div class="corner-tr-w" />
         <div class="corner-br-w" />
@@ -514,10 +514,10 @@ onUnmounted(() => {
     ════════════════════════════════════════════════════════ -->
     <section
       ref="rightColRef"
-      class="flex flex-col gap-5 xl:col-span-4 xl:gap-4 xl:overflow-hidden xl:min-h-0"
+      class="mb-24 lg:mb-0 flex flex-col gap-8 xl:col-span-4 xl:gap-4 xl:overflow-hidden xl:min-h-0"
     >
       <!-- ── PERMANENT UPGRADES ── -->
-      <div class="flex-shrink-0">
+      <div class="order-2 xl:order-1 flex-shrink-0">
         <h3 class="hud-label mb-2 font-semibold lg:font-normal">
           CORE_COMPETENCIES
         </h3>
@@ -589,13 +589,13 @@ onUnmounted(() => {
             v-if="expandedUpgrade && isMobile"
             class="mt-2 border border-white/20 p-3 bg-[#1a1a1a] xl:hidden"
           >
-            <p class="hud-label !text-[10px] mb-2">
+            <p class="hud-label !text-[12px] !lg:text-[10px] mb-2">
               {{ expandedUpgrade.label }}
             </p>
             <div
               v-for="item in expandedUpgrade.tooltip"
               :key="item"
-              class="font-mono text-[10px] text-[#e2e2e2] leading-relaxed"
+              class="font-mono text-[12px] lg:text-[10px] text-[#e2e2e2] leading-relaxed"
             >
               {{ item }}
             </div>
