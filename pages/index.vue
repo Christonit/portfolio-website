@@ -12,23 +12,6 @@ interface Upgrade {
   tooltip: string[];
 }
 
-interface Skill {
-  icon: string;
-  name: string;
-  active?: boolean;
-}
-
-interface Mission {
-  name: string;
-  tags: string;
-  link: string;
-}
-
-interface Biometric {
-  label: string;
-  value: string;
-}
-
 // ── PERMANENT UPGRADES ───────────────────────────────────────────
 const upgrades: Upgrade[] = [
   {
@@ -90,23 +73,86 @@ const upgrades: Upgrade[] = [
 ];
 
 // ── AUGMENTS ─────────────────────────────────────────────────────
-const skills: Skill[] = [
-  { icon: "javascript", name: "TYPESCRIPT", active: true },
-  { icon: "deployed_code", name: "REACT_FRAMEWORK" },
-  { icon: "widgets", name: "VUE_NUXT_STACK" },
-  { icon: "terminal", name: "NODE_JS_RUNTIME" },
-  { icon: "cloud", name: "AWS_CLOUD" },
-  { icon: "cloud", name: "GOOGLE_GLOUD_PLATFORM" },
-  { icon: "brush", name: "FIGMA_INTERFACE_DESIGN" },
-  { icon: "phone_iphone", name: "SWIFT_SWIFTUI" },
-  { icon: "api", name: "GRAPHQL_REST_APIs" },
-  { icon: "code", name: "PYTHON" },
-  { icon: "storage", name: "DATABASE_SYSTEMS" },
-  { icon: "web", name: "HEADLESS_CMS" },
-  { icon: "style", name: "CSS_TAILWIND" },
+const skills = [
+  {
+    iconSrc: "/images/typescript-svgrepo-com.svg",
+    name: "TYPESCRIPT",
+    active: true,
+    metadata: "javascript, typescript",
+  },
+  {
+    iconSrc: "/images/react-svgrepo-com.svg",
+    name: "REACT",
+    metadata: "react",
+  },
+  {
+    iconSrc: "/images/nextjs-svgrepo-com.svg",
+    name: "NEXT JS",
+    metadata: "nextjs",
+  },
+  {
+    iconSrc: "/images/vuejs-svgrepo-com.svg",
+    name: "VUEJS",
+    metadata: "vuejs",
+  },
+  {
+    iconSrc: "/images/nuxt-js-svgrepo-com.svg",
+    name: "NUXT",
+    metadata: "nuxt",
+  },
+  {
+    iconSrc: "/images/nodejs-svgrepo-com.svg",
+    name: "NODE_JS_RUNTIME",
+    metadata: "node.js, rest api, supabase",
+  },
+  {
+    iconSrc: "/images/aws-lambda-svgrepo-com.svg",
+    name: "AWS_CLOUD",
+    metadata: "aws, dynamodb, s3, lambdas, ec2",
+  },
+  {
+    iconSrc: "/images/google-cloud-svgrepo-com.svg",
+    name: "GOOGLE_GLOUD_PLATFORM",
+    metadata: "gcp, firebase",
+  },
+  {
+    iconSrc: "/images/figma-svgrepo-com.svg",
+    name: "FIGMA_UI_DESIGN",
+    metadata: "figma",
+  },
+  {
+    iconSrc: "/images/graphql-svgrepo-com.svg",
+    name: "GRAPHQL_REST_APIs",
+    metadata: "graphql",
+  },
+  {
+    iconSrc: "/images/python-127-svgrepo-com.svg",
+    name: "PYTHON",
+    metadata: "python",
+  },
+  {
+    iconSrc: "/images/database-svgrepo-com.svg",
+    name: "DATABASE_SYSTEMS",
+    metadata: "database",
+  },
+  {
+    iconSrc: "/images/headless.svg",
+    name: "WORDPRESS_HEADLESS_CMS",
+    metadata: "wordpress, headless cms",
+  },
+  {
+    iconSrc: "/images/css.svg",
+    name: "CSS_TAILWIND",
+    metadata: "css, sass, tailwind",
+  },
+  {
+    iconSrc: "/images/swift-svgrepo-com.svg",
+    name: "SWIFT_SWIFTUI",
+    metadata: "swift, ios development",
+  },
 ];
 
-const missions: Mission[] = [
+const missions = [
   {
     name: "CANOPY SUPER APP",
     tags: "FRONT END ARCHITECTURE // WEB3",
@@ -129,13 +175,6 @@ const missions: Mission[] = [
     tags: "ARTICLE",
     link: "https://www.linkedin.com/posts/chrisalesant_how-to-improve-page-load-times-and-web-core-activity-7165369185630425088-arOu?utm_source=share&utm_medium=member_desktop&rcm=ACoAABeuFBAB5t8zhgkSJO8kmWvEE1MK-4WMRqs",
   },
-];
-
-const biometrics: Biometric[] = [
-  { label: "LOCATION", value: "NYC" },
-  { label: "AVAILABILITY", value: "ACTIVE_FOR_PROJECTS" },
-  { label: "LATENCY", value: "02_MS" },
-  { label: "NEURAL_LINK", value: "STABLE" },
 ];
 
 // ── Mobile / breakpoint state ─────────────────────────────────────
@@ -338,29 +377,29 @@ onUnmounted(() => {
         <div class="mt-5 space-y-3">
           <div>
             <span class="hud-label">EQUIPPED CLASS</span>
-            <div
+            <h2
               class="text-white font-bold uppercase tracking-widest mt-0.5"
               style="font-size: clamp(0.65rem, 1.1vw, 0.85rem)"
             >
               FULL_STACK_ENGINEER
-            </div>
+            </h2>
           </div>
           <div>
-            <span class="hud-label">LATEST MISSION</span>
-            <div
+            <h3 class="hud-label">LATEST MISSION</h3>
+            <h4
               class="hidden lg:block mt-1 text-[#c6c6c6] leading-snug text-xs"
             >
               <span class="text-white">
                 AI, FRONTEND, DATA_PIPELINES & STUFF</span
               >
               //<br />@STOCKS_TO_TRADE
-            </div>
-            <div class="lg:hidden mt-1 text-[#c6c6c6] leading-snug text-xs">
+            </h4>
+            <h4 class="lg:hidden mt-1 text-[#c6c6c6] leading-snug text-xs">
               <span class="text-white">
                 AI / FRONTEND / DATA_PIPELINES & STUFF</span
               >
               //<br />@ STOCKS_TO_TRADE
-            </div>
+            </h4>
           </div>
         </div>
       </div>
@@ -406,63 +445,7 @@ onUnmounted(() => {
         <div class="corner-br-w" />
       </div>
 
-      <!-- Service Record -->
-      <div
-        class="relative flex-shrink-0 border border-[#474747]/40 p-4 bg-[#1f1f1f]/20"
-      >
-        <div class="corner-tl" />
-        <div class="corner-tr" />
-        <div class="corner-bl" />
-        <div class="corner-br" />
-
-        <div class="flex justify-between items-center mb-2">
-          <span class="hud-label">SERVICE_RECORD</span>
-          <span class="font-mono text-[8px] text-white tracking-wider"
-            >LVL_10</span
-          >
-        </div>
-
-        <div class="h-px bg-[#353535] w-full relative mb-4">
-          <div class="absolute inset-y-0 left-0 bg-white" style="width: 85%" />
-        </div>
-
-        <div class="grid grid-cols-3 gap-2 text-center">
-          <div>
-            <span class="hud-label !text-[8px] mb-0.5">EXPERIENCE</span>
-            <span class="font-bold text-sm block text-white">10_YEARS</span>
-          </div>
-          <div>
-            <span class="hud-label !text-[8px] mb-0.5">COFFEE_CUPS</span>
-            <span class="font-bold text-sm block text-white">+99</span>
-          </div>
-          <div>
-            <span class="hud-label !text-[8px] mb-0.5">PROJECTS</span>
-            <span class="font-bold text-sm block text-white">+99</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Spacer (desktop only — pushes biometrics to bottom) -->
-      <div class="hidden xl:block flex-1" />
-
-      <!-- Biometric Data -->
-      <div class="flex-shrink-0">
-        <span class="hud-label mb-3">BIOMETRIC_DATA</span>
-        <div class="space-y-1.5">
-          <div
-            v-for="bio in biometrics"
-            :key="bio.label"
-            class="flex justify-between items-center border-b border-[#474747]/25 pb-1.5"
-          >
-            <span class="font-mono text-[10px] uppercase text-[#919191]">{{
-              bio.label
-            }}</span>
-            <span class="font-mono text-[10px] text-white">{{
-              bio.value
-            }}</span>
-          </div>
-        </div>
-      </div>
+      <ProfileStatsPanel />
     </section>
 
     <!-- ════════════════════════════════════════════════════════
@@ -535,9 +518,9 @@ onUnmounted(() => {
     >
       <!-- ── PERMANENT UPGRADES ── -->
       <div class="flex-shrink-0">
-        <span class="hud-label mb-2 font-semibold lg:font-regular"
-          >CORE_COMPETENCIES</span
-        >
+        <h3 class="hud-label mb-2 font-semibold lg:font-normal">
+          CORE_COMPETENCIES
+        </h3>
 
         <div class="relative">
           <!-- Desktop: scrollable with max-height; Mobile: plain grid (no cap) -->
@@ -606,13 +589,13 @@ onUnmounted(() => {
             v-if="expandedUpgrade && isMobile"
             class="mt-2 border border-white/20 p-3 bg-[#1a1a1a] xl:hidden"
           >
-            <p class="hud-label !text-[8px] mb-2">
+            <p class="hud-label !text-[10px] mb-2">
               {{ expandedUpgrade.label }}
             </p>
             <div
               v-for="item in expandedUpgrade.tooltip"
               :key="item"
-              class="font-mono text-[8px] text-[#e2e2e2] leading-relaxed"
+              class="font-mono text-[10px] text-[#e2e2e2] leading-relaxed"
             >
               {{ item }}
             </div>
@@ -620,106 +603,19 @@ onUnmounted(() => {
         </Transition>
       </div>
 
-      <!-- ── AUGMENTS ── -->
-      <div class="flex-shrink-0 xl:flex xl:flex-col xl:min-h-0">
-        <div class="flex justify-between items-center mb-2 flex-shrink-0">
-          <span class="hud-label font-semibold lg:font-regular"
-            >TECH STACK</span
-          >
-          <span class="font-mono text-[8px] text-[#919191]"
-            >MOD_{{ String(skills.length).padStart(3, "0") }}</span
-          >
-        </div>
-        <!-- Desktop: capped + scrollable; Mobile: full list -->
-        <div class="space-y-px xl:overflow-y-auto xl:max-h-[142px]">
-          <div
-            v-for="(skill, i) in skills"
-            :key="skill.name"
-            :ref="(el) => setItemRef(el as HTMLElement, UPGRADE_COUNT + i)"
-            :class="[
-              'flex items-center justify-between px-3 py-2 border-r-2 cursor-pointer transition-all duration-150 group',
-              focusedSkill === i
-                ? 'bg-[#353535] border-white translate-x-0.5'
-                : skill.active
-                  ? 'bg-[#2a2a2a] border-white hover:translate-x-0.5'
-                  : 'bg-[#353535]/10 border-[#474747]/50 hover:bg-[#1f1f1f] hover:translate-x-0.5',
-            ]"
-          >
-            <div class="flex items-center gap-3">
-              <span
-                class="material-symbols-outlined text-base lg:text-[16px] leading-none"
-                :class="
-                  focusedSkill === i
-                    ? 'text-white'
-                    : 'text-[#919191] group-hover:text-[#e2e2e2]'
-                "
-                >{{ skill.icon }}</span
-              >
-              <span
-                class="lg:font-bold text-[12px] uppercase tracking-wider"
-                :class="focusedSkill === i ? 'text-white' : ''"
-                >{{ skill.name }}</span
-              >
-            </div>
-            <div
-              class="w-10 h-px shrink-0"
-              :class="
-                focusedSkill === i || skill.active
-                  ? 'bg-white'
-                  : 'bg-[#474747]/60'
-              "
-            />
-          </div>
-        </div>
-      </div>
+      <TechStackList
+        :skills="skills"
+        :focused-skill="focusedSkill"
+        :ref-offset="UPGRADE_COUNT"
+        :set-item-ref="setItemRef"
+      />
 
-      <!-- ── MISSION LOGS ── -->
-      <div class="xl:flex xl:flex-col xl:flex-1 xl:min-h-0 lg:mb-0 mb-16">
-        <span class="hud-label mb-2 xl:flex-shrink-0">PROJECTS</span>
-        <!-- Desktop: grows to fill remaining space + scrolls; Mobile: full list -->
-        <div class="xl:flex-1 xl:overflow-y-auto">
-          <NuxtLink
-            v-for="(mission, i) in missions"
-            :key="mission.name"
-            :ref="
-              (el) =>
-                setItemRef(el as HTMLElement, UPGRADE_COUNT + SKILL_COUNT + i)
-            "
-            :class="[
-              'flex gap-3 py-2.5 border-b border-[#474747]/20 px-1 cursor-pointer transition-colors group',
-              focusedMission === i ? 'bg-[#2a2a2a]' : 'hover:bg-[#1f1f1f]/60',
-            ]"
-            :to="mission.link"
-          >
-            <div
-              class="w-[2px] shrink-0 self-stretch transition-colors"
-              :class="
-                focusedMission === i
-                  ? 'bg-white'
-                  : 'bg-white/40 group-hover:bg-white'
-              "
-            />
-            <div class="flex flex-col gap-1">
-              <span
-                target="_blank"
-                class="font-bold text-[11px] leading-none block uppercase tracking-wider transition-colors"
-                :class="
-                  focusedMission === i
-                    ? 'text-white'
-                    : 'text-[#e2e2e2] group-hover:text-white'
-                "
-              >
-                {{ mission.name }}
-              </span>
-              <span
-                class="font-mono text-[8px] leading-none text-[#919191] uppercase mt-0.5"
-              >
-                // {{ mission.tags }}
-              </span>
-            </div>
-          </NuxtLink>
-        </div>
-      </div>
+      <ProjectsList
+        :missions="missions"
+        :focused-mission="focusedMission"
+        :ref-offset="UPGRADE_COUNT + SKILL_COUNT"
+        :set-item-ref="setItemRef"
+      />
     </section>
   </div>
 
@@ -731,11 +627,11 @@ onUnmounted(() => {
         class="fixed z-[9999] pointer-events-none bg-[#131313] border border-[#474747] p-3 shadow-2xl"
         :style="tooltipStyle"
       >
-        <p class="hud-label !text-[8px] mb-2">{{ activeUpgrade.label }}</p>
+        <p class="hud-label !text-[12px] mb-2">{{ activeUpgrade.label }}</p>
         <div
           v-for="item in activeUpgrade.tooltip"
           :key="item"
-          class="font-mono text-[8px] text-[#e2e2e2] leading-relaxed"
+          class="font-mono text-[12px] text-[#e2e2e2] leading-relaxed"
         >
           {{ item }}
         </div>

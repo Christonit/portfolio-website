@@ -102,7 +102,7 @@
 
 @layer components {
   .hud-label {
-    @apply block font-mono text-[12px] lg:text-[9px] tracking-[0.2em] uppercase text-[#919191];
+    @apply block font-mono text-[12px] lg:text-[10px] tracking-[0.2em] uppercase text-[#919191];
   }
 
   .hud-kbd {
