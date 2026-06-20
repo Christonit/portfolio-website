@@ -4,7 +4,7 @@ import { useAudio } from '~/composables/useAudio';
 const router = useRouter();
 const route = useRoute();
 const hudKey = useHudNav();
-const { isMuted, initAudio, toggleMute, playHover, playClick } = useAudio();
+const { isMuted, initAudio, toggleMute, playHover, playClick, playHaptic } = useAudio();
 
 const pages = ["/", "/bio", "/contact"];
 
@@ -119,8 +119,16 @@ function onGlobalMouseOut(e: MouseEvent) {
   }
 }
 
-function onGlobalClick() {
+function onGlobalClick(e: MouseEvent) {
   playClick();
+
+  // Trigger brief vibration on tapping links, buttons, and navigation elements
+  const target = (e.target as HTMLElement).closest(
+    'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]'
+  );
+  if (target) {
+    playHaptic();
+  }
 }
 
 onMounted(() => {

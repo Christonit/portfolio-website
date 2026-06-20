@@ -118,6 +118,13 @@ export const useAudio = () => {
     clickAudio.play().catch(() => {})
   }
 
+  const playHaptic = () => {
+    if (!process.client) return
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(15) // Subtle 15ms haptic tick
+    }
+  }
+
   return {
     isMuted,
     isPlaying,
@@ -125,5 +132,6 @@ export const useAudio = () => {
     toggleMute,
     playHover,
     playClick,
+    playHaptic,
   }
 }
