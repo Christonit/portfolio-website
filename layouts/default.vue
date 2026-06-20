@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useAudio } from '~/composables/useAudio';
+
 const router = useRouter();
 const route = useRoute();
 const hudKey = useHudNav();
+const { isMuted, initAudio, toggleMute, playHover, playClick } = useAudio();
 
 const pages = ["/", "/bio", "/contact"];
 
@@ -93,14 +96,49 @@ function animateWarp(now: number) {
   warpRaf = requestAnimationFrame(animateWarp);
 }
 
+let lastHoveredElement: HTMLElement | null = null;
+
+function onGlobalMouseOver(e: MouseEvent) {
+  const target = (e.target as HTMLElement).closest(
+    'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]'
+  ) as HTMLElement | null;
+
+  if (target) {
+    if (target !== lastHoveredElement) {
+      lastHoveredElement = target;
+      playHover();
+    }
+  } else {
+    lastHoveredElement = null;
+  }
+}
+
+function onGlobalMouseOut(e: MouseEvent) {
+  if (lastHoveredElement && !lastHoveredElement.contains(e.relatedTarget as Node)) {
+    lastHoveredElement = null;
+  }
+}
+
+function onGlobalClick() {
+  playClick();
+}
+
 onMounted(() => {
+  initAudio();
   window.addEventListener("keydown", onKeydown);
+  window.addEventListener("click", onGlobalClick);
+  window.addEventListener("mouseover", onGlobalMouseOver);
+  window.addEventListener("mouseout", onGlobalMouseOut);
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!reduce) warpRaf = requestAnimationFrame(animateWarp);
 });
+
 onUnmounted(() => {
   window.removeEventListener("keydown", onKeydown);
+  window.removeEventListener("click", onGlobalClick);
+  window.removeEventListener("mouseover", onGlobalMouseOver);
+  window.removeEventListener("mouseout", onGlobalMouseOut);
   cancelAnimationFrame(warpRaf);
 });
 
@@ -253,6 +291,15 @@ watch(() => route.path, scrollMainToTopOnMobile);
         <span class="wip-badge" role="status" aria-label="Work in progress">
           WORK_IN_PROGRESS
         </span>
+        <button
+          class="flex p-2 text-[#919191] hover:text-white hover:bg-[#353535] transition-all focus:outline-none"
+          :aria-label="isMuted ? 'Unmute Audio' : 'Mute Audio'"
+          @click.stop="toggleMute"
+        >
+          <span class="material-symbols-outlined text-xl">
+            {{ isMuted ? 'volume_off' : 'volume_up' }}
+          </span>
+        </button>
         <button
           class="hidden xl:flex p-2 text-[#919191] hover:text-white hover:bg-[#353535] transition-all"
           aria-label="Terminal"
