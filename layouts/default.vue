@@ -6,9 +6,10 @@ const route = useRoute();
 const hudKey = useHudNav();
 const { isMuted, initAudio, toggleMute, playHover, playClick, playHaptic } = useAudio();
 
-const pages = ["/", "/bio", "/contact"];
+const pages = ["/", "/projects", "/bio", "/contact"];
 
 const currentIndex = computed(() => {
+  if (route.path.startsWith("/project/")) return pages.indexOf("/projects");
   const i = pages.indexOf(route.path);
   return i === -1 ? 0 : i;
 });
@@ -153,6 +154,7 @@ onUnmounted(() => {
 // ── Desktop nav items ─────────────────────────────────────────────
 const navItems = [
   { label: "STATS", path: "/" },
+  { label: "PROJECTS", path: "/projects" },
   { label: "BIO", path: "/bio" },
   { label: "GET_IN_TOUCH", path: "https://www.linkedin.com/in/chrisalesant/" },
 ];
@@ -160,6 +162,7 @@ const navItems = [
 // ── Mobile bottom nav items ───────────────────────────────────────
 const mobileNavItems = [
   { label: "STATS", path: "/", icon: "analytics" },
+  { label: "PROJECTS", path: "/projects", icon: "grid_view" },
   { label: "BIO", path: "/bio", icon: "fingerprint" },
   {
     label: "CONNECT",
@@ -168,7 +171,12 @@ const mobileNavItems = [
   },
 ];
 
-const isActive = (path: string) => route.path === path;
+const isActive = (path: string) => {
+  if (path === "/projects") {
+    return route.path === "/projects" || route.path.startsWith("/project/");
+  }
+  return route.path === path;
+};
 
 const mainRef = ref<HTMLElement | null>(null);
 
@@ -224,7 +232,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
 
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
     <nav
-      class="fixed top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10"
+      class="site-nav fixed top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10"
     >
       <!-- Logo: always visible -->
       <NuxtLink
@@ -322,7 +330,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
     <!-- Desktop: overflow-hidden, sits between top nav and keyboard+footer bars -->
     <main
       ref="mainRef"
-      class="crt-warp absolute lg:relative inset-x-0 top-14 z-10 bottom-16 overflow-y-auto xl:bottom-[72px] xl:overflow-hidden"
+      class="hud-page crt-warp absolute lg:relative inset-x-0 top-14 z-10 bottom-16 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-[72px] xl:h-[calc(100vh-132px)] xl:overflow-hidden"
     >
       <slot />
     </main>

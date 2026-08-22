@@ -1,0 +1,160 @@
+<script setup lang="ts">
+import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
+import projectsJson from "~/data/projects.json";
+import { projectListItems } from "~/utils/projectSchema";
+import { SITE_URL } from "~/utils/site";
+
+const PROJECTS_LIST_ID = `${SITE_URL}/projects#itemlist`;
+const projects = projectsJson as ProjectPreview[];
+
+usePageSeo({
+  title: "CH_SANTANA_OS_V3 // PROJECTS",
+  description:
+    "Selected web apps, platforms, and technical articles by Christopher Santana.",
+  pageType: "CollectionPage",
+  mainEntity: { "@id": PROJECTS_LIST_ID },
+  extraSchema: () => [
+    defineItemList({
+      "@id": PROJECTS_LIST_ID,
+      name: "Selected work",
+      itemListOrder: "Unordered",
+      numberOfItems: projects.length,
+      itemListElement: projectListItems(projects),
+    }),
+  ],
+});
+
+const hudKey = useHudNav();
+const totalWork = projects.length;
+
+const focusedIndex = ref<number | null>(null);
+const cardRefs = ref<(HTMLElement | null)[]>([]);
+const columns = ref(1);
+
+function bindCard(el: Element | null, i: number) {
+  cardRefs.value[i] = el instanceof HTMLElement ? el : null;
+}
+
+function readColumns() {
+  if (typeof window === "undefined") return 1;
+  if (window.innerWidth >= 1280) return 3;
+  if (window.innerWidth >= 768) return 2;
+  return 1;
+}
+
+function scrollCardIntoView(i: number) {
+  cardRefs.value[i]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function activateCard(i: number) {
+  const el = cardRefs.value[i];
+  const link = el instanceof HTMLAnchorElement ? el : el?.querySelector("a");
+  link?.click();
+}
+
+watch(hudKey, (key) => {
+  if (!key) return;
+
+  const cols = columns.value;
+  const last = totalWork - 1;
+
+  if (focusedIndex.value === null) {
+    focusedIndex.value = 0;
+    scrollCardIntoView(0);
+    return;
+  }
+
+  const i = focusedIndex.value;
+
+  if (key === "ArrowRight") {
+    focusedIndex.value = Math.min(i + 1, last);
+  } else if (key === "ArrowLeft") {
+    focusedIndex.value = Math.max(i - 1, 0);
+  } else if (key === "ArrowDown") {
+    focusedIndex.value = Math.min(i + cols, last);
+  } else if (key === "ArrowUp") {
+    focusedIndex.value = Math.max(i - cols, 0);
+  }
+
+  scrollCardIntoView(focusedIndex.value);
+});
+
+function onKeydown(e: KeyboardEvent) {
+  const tag = (e.target as HTMLElement)?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  if (e.key !== "Enter" || focusedIndex.value === null) return;
+  e.preventDefault();
+  activateCard(focusedIndex.value);
+}
+
+let cleanupListeners: (() => void) | undefined;
+
+onMounted(() => {
+  columns.value = readColumns();
+  const onResize = () => {
+    columns.value = readColumns();
+  };
+  window.addEventListener("resize", onResize);
+  window.addEventListener("keydown", onKeydown);
+  cleanupListeners = () => {
+    window.removeEventListener("resize", onResize);
+    window.removeEventListener("keydown", onKeydown);
+  };
+});
+
+onUnmounted(() => {
+  cleanupListeners?.();
+});
+</script>
+
+<template>
+  <div
+    class="flex flex-col gap-8 px-4 py-5 pb-8 xl:h-[calc(100vh-132px)] xl:overflow-y-auto xl:px-8"
+  >
+    <header class="flex max-w-3xl flex-col gap-3 pt-2">
+      <span class="hud-label">// PROJECTS</span>
+      <h1
+        class="font-semibold uppercase tracking-tighter text-white"
+        style="font-size: clamp(2.1rem, 4.4vw, 3.6rem); line-height: 0.92"
+      >
+        SELECTED WORK
+      </h1>
+      <p class="max-w-xl font-mono text-xs leading-relaxed text-[#919191] xl:text-sm">
+        A collection of web apps and projects I've collaborated on over the
+        years, along with technical articles I'm proud of.
+      </p>
+    </header>
+
+    <section aria-label="Selected work">
+      <ul
+        class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 xl:gap-6"
+        role="list"
+      >
+        <li
+          v-for="(project, i) in projects"
+          :key="project.slug"
+          class="min-h-0"
+          :ref="(el) => bindCard(el as Element | null, i)"
+        >
+          <ProjectsCard
+            :project="project"
+            :index="i"
+            :total="totalWork"
+            :focused="focusedIndex === i"
+          />
+        </li>
+        <!--
+        <li
+          class="min-h-0"
+          :ref="(el) => bindCard(el as Element | null, totalWork)"
+        >
+          <ProjectsCard
+            variant="mission"
+            :focused="focusedIndex === totalWork"
+          />
+        </li>
+        -->
+      </ul>
+    </section>
+  </div>
+</template>

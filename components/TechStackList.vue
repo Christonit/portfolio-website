@@ -32,8 +32,6 @@ defineProps<{
         :key="skill.name"
         :ref="(el) => setItemRef(el as HTMLElement, refOffset + i)"
         role="listitem"
-        itemscope
-        itemtype="https://schema.org/DefinedTerm"
         :title="skill.metadata"
         :data-keywords="skill.metadata"
         :aria-label="`${skill.name.replace(/_/g, ' ')} — ${skill.metadata}`"
@@ -49,7 +47,6 @@ defineProps<{
       >
         <div class="flex items-center gap-3">
           <img
-            itemprop="image"
             :src="skill.iconSrc"
             :alt="`${skill.name.replace(/_/g, ' ')} — ${skill.metadata}`"
             :title="skill.metadata"
@@ -64,11 +61,7 @@ defineProps<{
                 : 'xl:group-hover:opacity-70'
             "
           />
-          <meta itemprop="name" :content="skill.name.replace(/_/g, ' ')" />
-          <meta itemprop="description" :content="skill.metadata" />
-          <meta itemprop="keywords" :content="skill.metadata" />
           <span
-            itemprop="termCode"
             class="lg:font-bold text-[12px] uppercase tracking-wider"
             :class="focusedSkill === i ? 'xl:text-white' : ''"
             >{{ skill.name }}</span

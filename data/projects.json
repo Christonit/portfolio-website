@@ -1,0 +1,157 @@
+[
+  {
+    "name": "CANOPY SUPER APP",
+    "slug": "canopy-super-app",
+    "code": "AST-AR-001",
+    "tags": "FRONTEND_ARCHITECTURE // WEB3",
+    "category": "WEB3",
+    "link": "https://testnet.app.canopynetwork.org/",
+    "image": "/images/projects/canopy.png",
+    "icon": "hexagon",
+    "description": "Zero-to-one frontend architecture for a Web3 super app — launchpad, DEX, and explorer on a shared interface system.",
+    "dossier": [
+      "Zero-to-one interface architecture for a Web3 super app. Launchpad, DEX, and explorer share one component system so every surface reads as a single operating environment rather than three bolted-on products.",
+      "The launchpad had to feel like a control deck: pool state, allocation windows, and wallet status visible without burying the trade path. Navigation is a mission log, not a marketing sitemap.",
+      "DEX routing and explorer views inherit the same tokens, density, and motion language. A swap, a contract call, and a block trace all live inside one HUD instead of three visual dialects.",
+      "Frontend architecture was treated as infrastructure. Route boundaries, data loaders, and error states were designed before chrome, so the interface could expand without rewriting the cockpit.",
+      "Web3 state is hostile to naive rendering. Wallet disconnects, chain switches, and pending transactions are first-class modes, not toast afterthoughts.",
+      "The explorer layer turns raw chain noise into readable telemetry: hashes, gas, and confirmations formatted for operators who already know what they are looking for.",
+      "Shared primitives — panels, meters, and monospace readouts — keep density high without collapsing into spreadsheet clutter. Every pixel has a job.",
+      "The result is a super app that still feels like one machine. New modules dock into the same grid instead of opening a different website."
+    ],
+    "tasks": [
+      "Zero-to-one Architecture",
+      "Launchpad, DEX & Explorer",
+      "Frontend Architecture"
+    ],
+    "tech": ["React", "Next.js", "Node.js", "Web3"],
+    "metric": { "label": "BUILD", "value": "100%", "progress": 100 }
+  },
+  {
+    "name": "TIMOTHY SYKES",
+    "slug": "timothy-sykes",
+    "code": "AST-AR-002",
+    "tags": "NUXT // CLOUDFLARE // AWS",
+    "category": "WEB",
+    "link": "https://www.timothysykes.com/",
+    "image": "/images/projects/timothy-sykes.png",
+    "icon": "auto_awesome",
+    "description": "Frontend, SEO architecture, and a Cloudflare Workers migration for a high-traffic trading education platform.",
+    "dossier": [
+      "Frontend, SEO architecture, and an edge migration for a high-traffic trading education platform. The brief was simple and brutal: keep the brand loud, make the pages fast, and stop paying latency tax on every lesson.",
+      "The marketing surface is a broadcast channel. Hero media, curriculum funnels, and evergreen articles all compete for the first paint. The layout is a split capture: site chrome on one side, proof on the other.",
+      "SEO was treated as architecture, not a plugin. Heading order, internal paths, and crawlable lesson indexes were designed so search engines could index the catalog without a second sitemap ceremony.",
+      "A Cloudflare Workers migration moved dynamic work to the edge. Origin pressure dropped; cache hits became the default path instead of a lucky exception.",
+      "AWS still holds the heavier payloads. The split is deliberate: Workers for request logic, origin for media and durable records. Two machines, one response.",
+      "Nuxt owns the view layer. Server routes, meta, and page shells stay typed and predictable while the brand keeps its high-contrast campaign look.",
+      "Video and testimonial frames are first-class gallery objects. Scroll the dossier and the capture log advances — lesson stills, broadcast clips, landing variants.",
+      "The platform now reads as a live feed instead of a brochure that happens to stream. Traffic spikes no longer feel like a weather event."
+    ],
+    "tasks": [
+      "Frontend Development",
+      "SEO Architecture",
+      "Cloudflare Workers Migration"
+    ],
+    "tech": ["Nuxt", "TypeScript", "Cloudflare", "AWS", "Tailwind"],
+    "metric": { "label": "BUILD", "value": "72%", "progress": 72 }
+  },
+  {
+    "name": "STOCKS_TO_TRADE",
+    "slug": "stockstotrade",
+    "code": "AST-AR-003",
+    "tags": "NUXT // AWS // WEBSOCKETS // LLM",
+    "category": "FINTECH",
+    "link": "https://stockstotrade.com/",
+    "image": "/images/projects/stockstotrade.png",
+    "icon": "candlestick_chart",
+    "description": "Trading education and market data for 1M+ monthly users. Shared Songbird backend with TimothySykes.com: live quotes, catalogs, and publishing.",
+    "dossier": [
+      "StocksToTrade is a high-traffic trading education and market-data platform — charting, scanners, watchlists, webinars, news — for more than a million unique monthly users. TimothySykes.com is the companion education and publishing site for Tim Sykes' content.",
+      "Both frontends share one backend I built and own: Songbird. Quotes, news, catalogs, and publishing flow through the same APIs, caches, and pipelines instead of two separate stacks.",
+      "I owned frontend and web services for both sites as a full-stack engineer and lead of a four-person team: Nuxt/Vue on Cloudflare, Songbird on AWS, and a shared component library.",
+      "I moved them off slow full-site rebuilds onto request-time data — DynamoDB catalogs, S3 JSON, and a shared cache — so pages compose on the request instead of waiting for a rebuild.",
+      "Live quotes run over WebSockets. Index feeds, watchlists, and scanners stay current when the tape is loud, with cache windows and fallback snapshots so the HUD does not lie.",
+      "Publishing is automated: WordPress ships news and posts to S3, then SSR on the public site. Editorial no longer blocks deploys. AdButler was replaced with our AIZEn ad stack.",
+      "I led LLM tooling for QA, SEO integrity checks, and comment moderation. CI/CD and infra — Cloudflare Workers/Pages, AWS deploy, rate limiting — cut a large share of operating cost.",
+      "SEO and Core Web Vitals were treated as architecture: JSON-LD, sitemaps, hydration budgets, and cache TTLs. At this traffic, first paint is a product feature."
+    ],
+    "tasks": [
+      "Frontend development (news, quotes, charts, Watch Live, lead capture, shared UI)",
+      "Backend / API",
+      "Real-time market data (WebSockets, quotes, index feeds)",
+      "Data engineering (DynamoDB, S3 content, news pipeline)",
+      "SEO",
+      "Performance (SSR, Core Web Vitals, hydration, cache/TTL)",
+      "CMS / publishing automation (headless WordPress)",
+      "AI / LLM tooling (QA, SEO integrity, comment moderation)",
+      "DevOps (Cloudflare Workers/Pages, AWS deploy, CI/CD, rate limiting)"
+    ],
+    "tech": [
+      "Nuxt 3",
+      "Vue 3",
+      "TypeScript",
+      "Hono",
+      "WebSockets",
+      "AWS",
+      "Cloudflare",
+      "WordPress"
+    ],
+    "techGroups": [
+      {
+        "label": "Frontend",
+        "items": [
+          "Nuxt 3",
+          "Vue 3",
+          "TypeScript",
+          "Pinia",
+          "Tailwind",
+          "Sass",
+          "Chart.js",
+          "Highcharts"
+        ]
+      },
+      {
+        "label": "Backend",
+        "items": ["Node.js", "Hono", "Zod/OpenAPI", "WebSockets"]
+      },
+      {
+        "label": "Data / cloud",
+        "items": [
+          "AWS (S3, DynamoDB, ECR, Elastic Beanstalk)",
+          "Cloudflare Workers/Pages",
+          "Docker",
+          "Railway"
+        ]
+      },
+      {
+        "label": "CMS / SEO",
+        "items": ["WordPress REST", "JSON-LD", "Sitemaps"]
+      }
+    ],
+    "metric": { "label": "MONTHLY_UNIQUES", "value": "1M+", "progress": 100 }
+  },
+  {
+    "name": "HOW TO IMPROVE YOUR WEBSITES PERFORMANCE",
+    "slug": "website-performance",
+    "code": "AST-AR-004",
+    "tags": "ARTICLE",
+    "category": "ARTICLE",
+    "link": "https://www.linkedin.com/posts/chrisalesant_how-to-improve-page-load-times-and-web-core-activity-7165369185630425088-arOu?utm_source=share&utm_medium=member_desktop&rcm=ACoAABeuFBAB5t8zhgkSJO8kmWvEE1MK-4WMRqs",
+    "image": "/images/projects/website-performance.png",
+    "icon": "article",
+    "description": "Practical notes on page load times, Core Web Vitals, and the performance work that actually moves the needle.",
+    "dossier": [
+      "Field notes on page load times, Core Web Vitals, and the performance work that actually moves the needle. No folklore. No 'just add a CDN' as a personality.",
+      "LCP is a media problem dressed as a metrics problem. Hero images, fonts, and blocking scripts set the ceiling before your framework ever hydrates.",
+      "INP is the human-facing vital. Main-thread congestion, heavy listeners, and layout thrash show up as a UI that feels late even when the network is fine.",
+      "CLS is a contract with the layout. Reserve space, don't inject banners after paint, and stop treating web fonts as a surprise guest.",
+      "The useful work is boring on purpose: critical CSS, image budgets, cache headers, and killing third-party tags that do not earn their bytes.",
+      "Lab scores are a flashlight, not the destination. Field data from real devices decides whether the mission succeeded.",
+      "These notes collect the checks I run before calling a page fast: waterfall, filmstrip, and a pass with the network throttled until it hurts.",
+      "Performance is a product feature. If the HUD stutters, the operator leaves. The article is a briefing for people who have to ship."
+    ],
+    "tasks": ["Technical Writing", "Web Performance"],
+    "tech": ["Core Web Vitals"],
+    "metric": { "label": "READ_TIME", "value": "6m", "progress": 42 }
+  }
+]

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-useSeoMeta({
+usePageSeo({
   title: "CH_SANTANA_OS_V3 // GET_IN_TOUCH",
-  description: "Contact Christopher Santana.",
+  description: "Contact Christopher Santana on LinkedIn.",
+  pageType: "ContactPage",
 });
 
 const form = reactive({ name: "", email: "", message: "" });

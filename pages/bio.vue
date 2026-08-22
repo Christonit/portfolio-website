@@ -1,7 +1,8 @@
 <script setup lang="ts">
-useSeoMeta({
+usePageSeo({
   title: "CH_SANTANA_OS_V3 // BIO",
   description: "Christopher Santana — Biography.",
+  pageType: "AboutPage",
 });
 
 const timeline = [

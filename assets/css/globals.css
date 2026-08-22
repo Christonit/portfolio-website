@@ -26,6 +26,38 @@
     --input: 0 0% 27.8%;
     --ring: 0 0% 100%;
     --radius: 0px;
+
+    /* transitions-dev motion tokens */
+    --duration-stagger: 40ms;
+    --duration-micro: 80ms;
+    --duration-quick: 150ms;
+    --duration-fast: 250ms;
+    --ease-out: ease-out;
+    --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --scale-small: 0.98;
+    --distance-micro: 4px;
+    --blur-medium: 3px;
+
+    /* Page side-by-side / view transitions */
+    --page-slide-dur: 250ms;
+    --page-fade-dur: 250ms;
+    --page-slide-distance: 8px;
+    --page-blur: 3px;
+    --page-stagger: 0ms;
+    --page-exit-enabled: 1;
+    --page-slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --page-fade-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --vt-slide-distance: 100%;
+
+    /* Tooltip open / close */
+    --tt-in-dur: 150ms;
+    --tt-out-dur: 50ms;
+    --tt-scale: 0.98;
+    --tt-delay: 80ms;
+    --tt-in-ease: ease-out;
+    --tt-out-ease: ease-out;
+    --tt-bg: #0c0c0c;
+    --tt-fg: #e2e2e2;
   }
 }
 
@@ -349,5 +381,149 @@
     height: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.4);
     border-right: 1px solid rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* ── Named regions for View Transitions ─────────────────────────── */
+.hud-page {
+  view-transition-name: hud-page;
+}
+
+.site-nav {
+  view-transition-name: site-nav;
+}
+
+::view-transition-old(root),
+::view-transition-new(root),
+::view-transition-group(root),
+::view-transition-old(site-nav),
+::view-transition-new(site-nav),
+::view-transition-group(site-nav) {
+  animation: none;
+}
+
+::view-transition-group(hud-page) {
+  overflow: hidden;
+  animation: none;
+}
+
+::view-transition-image-pair(hud-page) {
+  isolation: isolate;
+}
+
+::view-transition-old(hud-page),
+::view-transition-new(hud-page) {
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(hud-page) {
+  z-index: 1;
+}
+
+/* Link click: incoming page enters from the right, travels left */
+html[data-nav-dir="forward"]::view-transition-old(hud-page) {
+  animation: vt-slide-out-left var(--page-slide-dur) var(--page-slide-ease) both;
+}
+
+html[data-nav-dir="forward"]::view-transition-new(hud-page) {
+  animation: vt-slide-in-from-right var(--page-slide-dur) var(--page-slide-ease) both;
+  animation-delay: var(--page-stagger);
+}
+
+/* Back / breadcrumb: incoming page enters from the left, travels right */
+html[data-nav-dir="back"]::view-transition-old(hud-page) {
+  animation: vt-slide-out-right var(--page-slide-dur) var(--page-slide-ease) both;
+}
+
+html[data-nav-dir="back"]::view-transition-new(hud-page) {
+  animation: vt-slide-in-from-left var(--page-slide-dur) var(--page-slide-ease) both;
+  animation-delay: var(--page-stagger);
+}
+
+@keyframes vt-slide-out-right {
+  to {
+    transform: translateX(var(--vt-slide-distance));
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+@keyframes vt-slide-in-from-left {
+  from {
+    transform: translateX(calc(var(--vt-slide-distance) * -1));
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+@keyframes vt-slide-out-left {
+  to {
+    transform: translateX(calc(var(--vt-slide-distance) * -1));
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+@keyframes vt-slide-in-from-right {
+  from {
+    transform: translateX(var(--vt-slide-distance));
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+/* Vue page-transition fallback when View Transitions API is unavailable */
+.hud-forward-enter-active,
+.hud-forward-leave-active,
+.hud-back-enter-active,
+.hud-back-leave-active {
+  transition:
+    transform var(--page-slide-dur) var(--page-slide-ease),
+    opacity var(--page-fade-dur) var(--page-fade-ease),
+    filter var(--page-slide-dur) var(--page-slide-ease);
+  width: 100%;
+}
+
+.hud-forward-leave-active,
+.hud-back-leave-active {
+  position: absolute;
+  inset: 0;
+}
+
+.hud-forward-enter-from {
+  transform: translateX(var(--vt-slide-distance));
+  opacity: 0;
+  filter: blur(var(--page-blur));
+}
+
+.hud-forward-leave-to {
+  transform: translateX(calc(var(--vt-slide-distance) * -1));
+  opacity: 0;
+  filter: blur(var(--page-blur));
+}
+
+.hud-back-enter-from {
+  transform: translateX(calc(var(--vt-slide-distance) * -1));
+  opacity: 0;
+  filter: blur(var(--page-blur));
+}
+
+.hud-back-leave-to {
+  transform: translateX(var(--vt-slide-distance));
+  opacity: 0;
+  filter: blur(var(--page-blur));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-nav-dir="forward"]::view-transition-old(hud-page),
+  html[data-nav-dir="forward"]::view-transition-new(hud-page),
+  html[data-nav-dir="back"]::view-transition-old(hud-page),
+  html[data-nav-dir="back"]::view-transition-new(hud-page),
+  .hud-forward-enter-active,
+  .hud-forward-leave-active,
+  .hud-back-enter-active,
+  .hud-back-leave-active {
+    animation: none !important;
+    transition: none !important;
   }
 }

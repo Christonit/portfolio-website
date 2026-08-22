@@ -1,7 +1,13 @@
 <script setup lang="ts">
-useSeoMeta({
-  title: "CH_SANTANA_OS_V3 // STATS",
-  description: "Christopher Santana — Full Stack Engineer. STATS page.",
+import type { Mission } from "~/components/ProjectsList.vue";
+import missionsJson from "~/data/projects.json";
+import { openProject } from "~/utils/projects";
+import { SITE_DESCRIPTION } from "~/utils/site";
+
+usePageSeo({
+  title: "Christopher Santana - Full Stack Engineer",
+  description: SITE_DESCRIPTION,
+  pageType: "ProfilePage",
 });
 
 const hudKey = useHudNav();
@@ -152,30 +158,7 @@ const skills = [
   },
 ];
 
-const missions = [
-  {
-    name: "CANOPY SUPER APP",
-    tags: "FRONT END ARCHITECTURE // WEB3",
-    link: "https://testnet.app.canopynetwork.org/",
-  },
-  // { name: "SLATEMARK", tags: "iOS APP" },
-  {
-    name: "TIMOTHY SYKES",
-    tags: "NUXT // AWS // NODE.JS // AI",
-    link: "https://www.timothysykes.com/",
-  },
-  {
-    name: "STOCKSTOTRADE",
-    tags: "NUXT // AWS // NODE.JS // AI",
-    link: "https://stockstotrade.com/",
-  },
-  // { name: "ENCORO", tags: "iOS APP // NODE.JS // AI" },
-  {
-    name: "HOW TO IMPROVE YOUR WEBSITES PERFORMANCE",
-    tags: "ARTICLE",
-    link: "https://www.linkedin.com/posts/chrisalesant_how-to-improve-page-load-times-and-web-core-activity-7165369185630425088-arOu?utm_source=share&utm_medium=member_desktop&rcm=ACoAABeuFBAB5t8zhgkSJO8kmWvEE1MK-4WMRqs",
-  },
-];
+const missions = missionsJson as Mission[];
 
 // ── Mobile / breakpoint state ─────────────────────────────────────
 const isMobile = ref(false);
@@ -319,6 +302,14 @@ watch(hudKey, (key) => {
   }
 });
 
+function onInteractKey(e: KeyboardEvent) {
+  const tag = (e.target as HTMLElement)?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  if (e.key !== "Enter" || focusedMission.value === null) return;
+  e.preventDefault();
+  openProject(missions[focusedMission.value]);
+}
+
 // ── Lifecycle ────────────────────────────────────────────────────
 let cleanupListeners: (() => void) | undefined;
 
@@ -331,10 +322,12 @@ onMounted(() => {
   checkMobile();
   window.addEventListener("resize", checkMobile);
   window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("keydown", onInteractKey);
 
   cleanupListeners = () => {
     window.removeEventListener("resize", checkMobile);
     window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("keydown", onInteractKey);
   };
 });
 
@@ -392,13 +385,25 @@ onUnmounted(() => {
               <span class="text-white">
                 AI, FRONTEND, DATA_PIPELINES & STUFF</span
               >
-              //<br />@STOCKS_TO_TRADE
+              //<br />
+              <NuxtLink
+                to="/project/stockstotrade"
+                class="text-white hover:text-[#67F57A]"
+              >
+                @STOCKS_TO_TRADE
+              </NuxtLink>
             </h4>
             <h4 class="lg:hidden mt-1 text-[#c6c6c6] leading-snug text-xs">
               <span class="text-white">
                 AI / FRONTEND / DATA_PIPELINES & STUFF</span
               >
-              //<br />@ STOCKS_TO_TRADE
+              //<br />
+              <NuxtLink
+                to="/project/stockstotrade"
+                class="text-white hover:text-[#67F57A]"
+              >
+                @ STOCKS_TO_TRADE
+              </NuxtLink>
             </h4>
           </div>
         </div>
@@ -412,7 +417,7 @@ onUnmounted(() => {
           class="absolute top-2 left-2 z-10 border-l border-t border-white/15 px-2 py-0.5"
         >
           <span class="font-mono text-[8px] text-[#919191] uppercase"
-            >SCAN_LOCK: TARGET_ACQUIRED</span
+            >PROFILE_LOCK:</span
           >
         </div>
 
