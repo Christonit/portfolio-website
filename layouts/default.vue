@@ -239,7 +239,8 @@ watch(() => route.path, scrollMainToTopOnMobile);
         to="/"
         class="text-white font-semibold text-sm xl:text-lg tracking-tighter uppercase select-none mr-auto"
       >
-        CH_SANTANA_OS_V3
+        <span class="xl:hidden">CH_SANTANA</span>
+        <span class="hidden xl:inline">CH_SANTANA_OS_V3</span>
       </NuxtLink>
 
       <!-- L button (desktop only) -->
@@ -305,7 +306,8 @@ watch(() => route.path, scrollMainToTopOnMobile);
 
       <div class="flex items-center gap-2 shrink-0 z-10">
         <span class="wip-badge" role="status" aria-label="Work in progress">
-          WORK_IN_PROGRESS
+          <span class="xl:hidden">WIP</span>
+          <span class="hidden xl:inline">WORK_IN_PROGRESS</span>
         </span>
         <button
           class="flex p-2 text-[#919191] hover:text-white hover:bg-[#353535] transition-all focus:outline-none"

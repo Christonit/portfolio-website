@@ -171,6 +171,26 @@ function onVideoError() {
   videoFailed.value = true;
 }
 
+type WebkitVideo = HTMLVideoElement & {
+  webkitEnterFullscreen?: () => void;
+};
+
+async function expandDemo() {
+  const el = demoVideo.value as WebkitVideo | null;
+  if (!el) return;
+  try {
+    if (typeof el.webkitEnterFullscreen === "function") {
+      el.webkitEnterFullscreen();
+      return;
+    }
+    if (el.requestFullscreen) {
+      await el.requestFullscreen();
+    }
+  } catch {
+    /* Fullscreen can be blocked outside a user gesture. */
+  }
+}
+
 async function playDemo() {
   const el = demoVideo.value;
   if (!el) return;
@@ -304,6 +324,18 @@ onBeforeUnmount(() => {
           >
             <source :src="current.video" type="video/webm" />
           </video>
+          <button
+            v-if="hasVideo"
+            type="button"
+            class="project-demo-expand flex xl:hidden"
+            aria-label="Maximize video"
+            @click="expandDemo"
+          >
+            <span class="material-symbols-outlined text-[20px] leading-none"
+              >fullscreen</span
+            >
+            <span>MAX</span>
+          </button>
           <div
             v-else
             class="project-gallery-track"
@@ -558,6 +590,43 @@ onBeforeUnmount(() => {
   object-position: center top;
   background: #000;
   pointer-events: none;
+}
+
+.project-demo-video:fullscreen,
+.project-demo-video:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  pointer-events: auto;
+}
+
+.project-demo-expand {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 2;
+  min-height: 44px;
+  min-width: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(0, 0, 0, 0.72);
+  padding: 0 0.7rem;
+  color: #e2e2e2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1;
+}
+
+.project-demo-expand:hover,
+.project-demo-expand:focus-visible {
+  background: #fff;
+  color: #000;
+  outline: none;
 }
 
 @keyframes project-gallery-shift {
