@@ -9,10 +9,7 @@ usePageSeo({
   mainEntity: { "@id": IDENTITY_ID },
   extraSchema: () => [
     defineBreadcrumb({
-      itemListElement: [
-        { name: "Home", item: "/" },
-        { name: "Bio" },
-      ],
+      itemListElement: [{ name: "Home", item: "/" }, { name: "Bio" }],
     }),
   ],
 });
@@ -164,30 +161,30 @@ const theaters = [
           <span class="hud-label mb-3">IDENTITY_NARRATIVE</span>
           <div class="space-y-3 text-sm text-[#c6c6c6] leading-relaxed">
             <p>
-              I’m Chris. I live in Manhattan. I’m originally from Punta Cana in
-              the Dominican Republic, and I moved to the United States to pursue
-              a Master’s in Information Systems.
+              I am a Manhattan-based Senior Full Stack Engineer with over a
+              decade of experience building resilient interfaces and systems for
+              high-traffic web products. Originally from Punta Cana, Dominican
+              Republic, I moved to the United States to expand my technical
+              foundation and am currently pursuing a Master’s in Information
+              Systems at Baruch College.
             </p>
             <p>
-              I work at StocksToTrade, building analytics tools and training for
-              traders — webinars, chart scanners, watchlists, the kind of
-              cockpit that sits next to a Bloomberg terminal. I built the
-              systems behind the financial real-time news platform and the quote
-              lookup sites. Those products serve more than a million unique
-              monthly users.
+              My recent experience centers on engineering scalable platforms for
+              the fintech and decentralized tech sectors. I built the
+              architecture and automated pipelines behind real-time financial
+              news platforms and analytics tools that serve over one million
+              unique monthly users. Additionally, as a founding frontend
+              engineer for Canopy Network, I owned the frontend architecture
+              from zero through a testnet launch that successfully supported
+              more than 20,000 concurrent users in its first week.
             </p>
+
             <p>
-              I was a founding frontend engineer at Canopy Network, a blockchain
-              framework built for fast app integration. I owned the frontend
-              architecture from zero through the testnet launch. The first week
-              hit 20,000+ concurrent users.
-            </p>
-            <p>
-              Most of my career has been frontend software engineering. I now
-              work as a fullstack engineer — across wealth and investment
-              management, telecom, startups, and financial publishing. I’m here
-              for more ambiguous, ambitious problems, and a seat among the best
-              and brightest in the United States.
+              In the near future, I want to keep moving toward more ambiguous
+              and ambitious problems than the ones I have faced before and
+              collaborate with new people and keep growing as an engineer. I’ve
+              heard here in the states is where you get to work with the best
+              and brightest and I want to become one of those.
             </p>
           </div>
         </div>
@@ -324,7 +321,9 @@ const theaters = [
                   >
                     {{ item.role }}
                   </div>
-                  <div class="font-mono text-[8px] text-[#919191] tracking-widest">
+                  <div
+                    class="font-mono text-[8px] text-[#919191] tracking-widest"
+                  >
                     {{ item.type }}
                   </div>
                 </div>

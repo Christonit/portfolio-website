@@ -4,7 +4,6 @@ export type PageSchemaType =
   | "ProfilePage"
   | "CollectionPage"
   | "AboutPage"
-  | "ContactPage"
   | "ItemPage";
 
 type SeoValue = string | (() => string);

@@ -1,6 +1,6 @@
 export type NavDir = "forward" | "back";
 
-const TAB_PATHS = ["/", "/projects", "/bio", "/contact"];
+const TAB_PATHS = ["/", "/projects", "/bio"];
 
 export const useNavDirection = () =>
   useState<NavDir>("nav-dir", () => "forward");

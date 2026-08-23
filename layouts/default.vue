@@ -6,7 +6,7 @@ const route = useRoute();
 const hudKey = useHudNav();
 const { isMuted, initAudio, toggleMute, playHover, playClick, playHaptic } = useAudio();
 
-const pages = ["/", "/projects", "/bio", "/contact"];
+const pages = ["/", "/projects", "/bio"];
 
 const currentIndex = computed(() => {
   if (route.path.startsWith("/project/")) return pages.indexOf("/projects");

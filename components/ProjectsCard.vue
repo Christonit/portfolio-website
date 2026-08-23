@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "./ProjectTooltip.vue";
 import { isExternalProjectHref, projectHref } from "~/utils/projects";
+import { LINKEDIN_URL } from "~/utils/site";
 
 const props = withDefaults(
   defineProps<{
@@ -35,14 +36,15 @@ const ctaLabel = computed(() =>
 );
 
 const href = computed(() => {
-  if (isMission.value) return "/contact";
+  if (isMission.value) return LINKEDIN_URL;
   if (!props.project) return "/projects";
   return projectHref(props.project);
 });
 
-const isExternal = computed(() =>
-  props.project ? isExternalProjectHref(props.project) : false,
-);
+const isExternal = computed(() => {
+  if (isMission.value) return true;
+  return props.project ? isExternalProjectHref(props.project) : false;
+});
 
 const imageFailed = ref(false);
 const previewRatio = ref<string | null>(null);
