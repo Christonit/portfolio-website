@@ -1,8 +1,20 @@
 <script setup lang="ts">
+import { IDENTITY_ID, pageTitle } from "~/utils/site";
+
 usePageSeo({
-  title: "CH_SANTANA_OS_V3 // GET_IN_TOUCH",
-  description: "Contact Christopher Santana on LinkedIn.",
+  title: pageTitle("Get in Touch"),
+  description:
+    "Contact Christopher Santana — Senior Full Stack Engineer in NYC. Open for roles and collaborations via email, LinkedIn, or GitHub.",
   pageType: "ContactPage",
+  mainEntity: { "@id": IDENTITY_ID },
+  extraSchema: () => [
+    defineBreadcrumb({
+      itemListElement: [
+        { name: "Home", item: "/" },
+        { name: "Get in Touch" },
+      ],
+    }),
+  ],
 });
 
 const form = reactive({ name: "", email: "", message: "" });

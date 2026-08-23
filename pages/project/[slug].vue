@@ -10,6 +10,10 @@ import {
   buildProjectGallery,
   type GalleryFrame,
 } from "~/utils/projectGallery";
+import {
+  formatProjectName,
+  pageTitle,
+} from "~/utils/site";
 
 definePageMeta({
   key: (route) => route.fullPath,
@@ -46,9 +50,10 @@ const objectCode = computed(() => {
 });
 
 usePageSeo({
-  title: () => `CH_SANTANA_OS_V3 // ${current.value.name}`,
+  title: () => pageTitle(formatProjectName(current.value.name)),
   description: () =>
-    current.value.description || `Project dossier for ${current.value.name}.`,
+    current.value.description ||
+    `${formatProjectName(current.value.name)} — a project by Christopher Santana.`,
   pageType: "ItemPage",
   image: () => current.value.image || "/images/og-image.webp",
   mainEntity: () => ({
@@ -58,8 +63,8 @@ usePageSeo({
     defineBreadcrumb({
       itemListElement: [
         { name: "Home", item: "/" },
-        { name: "Projects", item: "/projects" },
-        { name: current.value.name },
+        { name: "Selected Work", item: "/projects" },
+        { name: formatProjectName(current.value.name) },
       ],
     }),
     projectWorkNode(current.value),

@@ -1,6 +1,6 @@
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import { isArticle } from "~/utils/projects";
-import { IDENTITY_ID, SITE_URL } from "~/utils/site";
+import { formatProjectName, IDENTITY_ID, SITE_URL } from "~/utils/site";
 
 function absoluteUrl(pathOrUrl: string) {
   if (/^https?:\/\//.test(pathOrUrl)) return pathOrUrl;
@@ -21,7 +21,7 @@ export function projectWorkNode(project: ProjectPreview, pageUrl?: string) {
   return {
     "@type": isArticle(project) ? "SocialMediaPosting" : "CreativeWork",
     "@id": `${url}#work`,
-    name: project.name,
+    name: formatProjectName(project.name),
     description: project.description,
     url,
     image: project.image ? absoluteUrl(project.image) : undefined,

@@ -1,9 +1,20 @@
 <script setup lang="ts">
+import { IDENTITY_ID, pageTitle } from "~/utils/site";
+
 usePageSeo({
-  title: "CH_SANTANA_OS_V3 // BIO",
+  title: pageTitle("Bio"),
   description:
-    "Christopher Santana — from Punta Cana to Manhattan. Full stack engineer behind real-time news and quote systems used by 1M+ monthly users.",
+    "Christopher Santana — from Punta Cana to Manhattan. Senior Full Stack Engineer behind real-time news and quote systems used by 1M+ monthly users.",
   pageType: "AboutPage",
+  mainEntity: { "@id": IDENTITY_ID },
+  extraSchema: () => [
+    defineBreadcrumb({
+      itemListElement: [
+        { name: "Home", item: "/" },
+        { name: "Bio" },
+      ],
+    }),
+  ],
 });
 
 const origin = [

@@ -2,18 +2,24 @@
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
 import { projectListItems } from "~/utils/projectSchema";
-import { SITE_URL } from "~/utils/site";
+import { SITE_URL, pageTitle } from "~/utils/site";
 
 const PROJECTS_LIST_ID = `${SITE_URL}/projects#itemlist`;
 const projects = projectsJson as ProjectPreview[];
 
 usePageSeo({
-  title: "CH_SANTANA_OS_V3 // PROJECTS",
+  title: pageTitle("Selected Work"),
   description:
-    "Selected web apps, platforms, and technical articles by Christopher Santana.",
+    "Selected work by Christopher Santana — high-traffic Nuxt platforms, Cloudflare and AWS infrastructure, and technical writing on performance and automation.",
   pageType: "CollectionPage",
   mainEntity: { "@id": PROJECTS_LIST_ID },
   extraSchema: () => [
+    defineBreadcrumb({
+      itemListElement: [
+        { name: "Home", item: "/" },
+        { name: "Selected Work" },
+      ],
+    }),
     defineItemList({
       "@id": PROJECTS_LIST_ID,
       name: "Selected work",

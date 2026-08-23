@@ -1,4 +1,4 @@
-import { IDENTITY_ID, SITE_URL } from "~/utils/site";
+import { IDENTITY_ID, SITE_NAME, SITE_URL } from "~/utils/site";
 
 export type PageSchemaType =
   | "ProfilePage"
@@ -53,6 +53,16 @@ export function usePageSeo(options: {
     image.value.toLowerCase().endsWith(".png") ? "image/png" : "image/webp",
   );
 
+  const mainEntity = computed(() => {
+    if (options.mainEntity) {
+      return typeof options.mainEntity === "function"
+        ? options.mainEntity()
+        : options.mainEntity;
+    }
+    if (options.pageType === "ProfilePage") return { "@id": IDENTITY_ID };
+    return undefined;
+  });
+
   useSeoMeta({
     title,
     description,
@@ -60,11 +70,14 @@ export function usePageSeo(options: {
     ogDescription: description,
     ogUrl: canonical,
     ogType: "website",
+    ogSiteName: SITE_NAME,
     ogImage: image,
     ogImageType: imageType,
     ogImageWidth: 1200,
     ogImageHeight: 630,
     twitterCard: "summary_large_image",
+    twitterTitle: title,
+    twitterDescription: description,
     twitterImage: image,
   });
 
@@ -72,23 +85,15 @@ export function usePageSeo(options: {
     link: [{ rel: "canonical", href: canonical }],
   });
 
-  const mainEntity = options.mainEntity
-    ? typeof options.mainEntity === "function"
-      ? options.mainEntity()
-      : options.mainEntity
-    : options.pageType === "ProfilePage"
-      ? { "@id": IDENTITY_ID }
-      : undefined;
-
   useSchemaOrg([
     defineWebPage({
       "@type": options.pageType,
-      name: title.value,
-      description: description.value,
-      url: canonical.value,
+      name: () => title.value,
+      description: () => description.value,
+      url: () => canonical.value,
       inLanguage: "en",
-      ...(image.value ? { primaryImageOfPage: image.value } : {}),
-      ...(mainEntity ? { mainEntity } : {}),
+      primaryImageOfPage: () => image.value,
+      mainEntity: () => mainEntity.value,
     }),
     ...(options.extraSchema?.() ?? []),
   ]);

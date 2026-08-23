@@ -5,6 +5,7 @@ import {
   LINKEDIN_URL,
   SITE_DESCRIPTION,
   SITE_NAME,
+  SITE_TITLE,
   SITE_URL,
 } from "./utils/site";
 
@@ -93,7 +94,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "CH_SANTANA_OS_V3 // OPERATOR PROFILE",
+      title: SITE_TITLE,
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -103,7 +104,7 @@ export default defineNuxtConfig({
         },
         { name: "theme-color", content: "#131313" },
         { property: "og:type", content: "website" },
-        { property: "og:title", content: "CH_SANTANA_OS_V3 // OPERATOR PROFILE" },
+        { property: "og:title", content: SITE_TITLE },
         {
           property: "og:description",
           content: SITE_DESCRIPTION,

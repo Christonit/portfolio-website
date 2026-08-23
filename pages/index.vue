@@ -2,10 +2,10 @@
 import type { Mission } from "~/components/ProjectsList.vue";
 import missionsJson from "~/data/projects.json";
 import { openProject } from "~/utils/projects";
-import { SITE_DESCRIPTION } from "~/utils/site";
+import { SITE_DESCRIPTION, SITE_TITLE } from "~/utils/site";
 
 usePageSeo({
-  title: "Christopher Santana - Full Stack Engineer",
+  title: SITE_TITLE,
   description: SITE_DESCRIPTION,
   pageType: "ProfilePage",
 });
