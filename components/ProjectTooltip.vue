@@ -60,7 +60,7 @@ const visitLabel = computed(() =>
   >
     <!-- Preview image -->
     <div
-      class="preview-still-frame relative aspect-[16/9] w-full overflow-hidden border-b border-white/10 bg-black"
+      class="relative aspect-[16/9] w-full overflow-hidden border-b border-white/10 bg-black"
     >
       <div
         class="absolute inset-0 flex flex-col items-center justify-center gap-1.5"
@@ -79,17 +79,13 @@ const visitLabel = computed(() =>
         v-if="project.image"
         :src="project.image"
         :alt="`${project.name} preview`"
-        class="preview-still absolute inset-0 z-[1] h-full w-full object-cover object-top transition-opacity duration-200"
-        :class="[
-          imageReady ? 'opacity-100' : 'opacity-0',
-          project.imageTone === 'dark' ? 'preview-still--dark' : '',
-        ]"
+        class="absolute inset-0 z-[1] h-full w-full object-cover object-top transition-opacity duration-200"
+        :class="imageReady ? 'opacity-100' : 'opacity-0'"
         loading="lazy"
         decoding="async"
         @load="imageReady = true"
         @error="imageReady = false"
       />
-      <div class="absolute inset-0 z-[2] scanline-overlay opacity-30" />
     </div>
 
     <div class="flex flex-col gap-4 px-4 pb-4 pt-3.5">

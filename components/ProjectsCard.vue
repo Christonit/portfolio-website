@@ -47,9 +47,6 @@ const previewRatio = ref<string | null>(null);
 const showPreview = computed(
   () => Boolean(props.project?.image) && !imageFailed.value,
 );
-const previewToneClass = computed(() =>
-  props.project?.imageTone === "dark" ? "preview-still--dark" : "",
-);
 
 function applyPreviewSize(el: EventTarget | null) {
   if (!(el instanceof HTMLImageElement)) return;
@@ -138,7 +135,7 @@ const ariaLabel = computed(() => {
     <!-- ── WORK CARD ── -->
     <template v-else-if="project">
       <div
-        class="projects-card__thumb preview-still-frame relative shrink-0 overflow-hidden"
+        class="projects-card__thumb relative shrink-0 overflow-hidden"
         :class="{ 'has-media': showPreview, 'h-36': !previewRatio }"
         :style="previewRatio ? { aspectRatio: previewRatio } : undefined"
       >
@@ -147,8 +144,7 @@ const ariaLabel = computed(() => {
           :ref="syncPreviewEl"
           :src="project.image"
           alt=""
-          class="preview-still absolute inset-0 z-0 h-full w-full object-fill"
-          :class="previewToneClass"
+          class="absolute inset-0 z-0 h-full w-full object-fill"
           loading="lazy"
           decoding="async"
           @load="applyPreviewSize($event.currentTarget)"
@@ -249,6 +245,10 @@ const ariaLabel = computed(() => {
 
 .projects-card__thumb.has-media::before {
   display: none;
+}
+
+.projects-card__thumb img {
+  color-scheme: light;
 }
 
 .projects-card__arrow {

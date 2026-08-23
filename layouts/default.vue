@@ -219,30 +219,6 @@ watch(() => route.path, scrollMainToTopOnMobile);
           yChannelSelector="G"
         />
       </filter>
-      <!-- Highlight roll-off for light UI screenshots inside the dark HUD. -->
-      <filter
-        id="preview-grade"
-        x="0%"
-        y="0%"
-        width="100%"
-        height="100%"
-        color-interpolation-filters="sRGB"
-      >
-        <feComponentTransfer>
-          <feFuncR
-            type="table"
-            tableValues="0 0.12 0.24 0.35 0.45 0.54 0.62 0.70 0.78"
-          />
-          <feFuncG
-            type="table"
-            tableValues="0 0.12 0.24 0.35 0.45 0.54 0.62 0.70 0.78"
-          />
-          <feFuncB
-            type="table"
-            tableValues="0 0.12 0.24 0.35 0.45 0.54 0.62 0.70 0.78"
-          />
-        </feComponentTransfer>
-      </filter>
     </svg>
 
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
