@@ -2,18 +2,9 @@
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
 import { isArticle } from "~/utils/projects";
-import {
-  projectCanonicalUrl,
-  projectWorkNode,
-} from "~/utils/projectSchema";
-import {
-  buildProjectGallery,
-  type GalleryFrame,
-} from "~/utils/projectGallery";
-import {
-  formatProjectName,
-  pageTitle,
-} from "~/utils/site";
+import { projectCanonicalUrl, projectWorkNode } from "~/utils/projectSchema";
+import { buildProjectGallery, type GalleryFrame } from "~/utils/projectGallery";
+import { formatProjectName, pageTitle } from "~/utils/site";
 
 definePageMeta({
   key: (route) => route.fullPath,
@@ -40,14 +31,6 @@ if (!project.value) {
 }
 
 const current = computed(() => project.value as ProjectPreview);
-
-const objectCode = computed(() => {
-  if (current.value.code) return current.value.code;
-  const index = projects
-    .filter((item) => !isArticle(item))
-    .findIndex((item) => item.slug === slug.value);
-  return `AST-AR-${String(Math.max(index, 0) + 1).padStart(3, "0")}`;
-});
 
 usePageSeo({
   title: () => pageTitle(formatProjectName(current.value.name)),
@@ -266,11 +249,7 @@ onBeforeUnmount(() => {
           </NuxtLink>
         </li>
         <li class="hidden xl:inline">
-          <NuxtLink
-            to="/"
-            data-nav-back
-            class="hover:text-white"
-          >
+          <NuxtLink to="/" data-nav-back class="hover:text-white">
             STATS
           </NuxtLink>
         </li>
@@ -295,7 +274,7 @@ onBeforeUnmount(() => {
         rel="noopener noreferrer"
         class="shrink-0 font-mono text-[9px] uppercase tracking-[0.18em] text-[#67F57A] hover:text-white xl:text-[10px]"
       >
-        [ VISIT_PROJECT ]
+        VISIT_PROJECT
       </a>
     </nav>
 
@@ -359,15 +338,6 @@ onBeforeUnmount(() => {
             v-if="!hasVideo"
             class="pointer-events-none absolute inset-0 scanline-overlay opacity-40"
           />
-          <div
-            class="pointer-events-none absolute left-3 top-3 z-[1] border-l border-t border-white/20 px-2 py-0.5"
-          >
-            <span
-              class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#919191]"
-            >
-              CAPTURE_LOCK: {{ objectCode }}
-            </span>
-          </div>
         </div>
 
         <div
@@ -416,7 +386,7 @@ onBeforeUnmount(() => {
           <h1
             class="font-mono text-[13px] uppercase leading-snug tracking-[0.12em] text-white xl:text-sm"
           >
-            // {{ objectCode }} {{ current.name }}
+            // {{ current.name }}
           </h1>
         </header>
 
@@ -474,7 +444,7 @@ onBeforeUnmount(() => {
                         : 'border-[#3a3a3a] text-[#e2e2e2]'
                     "
                   >
-                    [ {{ item }} ]
+                    {{ item }}
                   </span>
                 </li>
               </ul>
@@ -532,7 +502,9 @@ onBeforeUnmount(() => {
   background-image:
     radial-gradient(rgba(255, 255, 255, 0.035) 0.5px, transparent 0.5px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 40%);
-  background-size: 3px 3px, 100% 100%;
+  background-size:
+    3px 3px,
+    100% 100%;
 }
 
 .project-dossier {

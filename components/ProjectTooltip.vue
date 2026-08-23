@@ -17,7 +17,6 @@ export interface ProjectPreview {
   slug: string;
   category: string;
   tags: string;
-  code?: string;
   link?: string;
   image?: string;
   imageTone?: "dark" | "light";
@@ -122,7 +121,7 @@ const visitLabel = computed(() =>
                 : 'border-[#3a3a3a] text-[#e2e2e2] hover:border-[#67F57A] hover:text-[#67F57A]'
             "
           >
-            [ {{ item }} ]
+            {{ item }}
           </span>
         </li>
       </ul>
@@ -134,9 +133,7 @@ const visitLabel = computed(() =>
           :to="`/project/${project.slug}`"
           class="project-tt-btn"
         >
-          <span aria-hidden="true">[</span>
-          <span class="project-tt-btn__label">LEARN MORE</span>
-          <span aria-hidden="true">]</span>
+          LEARN MORE
         </NuxtLink>
 
         <a
@@ -146,9 +143,7 @@ const visitLabel = computed(() =>
           rel="noopener noreferrer"
           class="project-tt-btn"
         >
-          <span aria-hidden="true">[</span>
-          <span class="project-tt-btn__label">{{ visitLabel }}</span>
-          <span aria-hidden="true">]</span>
+          {{ visitLabel }}
         </a>
       </div>
     </div>
@@ -157,14 +152,13 @@ const visitLabel = computed(() =>
 
 <style scoped>
 .project-tt-btn {
-  position: relative;
   display: flex;
   flex: 1 1 0;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   min-height: 44px;
   min-width: 0;
-  padding: 0 10px;
+  padding: 0 12px;
   border: 1px solid #67f57a;
   color: #67f57a;
   font-family: inherit;
@@ -173,19 +167,11 @@ const visitLabel = computed(() =>
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
   transition:
     background-color var(--tt-in-dur, 150ms) var(--tt-in-ease, ease-out),
     color var(--tt-in-dur, 150ms) var(--tt-in-ease, ease-out);
-}
-
-.project-tt-btn__label {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  white-space: nowrap;
 }
 
 .project-tt-btn:hover,

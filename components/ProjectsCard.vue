@@ -29,7 +29,9 @@ const badges = computed(() => {
 });
 
 const ctaLabel = computed(() =>
-  props.project?.category === "ARTICLE" ? "READ_ARTICLE" : "VIEW_PROJECT",
+  props.project?.category.toLowerCase() === "article"
+    ? "READ_ARTICLE"
+    : "VIEW_PROJECT",
 );
 
 const href = computed(() => {

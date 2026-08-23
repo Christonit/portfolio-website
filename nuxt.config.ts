@@ -10,7 +10,7 @@ import {
 } from "./utils/site";
 
 const projectPaths = (projects as { slug: string; category: string }[])
-  .filter((project) => project.category !== "ARTICLE")
+  .filter((project) => project.category.toLowerCase() !== "article")
   .map((project) => `/project/${project.slug}`);
 
 export default defineNuxtConfig({

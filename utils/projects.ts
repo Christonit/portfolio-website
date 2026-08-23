@@ -5,7 +5,7 @@ type ProjectLink = {
 };
 
 export function isArticle(project: Pick<ProjectLink, "category">): boolean {
-  return project.category === "ARTICLE";
+  return project.category.toLowerCase() === "article";
 }
 
 export function projectHref(project: ProjectLink): string {

@@ -13,14 +13,5 @@ export function pageTitle(section: string) {
 }
 
 export function formatProjectName(name: string) {
-  const known: Record<string, string> = {
-    "CANOPY SUPER APP": "Canopy Super App",
-    "TIMOTHY SYKES": "Timothy Sykes",
-    STOCKS_TO_TRADE: "StocksToTrade",
-  };
-  if (known[name]) return known[name];
-  return name
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return name.replace(/_/g, " ");
 }

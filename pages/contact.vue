@@ -140,7 +140,7 @@ const channels = [
                 form.message = '';
               "
             >
-              [ SEND_ANOTHER ]
+              SEND_ANOTHER
             </button>
           </div>
 
@@ -192,7 +192,7 @@ const channels = [
                 class="material-symbols-outlined text-sm leading-none animate-spin"
                 >sync</span
               >
-              {{ sending ? "TRANSMITTING..." : "[ SEND_TRANSMISSION ]" }}
+              {{ sending ? "TRANSMITTING..." : "SEND_TRANSMISSION" }}
             </button>
           </form>
         </div>

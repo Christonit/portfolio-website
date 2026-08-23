@@ -1,10 +1,9 @@
 [
   {
-    "name": "CANOPY SUPER APP",
+    "name": "Canopy Super App",
     "slug": "canopy-super-app",
-    "code": "AST-AR-001",
-    "tags": "FRONTEND_ARCHITECTURE // WEB3",
-    "category": "WEB3",
+    "tags": "Frontend architecture // Web3 // Next.JS",
+    "category": "Web3",
     "link": "https://testnet.app.canopynetwork.org/",
     "image": "/images/canopy-image.webp",
     "imageTone": "dark",
@@ -17,69 +16,84 @@
       "I treated blockchain integration, reliability, and SEO as launch constraints, not later work. The frontend stayed stable through testnet traffic at that scale and did not require a rewrite afterward. Most of that original architecture is still in production."
     ],
     "tasks": [
-      "Zero-to-one frontend architecture",
-      "Launchpad, DEX, and chain explorer",
-      "25K+ concurrent users at testnet"
+      "Zero-to-launch frontend architecture",
+      "Created the frontend for launchpad, DEX, and explorer experience",
+      "UI scaled for 25K+ concurrent users"
     ],
-    "tech": ["React", "Next.js", "Node.js", "Web3"],
-    "metric": { "label": "CONCURRENT_USERS", "value": "25K+", "progress": 100 }
+    "tech": ["React", "Next.js", "Node.js", "Web3", "UI/UX", "SEO"],
+    "metric": {
+      "label": "Concurrent users",
+      "value": "25K+",
+      "progress": 100
+    }
   },
   {
-    "name": "TIMOTHY SYKES",
+    "name": "Timothy Sykes",
     "slug": "timothy-sykes",
-    "code": "AST-AR-002",
-    "tags": "NUXT // CLOUDFLARE // SEO",
-    "category": "WEB",
+    "tags": "Nuxt // WordPress // AWS // AI // SEO",
+    "category": "Web",
     "link": "https://www.timothysykes.com/",
     "image": "/images/timothysykes-image.webp",
     "video": "/videos/timothy-sykes-demo.webm",
     "icon": "auto_awesome",
-    "description": "Lead Full-Stack Engineer for TimothySykes.com — Nuxt on Cloudflare Workers, request-time data, and SEO as infrastructure.",
+    "description": "Lead Full-Stack Engineer for TimothySykes.com — new features, WordPress/CMS, request-time data, frontend rendering, and SEO as infrastructure.",
     "dossier": [
-      "I owned frontend and web services for TimothySykes.com as Lead Full-Stack Engineer of a four-person team. The site is Tim Sykes' trading-education and publishing platform — news, quote pages, blog, webinars, and lead-capture funnels — on a Nuxt 3 frontend. It shares Songbird with StocksToTrade for quotes, catalogs, WordPress publishing, and OG images rather than running a separate market-data stack.",
-      "The brand had to stay loud without paying a rebuild tax on every release. I rebuilt news and quote pages, migrated hosting from Netlify to Cloudflare Workers, and replaced slow full-site builds with request-time data from DynamoDB catalogs, S3 JSON, and a shared cache. Live quotes arrive over Songbird WebSockets. WordPress publishing is automated, so posts go live without a deploy.",
-      "I replaced AdButler with AIZEn, including Watch Live and UTM attribution, and shipped SEO as infrastructure: JSON-LD, dynamic sitemaps, robots, redirects, OG images, and correct 404s. Cypress covers core flows, the blog, and ads. Performance work targeted hydration, layout shift, and impression tracking so Core Web Vitals hold when campaign traffic spikes."
+      "I owned frontend and web services for TimothySykes.com as Lead Full-Stack Engineer of a four-person team. The site is Tim Sykes' trading-education and publishing platform — news, quote pages, blog, webinars, and lead-capture funnels — on a Nuxt 3 frontend. I also built the shared web services that carry traffic and common jobs across sister sites in the company.",
+      "I designed the systems behind news and quote pages: a shared cache, real-time publishing from the WordPress CMS, and live quotes on the public site. That moved us off a monolithic WordPress surface onto a headless Nuxt architecture with a request-time rendering pipeline.",
+      "I used AI to replace manual SEO checks with agentic workflows, and built the ad-serving stack that replaced AdButler so campaigns and attribution stayed under our control."
     ],
     "tasks": [
-      "Lead full-stack, 4-person team",
-      "Nuxt on Cloudflare Workers",
-      "Request-time data, no rebuild tax",
-      "SEO as infrastructure"
+      "Monolithic WordPress to headless Nuxt architecture",
+      "Stock data ingestion and news publishing pipeline",
+      "AI automation for SEO and ops"
     ],
-    "tech": ["Nuxt 3", "TypeScript", "Cloudflare Workers", "AWS", "SEO"],
-    "metric": { "label": "BUILD", "value": "72%", "progress": 72 }
+    "tech": ["Nuxt 3", "TypeScript", "Cloudflare Workers", "AWS", "WordPress", "SEO", "AI"],
+    "metric": {
+      "label": "Build",
+      "value": "72%",
+      "progress": 72
+    }
   },
   {
-    "name": "STOCKS_TO_TRADE",
+    "name": "StocksToTrade",
     "slug": "stockstotrade",
-    "code": "AST-AR-003",
-    "tags": "NUXT // AWS // WEBSOCKETS // LLM",
-    "category": "FINTECH",
+    "tags": "Nuxt // WordPress // AWS // WebSockets // AI",
+    "category": "Fintech",
     "link": "https://stockstotrade.com/",
     "image": "/images/stockstotade-image.webp",
     "video": "/videos/stocks-to-trade-demo.webm",
     "icon": "candlestick_chart",
-    "description": "Lead Full-Stack Engineer for StocksToTrade — trading education and live market data for 1M+ monthly users.",
+    "description": "Lead Full-Stack Engineer for StocksToTrade — new features, WordPress/CMS, request-time data, live market feeds, and SEO as infrastructure for 1M+ monthly users.",
     "dossier": [
-      "I led frontend and web services for StocksToTrade as Lead Full-Stack Engineer of a four-person team. StocksToTrade is a trading education and market-data platform — charting, scanners, watchlists, webinars, and news — used by more than a million unique visitors a month. Songbird, a backend I designed and still own, is the shared service layer for quotes, catalogs, and publishing.",
-      "Full-site rebuilds could not keep up with live markets or editorial cadence. I moved the platform to request-time architecture: DynamoDB catalogs, S3 JSON, and a shared cache so pages compose on the request instead of waiting for a rebuild. Live quotes, index feeds, and scanners run over WebSockets, with cache windows and fallback snapshots so watchlists stay current under load.",
-      "I automated publishing so WordPress ships news to S3 and the public site SSRs it — editorial no longer blocks deploys. I replaced AdButler with our AIZEn ad stack, led LLM tooling for QA, SEO integrity, and comment moderation, and treated Core Web Vitals as a product feature: JSON-LD, sitemaps, hydration budgets, and cache TTLs. CI/CD and infrastructure on Cloudflare Workers/Pages and AWS cut a large share of operating cost."
+      "I owned frontend and web services for StocksToTrade as Lead Full-Stack Engineer of a four-person team. StocksToTrade is the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news — used by more than a million unique visitors a month. Songbird, a backend I designed and still own, is the shared service layer that also powers sister sites like TimothySykes.com.",
+      "I designed the systems behind news, quotes, and scanners: a shared cache, real-time publishing from WordPress, and live market data over WebSockets. Full-site rebuilds could not keep up with markets or editorial cadence, so I moved the platform to a headless Nuxt architecture with request-time data from DynamoDB catalogs, S3 JSON, and cache fallbacks.",
+      "I used AI and LLM tooling to replace manual QA, SEO integrity checks, and comment moderation, and built the ad-serving stack that replaced AdButler. Core Web Vitals, JSON-LD, sitemaps, and cache TTLs were treated as product work — and Cloudflare plus AWS cut a large share of operating cost."
     ],
     "tasks": [
-      "Lead full-stack, 1M+ monthly users",
-      "Live market data over WebSockets",
-      "Headless WordPress publishing",
-      "LLM tooling and infra cost cut"
+      "Monolithic rebuild cycle to request-time Nuxt architecture",
+      "Live stock data ingestion, quotes, and news pipeline",
+      "AI automation for QA, SEO, and ops"
     ],
-    "tech": ["Nuxt 3", "TypeScript", "AWS", "Cloudflare", "WebSockets", "WordPress", "LLMs"],
-    "metric": { "label": "MONTHLY_UNIQUES", "value": "1M+", "progress": 100 }
+    "tech": [
+      "Nuxt 3",
+      "TypeScript",
+      "AWS",
+      "Cloudflare",
+      "WebSockets",
+      "WordPress",
+      "LLMs"
+    ],
+    "metric": {
+      "label": "Monthly uniques",
+      "value": "1M+",
+      "progress": 100
+    }
   },
   {
-    "name": "CONTENT AUTOMATION WITH AWS, JAVASCRIPT, AND WORDPRESS",
+    "name": "Content automation with AWS, JavaScript, and WordPress",
     "slug": "content-automation-ai",
-    "code": "AST-AR-004",
-    "tags": "ARTICLE // AWS // AI",
-    "category": "ARTICLE",
+    "tags": "Article // AWS // AI",
+    "category": "Article",
     "link": "https://dev.to/christonit/aws-javascript-wordpress-fun-content-automation-strategies-using-artificial-intelligence-1gl1",
     "image": "/images/content-automation-ai.webp",
     "icon": "article",
@@ -90,19 +104,22 @@
       "Editorial stopped publishing empty-looking posts, and the designer went back to actual brand work. When a specific image missed, the next step was a WordPress plugin so they could regenerate one post without paging me."
     ],
     "tasks": [
-      "AWS Lambda featured-image pipeline",
-      "OpenAI taglines from post content",
-      "WordPress REST + Nuxt SSG"
+      "Blueprint for a zero-touch AI content pipeline",
+      "Generating branded art on Lambda, not image APIs",
+      "Wiring OpenAI into headless WordPress publishing"
     ],
     "tech": ["AWS Lambda", "Node.js", "Canvas", "OpenAI", "WordPress", "Nuxt"],
-    "metric": { "label": "READ_TIME", "value": "9m", "progress": 63 }
+    "metric": {
+      "label": "Read time",
+      "value": "9m",
+      "progress": 63
+    }
   },
   {
-    "name": "HOW TO IMPROVE PAGE LOAD TIMES AND WEB CORE VITALS",
+    "name": "How to improve page load times and Web Core Vitals",
     "slug": "website-performance",
-    "code": "AST-AR-005",
-    "tags": "ARTICLE // NUXT // CWV",
-    "category": "ARTICLE",
+    "tags": "Article // Nuxt // CWV",
+    "category": "Article",
     "link": "https://dev.to/christonit/how-to-improve-page-load-times-and-web-core-vitals-in-nuxt-websites-j3l",
     "image": "/images/nuxt-core-web-vitals.webp",
     "icon": "article",
@@ -113,11 +130,15 @@
       "Above-the-fold post data moved from GraphQL to REST, with a slug-to-ID dictionary for SPA navigation. Comments, tags, and related posts stay on GraphQL in onMounted. Initial load dropped about 45%."
     ],
     "tasks": [
-      "Cut post-navigation load time 45%",
-      "GraphQL to REST for above-the-fold data",
-      "Deferred embeds and preconnect"
+      "Strategies to slash website load times",
+      "GraphQL and REST tradeoffs for Server Side Rendering",
+      "How to  protect and improve LCP and TBT"
     ],
     "tech": ["Nuxt", "Vue", "WordPress", "REST", "GraphQL"],
-    "metric": { "label": "READ_TIME", "value": "6m", "progress": 42 }
+    "metric": {
+      "label": "Read time",
+      "value": "6m",
+      "progress": 42
+    }
   }
 ]
