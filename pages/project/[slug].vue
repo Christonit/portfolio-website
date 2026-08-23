@@ -83,15 +83,6 @@ const dossierBeats = computed(() =>
   })),
 );
 
-const metric = computed(
-  () =>
-    current.value.metric ?? {
-      label: "BUILD",
-      value: "0%",
-      progress: 0,
-    },
-);
-
 const visitUrl = computed(() => current.value.link?.trim() || "");
 const galleryCount = computed(() => frames.value.length);
 const beatCount = computed(() => dossierBeats.value.length);
@@ -225,7 +216,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="project-page flex h-full min-h-0 flex-col gap-3 overflow-hidden px-4 py-4 xl:h-full xl:gap-4 xl:px-8 xl:py-5"
+    class="project-page flex min-h-0 flex-col gap-3 overflow-visible px-4 py-4 xl:h-full xl:gap-4 xl:overflow-hidden xl:px-8 xl:py-5"
     :style="{
       '--gallery-count': galleryCount,
       '--gallery-steps': gallerySteps,
@@ -279,7 +270,7 @@ onBeforeUnmount(() => {
     </nav>
 
     <div
-      class="project-shell relative grid min-h-0 flex-1 grid-rows-[minmax(220px,42vh)_minmax(0,1fr)] overflow-hidden border border-white/25 xl:grid-cols-12 xl:grid-rows-[minmax(0,1fr)]"
+      class="project-shell mb-8 relative grid overflow-visible border border-white/25 xl:min-h-0 xl:flex-1 xl:grid-cols-12 xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden"
     >
       <div class="corner-tl-w" />
       <div class="corner-tr-w" />
@@ -287,12 +278,17 @@ onBeforeUnmount(() => {
       <div class="corner-br-w" />
 
       <section
-        class="relative flex min-h-0 flex-col border-b border-white/15 xl:col-span-7 xl:border-b-0 xl:border-r xl:border-white/15"
+        class="relative flex flex-col border-b border-white/15 xl:col-span-7 xl:min-h-0 xl:border-b-0 xl:border-r xl:border-white/15"
         :aria-roledescription="hasVideo ? undefined : 'carousel'"
         :aria-label="hasVideo ? 'Project demo video' : 'Project image gallery'"
       >
         <div
-          class="project-gallery-stage relative min-h-0 flex-1 overflow-hidden bg-black"
+          class="project-gallery-stage relative bg-black"
+          :class="
+            hasVideo
+              ? 'project-gallery-stage--video'
+              : 'min-h-[220px] overflow-hidden xl:min-h-0 xl:flex-1'
+          "
         >
           <video
             v-if="hasVideo"
@@ -379,7 +375,7 @@ onBeforeUnmount(() => {
       </section>
 
       <section
-        class="project-dossier-panel relative flex min-h-0 flex-col xl:col-span-5"
+        class="project-dossier-panel relative flex flex-col xl:col-span-5 xl:min-h-0"
         aria-label="Project dossier"
       >
         <header class="shrink-0 border-b border-white/10 px-4 py-4 xl:px-5">
@@ -392,7 +388,7 @@ onBeforeUnmount(() => {
 
         <div
           ref="dossierRef"
-          class="project-dossier min-h-0 flex-1 overflow-y-auto px-4 py-4 xl:px-5"
+          class="project-dossier overflow-visible px-4 py-4 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:px-5"
           @scroll.passive="syncIndexFromScroll"
         >
           <div class="project-dossier-inner flex flex-col pr-2">
@@ -402,7 +398,7 @@ onBeforeUnmount(() => {
               class="project-dossier-beat flex flex-col gap-4"
             >
               <p
-                class="font-mono text-[11px] leading-relaxed tracking-wide text-[#c6c6c6] xl:text-xs"
+                class="project-dossier-copy font-mono text-base leading-relaxed tracking-wide text-[#c6c6c6]"
               >
                 {{ beat.text }}
               </p>
@@ -418,7 +414,7 @@ onBeforeUnmount(() => {
                 <li
                   v-for="task in current.tasks"
                   :key="task"
-                  class="flex items-start gap-2 font-mono text-[11px] uppercase tracking-wide text-[#e2e2e2]"
+                  class="flex items-start gap-2 font-mono text-base uppercase leading-relaxed tracking-wide text-[#e2e2e2]"
                 >
                   <span class="mt-px text-[#67F57A]" aria-hidden="true"
                     >&gt;</span
@@ -451,36 +447,6 @@ onBeforeUnmount(() => {
             </section>
           </div>
         </div>
-
-        <footer class="shrink-0 border-t border-white/10 px-4 py-3 xl:px-5">
-          <div class="mb-2 flex items-center justify-between gap-3">
-            <span
-              class="font-mono text-[9px] uppercase tracking-[0.22em] text-[#919191]"
-            >
-              {{ metric.label }}
-            </span>
-            <span
-              class="font-mono text-[10px] tabular-nums tracking-widest text-white"
-            >
-              {{ metric.value }}
-            </span>
-          </div>
-          <div
-            class="relative h-[3px] bg-[#2a2a2a]"
-            role="progressbar"
-            :aria-valuenow="metric.progress"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            :aria-label="`${metric.label} ${metric.value}`"
-          >
-            <div
-              class="absolute inset-y-0 left-0 bg-white"
-              :style="{
-                width: `${Math.min(100, Math.max(0, metric.progress))}%`,
-              }"
-            />
-          </div>
-        </footer>
       </section>
     </div>
   </div>
@@ -528,12 +494,22 @@ onBeforeUnmount(() => {
 }
 
 .project-dossier-inner {
-  min-height: 100%;
+  min-height: auto;
 }
 
 .project-dossier-beat {
-  min-height: 78%;
+  min-height: 0;
   padding-bottom: 1.75rem;
+}
+
+@media (min-width: 1280px) {
+  .project-dossier-inner {
+    min-height: 100%;
+  }
+
+  .project-dossier-beat {
+    min-height: 78%;
+  }
 }
 
 .project-gallery-track {
@@ -569,13 +545,16 @@ onBeforeUnmount(() => {
   object-position: center top;
 }
 
+.project-gallery-stage--video {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
 .project-demo-video {
-  position: absolute;
-  inset: 0;
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   object-position: center top;
   background: #000;
   pointer-events: none;

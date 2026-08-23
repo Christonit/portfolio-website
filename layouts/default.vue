@@ -316,12 +316,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             {{ isMuted ? 'volume_off' : 'volume_up' }}
           </span>
         </button>
-        <button
-          class="hidden xl:flex p-2 text-[#919191] hover:text-white hover:bg-[#353535] transition-all"
-          aria-label="Terminal"
-        >
-          <span class="material-symbols-outlined text-xl">terminal</span>
-        </button>
+        <LocalTime />
       </div>
     </nav>
 

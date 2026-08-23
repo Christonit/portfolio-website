@@ -359,7 +359,7 @@ onUnmounted(() => {
         <div class="corner-tr-w" />
         <div class="corner-br-w" />
 
-        <span class="hud-label mb-2">IDENTITY_DATABASE</span>
+        <span class="hud-label mb-2">IDENTITY</span>
         <h1
           class="font-semibold uppercase tracking-tighter leading-[0.88] text-white mt-1"
           style="font-size: clamp(2rem, 3.5vw, 3.2rem)"
@@ -369,7 +369,7 @@ onUnmounted(() => {
 
         <div class="mt-5 space-y-3">
           <div>
-            <span class="hud-label">EQUIPPED CLASS</span>
+            <span class="hud-label">EQUIPPED ROLE</span>
             <h2
               class="text-white font-bold uppercase tracking-widest mt-0.5"
               style="font-size: clamp(0.65rem, 1.1vw, 0.85rem)"
