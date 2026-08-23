@@ -20,6 +20,8 @@ export interface ProjectPreview {
   code?: string;
   link?: string;
   image?: string;
+  imageTone?: "dark" | "light";
+  video?: string;
   tasks: string[];
   tech: string[];
   techGroups?: ProjectTechGroup[];
@@ -58,7 +60,7 @@ const visitLabel = computed(() =>
   >
     <!-- Preview image -->
     <div
-      class="relative aspect-[16/9] w-full overflow-hidden border-b border-white/10 bg-black"
+      class="preview-still-frame relative aspect-[16/9] w-full overflow-hidden border-b border-white/10 bg-black"
     >
       <div
         class="absolute inset-0 flex flex-col items-center justify-center gap-1.5"
@@ -77,8 +79,11 @@ const visitLabel = computed(() =>
         v-if="project.image"
         :src="project.image"
         :alt="`${project.name} preview`"
-        class="absolute inset-0 z-[1] h-full w-full object-cover object-top transition-opacity duration-200"
-        :class="imageReady ? 'opacity-100' : 'opacity-0'"
+        class="preview-still absolute inset-0 z-[1] h-full w-full object-cover object-top transition-opacity duration-200"
+        :class="[
+          imageReady ? 'opacity-100' : 'opacity-0',
+          project.imageTone === 'dark' ? 'preview-still--dark' : '',
+        ]"
         loading="lazy"
         decoding="async"
         @load="imageReady = true"

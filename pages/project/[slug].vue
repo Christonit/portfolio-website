@@ -74,12 +74,26 @@ const frames = ref<GalleryFrame[]>(
   ),
 );
 
+const demoVideo = ref<HTMLVideoElement | null>(null);
+const videoFailed = ref(false);
+
+const hasVideo = computed(
+  () => Boolean(current.value.video) && !videoFailed.value,
+);
+
 const dossierCopy = computed(() => {
   if (current.value.dossier?.length) return current.value.dossier;
   return current.value.description
     ? [current.value.description]
     : ["No dossier payload on record."];
 });
+
+const dossierBeats = computed(() =>
+  dossierCopy.value.map((text, index) => ({
+    index,
+    text,
+  })),
+);
 
 const metric = computed(
   () =>
@@ -92,6 +106,7 @@ const metric = computed(
 
 const visitUrl = computed(() => current.value.link?.trim() || "");
 const galleryCount = computed(() => frames.value.length);
+const beatCount = computed(() => dossierBeats.value.length);
 const gallerySteps = computed(() => Math.max(galleryCount.value - 1, 1));
 
 const dossierRef = ref<HTMLElement | null>(null);
@@ -119,7 +134,7 @@ function detectCssScrollDriven() {
 
 function syncIndexFromScroll() {
   const el = dossierRef.value;
-  const total = galleryCount.value;
+  const total = beatCount.value;
   if (!el || total <= 1) {
     activeIndex.value = 0;
     return;
@@ -140,7 +155,7 @@ function syncIndexFromScroll() {
 }
 
 function goToFrame(index: number) {
-  const total = galleryCount.value;
+  const total = beatCount.value;
   if (total <= 0) return;
 
   const next = ((index % total) + total) % total;
@@ -173,6 +188,24 @@ function onFrameError(frame: GalleryFrame) {
   frames.value = buildProjectGallery(current.value.slug, current.value.name);
 }
 
+function onVideoError() {
+  videoFailed.value = true;
+}
+
+async function playDemo() {
+  const el = demoVideo.value;
+  if (!el) return;
+  try {
+    await el.play();
+  } catch {
+    /* Autoplay can be blocked; the reel stays muted and silent. */
+  }
+}
+
+function pauseDemo() {
+  demoVideo.value?.pause();
+}
+
 function scrollDossier(direction: 1 | -1) {
   dossierRef.value?.scrollBy({
     top: direction * 140,
@@ -188,9 +221,17 @@ watch(hudKey, (key) => {
   if (key === "ArrowUp") scrollDossier(-1);
 });
 
-onMounted(() => {
+onMounted(async () => {
   cssScrollDriven.value = detectCssScrollDriven();
   syncIndexFromScroll();
+  await nextTick();
+  if (hasVideo.value && !prefersReducedMotion()) {
+    void playDemo();
+  }
+});
+
+onBeforeUnmount(() => {
+  pauseDemo();
 });
 </script>
 
@@ -263,13 +304,28 @@ onMounted(() => {
 
       <section
         class="relative flex min-h-0 flex-col border-b border-white/15 xl:col-span-7 xl:border-b-0 xl:border-r xl:border-white/15"
-        aria-roledescription="carousel"
-        aria-label="Project image gallery"
+        :aria-roledescription="hasVideo ? undefined : 'carousel'"
+        :aria-label="hasVideo ? 'Project demo video' : 'Project image gallery'"
       >
         <div
           class="project-gallery-stage relative min-h-0 flex-1 overflow-hidden bg-black"
         >
+          <video
+            v-if="hasVideo"
+            ref="demoVideo"
+            class="project-demo-video"
+            :poster="current.image"
+            muted
+            loop
+            playsinline
+            preload="auto"
+            :aria-label="`${current.name} product demo`"
+            @error="onVideoError"
+          >
+            <source :src="current.video" type="video/webm" />
+          </video>
           <div
+            v-else
             class="project-gallery-track"
             :class="{ 'is-js-gallery': !cssScrollDriven }"
             :style="{
@@ -295,10 +351,11 @@ onMounted(() => {
             </figure>
           </div>
           <div
+            v-if="!hasVideo"
             class="pointer-events-none absolute inset-0 scanline-overlay opacity-40"
           />
           <div
-            class="pointer-events-none absolute left-3 top-3 border-l border-t border-white/20 px-2 py-0.5"
+            class="pointer-events-none absolute left-3 top-3 z-[1] border-l border-t border-white/20 px-2 py-0.5"
           >
             <span
               class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#919191]"
@@ -308,7 +365,10 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="flex shrink-0 items-stretch border-t border-white/20">
+        <div
+          v-if="!hasVideo"
+          class="flex shrink-0 items-stretch border-t border-white/20"
+        >
           <button
             type="button"
             class="flex min-h-11 min-w-11 items-center justify-center border-r border-white/20 text-lg text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
@@ -362,95 +422,58 @@ onMounted(() => {
         >
           <div class="project-dossier-inner flex flex-col pr-2">
             <article
-              v-for="(frame, i) in frames"
-              :key="`${current.slug}-beat-${frame.index}`"
+              v-for="beat in dossierBeats"
+              :key="`${current.slug}-beat-${beat.index}`"
               class="project-dossier-beat flex flex-col gap-4"
             >
-              <span class="hud-label">{{ frame.label }} // ARCHIVE_LOG</span>
               <p
                 class="font-mono text-[11px] leading-relaxed tracking-wide text-[#c6c6c6] xl:text-xs"
               >
-                {{ dossierCopy[i % dossierCopy.length] }}
+                {{ beat.text }}
               </p>
-
-              <section
-                v-if="i === 0 && current.tasks.length"
-                class="flex flex-col gap-3"
-                aria-label="Tasks"
-              >
-                <h2 class="hud-label">Tasks</h2>
-                <ul class="flex flex-col gap-2" role="list">
-                  <li
-                    v-for="task in current.tasks"
-                    :key="task"
-                    class="flex items-start gap-2 font-mono text-[11px] uppercase tracking-wide text-[#e2e2e2]"
-                  >
-                    <span class="mt-px text-[#67F57A]" aria-hidden="true"
-                      >&gt;</span
-                    >
-                    <span>{{ task }}</span>
-                  </li>
-                </ul>
-              </section>
-
-              <section
-                v-if="
-                  i === 0 &&
-                  (current.techGroups?.length || current.tech.length)
-                "
-                class="flex flex-col gap-3"
-                aria-label="Tech stack"
-              >
-                <h2 class="hud-label">Tech</h2>
-                <div
-                  v-if="current.techGroups?.length"
-                  class="flex flex-col gap-4"
-                >
-                  <div
-                    v-for="(group, gi) in current.techGroups"
-                    :key="group.label"
-                    class="flex flex-col gap-2"
-                  >
-                    <h3
-                      class="font-mono text-[9px] uppercase tracking-[0.18em] text-[#919191]"
-                    >
-                      {{ group.label }}
-                    </h3>
-                    <ul class="flex flex-wrap gap-1.5" role="list">
-                      <li
-                        v-for="(item, ti) in group.items"
-                        :key="`${group.label}-${item}`"
-                      >
-                        <span
-                          class="inline-flex items-center border px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.14em]"
-                          :class="
-                            gi === 0 && ti === 0
-                              ? 'border-[#67F57A] text-[#67F57A]'
-                              : 'border-[#3a3a3a] text-[#e2e2e2]'
-                          "
-                        >
-                          [ {{ item }} ]
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <ul v-else class="flex flex-wrap gap-1.5" role="list">
-                  <li v-for="(item, ti) in current.tech" :key="item">
-                    <span
-                      class="inline-flex items-center border px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.14em]"
-                      :class="
-                        ti === 0
-                          ? 'border-[#67F57A] text-[#67F57A]'
-                          : 'border-[#3a3a3a] text-[#e2e2e2]'
-                      "
-                    >
-                      [ {{ item }} ]
-                    </span>
-                  </li>
-                </ul>
-              </section>
             </article>
+
+            <section
+              v-if="current.tasks.length"
+              class="project-dossier-beat flex flex-col gap-3"
+              aria-label="Tasks"
+            >
+              <h2 class="hud-label">Tasks</h2>
+              <ul class="flex flex-col gap-2" role="list">
+                <li
+                  v-for="task in current.tasks"
+                  :key="task"
+                  class="flex items-start gap-2 font-mono text-[11px] uppercase tracking-wide text-[#e2e2e2]"
+                >
+                  <span class="mt-px text-[#67F57A]" aria-hidden="true"
+                    >&gt;</span
+                  >
+                  <span>{{ task }}</span>
+                </li>
+              </ul>
+            </section>
+
+            <section
+              v-if="current.tech.length"
+              class="project-dossier-beat flex flex-col gap-3"
+              aria-label="Tech stack"
+            >
+              <h2 class="hud-label">Tech</h2>
+              <ul class="flex flex-wrap gap-1.5" role="list">
+                <li v-for="(item, ti) in current.tech" :key="item">
+                  <span
+                    class="inline-flex items-center border px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.14em]"
+                    :class="
+                      ti === 0
+                        ? 'border-[#67F57A] text-[#67F57A]'
+                        : 'border-[#3a3a3a] text-[#e2e2e2]'
+                    "
+                  >
+                    [ {{ item }} ]
+                  </span>
+                </li>
+              </ul>
+            </section>
           </div>
         </div>
 
@@ -567,6 +590,18 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   object-position: center top;
+}
+
+.project-demo-video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  background: #000;
+  pointer-events: none;
 }
 
 @keyframes project-gallery-shift {

@@ -141,6 +141,42 @@
     @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] font-mono text-[8px] text-[#919191] leading-none;
   }
 
+  /* Project stills: keep screenshot whites from blooming under the CRT warp. */
+  .preview-still {
+    color-scheme: light;
+    filter: url(#preview-grade);
+  }
+
+  .preview-still--dark {
+    filter: contrast(1.14) saturate(1.04) brightness(0.96);
+  }
+
+  .preview-still-frame {
+    isolation: isolate;
+    background-color: #0a0a0a;
+  }
+
+  .preview-still-frame:has(.preview-still)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.1) 0%,
+        rgba(0, 0, 0, 0.32) 100%
+      ),
+      #c2c2c2;
+    mix-blend-mode: multiply;
+  }
+
+  .preview-still-frame:has(.preview-still--dark)::after {
+    background: rgba(0, 0, 0, 0.16);
+    mix-blend-mode: normal;
+  }
+
   /* ── WIP inline nav badge ────────────────────────────────────── */
   .wip-badge {
     display: inline-flex;

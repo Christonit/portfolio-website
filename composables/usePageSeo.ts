@@ -9,6 +9,11 @@ export type PageSchemaType =
 
 type SeoValue = string | (() => string);
 
+function toAbsoluteUrl(pathOrUrl: string, origin: string) {
+  if (/^https?:\/\//.test(pathOrUrl)) return pathOrUrl;
+  return new URL(pathOrUrl, `${origin}/`).href;
+}
+
 export function usePageSeo(options: {
   title: SeoValue;
   description: SeoValue;
@@ -28,7 +33,7 @@ export function usePageSeo(options: {
       ? options.description()
       : options.description,
   );
-  const image = computed(() => {
+  const imagePath = computed(() => {
     if (!options.image) return undefined;
     return typeof options.image === "function" ? options.image() : options.image;
   });
@@ -39,6 +44,15 @@ export function usePageSeo(options: {
     return `${origin}${path}`;
   });
 
+  const image = computed(() => {
+    const origin = String(site.url || SITE_URL).replace(/\/$/, "");
+    return toAbsoluteUrl(imagePath.value || "/images/og-image.webp", origin);
+  });
+
+  const imageType = computed(() =>
+    image.value.toLowerCase().endsWith(".png") ? "image/png" : "image/webp",
+  );
+
   useSeoMeta({
     title,
     description,
@@ -46,9 +60,12 @@ export function usePageSeo(options: {
     ogDescription: description,
     ogUrl: canonical,
     ogType: "website",
-    ogImage: () => image.value || "/images/og-image.webp",
+    ogImage: image,
+    ogImageType: imageType,
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
     twitterCard: "summary_large_image",
-    twitterImage: () => image.value || "/images/og-image.webp",
+    twitterImage: image,
   });
 
   useHead({

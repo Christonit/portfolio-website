@@ -42,6 +42,39 @@ const isExternal = computed(() =>
   props.project ? isExternalProjectHref(props.project) : false,
 );
 
+const imageFailed = ref(false);
+const previewRatio = ref<string | null>(null);
+const showPreview = computed(
+  () => Boolean(props.project?.image) && !imageFailed.value,
+);
+const previewToneClass = computed(() =>
+  props.project?.imageTone === "dark" ? "preview-still--dark" : "",
+);
+
+function applyPreviewSize(el: EventTarget | null) {
+  if (!(el instanceof HTMLImageElement)) return;
+  if (el.naturalWidth > 0 && el.naturalHeight > 0) {
+    previewRatio.value = `${el.naturalWidth} / ${el.naturalHeight}`;
+  }
+}
+
+function syncPreviewEl(el: Element | null) {
+  if (!(el instanceof HTMLImageElement)) return;
+  if (el.complete && el.naturalWidth === 0) {
+    imageFailed.value = true;
+    return;
+  }
+  if (el.complete) applyPreviewSize(el);
+}
+
+watch(
+  () => props.project?.image,
+  () => {
+    imageFailed.value = false;
+    previewRatio.value = null;
+  },
+);
+
 const counter = computed(() => {
   const n = String(props.index + 1).padStart(2, "0");
   const t = String(props.total).padStart(2, "0");
@@ -104,8 +137,25 @@ const ariaLabel = computed(() => {
 
     <!-- ── WORK CARD ── -->
     <template v-else-if="project">
-      <div class="projects-card__thumb relative h-36 shrink-0 overflow-hidden">
+      <div
+        class="projects-card__thumb preview-still-frame relative shrink-0 overflow-hidden"
+        :class="{ 'has-media': showPreview, 'h-36': !previewRatio }"
+        :style="previewRatio ? { aspectRatio: previewRatio } : undefined"
+      >
+        <img
+          v-if="showPreview"
+          :ref="syncPreviewEl"
+          :src="project.image"
+          alt=""
+          class="preview-still absolute inset-0 z-0 h-full w-full object-fill"
+          :class="previewToneClass"
+          loading="lazy"
+          decoding="async"
+          @load="applyPreviewSize($event.currentTarget)"
+          @error="imageFailed = true"
+        />
         <span
+          v-else
           class="relative z-[1] material-symbols-outlined text-[40px] text-white/90"
           aria-hidden="true"
         >
@@ -195,6 +245,10 @@ const ariaLabel = computed(() => {
     transparent 7px
   );
   pointer-events: none;
+}
+
+.projects-card__thumb.has-media::before {
+  display: none;
 }
 
 .projects-card__arrow {
