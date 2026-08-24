@@ -42,9 +42,9 @@ const keyOps = [
   {
     code: "01",
     org: "STOCKS_TO_TRADE",
-    metric: "1M+ MONTHLY UNIQUES",
+    metric: "",
     detail:
-      "Real-time news platform and quote lookup. Analytics tools, scanners, watchlists, webinars — a trading cockpit in the same traffic class as Yahoo News and Google Finance.",
+      "Real-time news platform and quote lookup. Analytics tools, scanners, watchlists and webinars website similar to Yahoo News and Google Finance.",
   },
   {
     code: "02",
@@ -127,13 +127,6 @@ const timeline = [
     ],
   },
 ];
-
-const theaters = [
-  "WEALTH & INVESTMENT",
-  "TELECOM",
-  "STARTUPS",
-  "FINANCIAL PUBLISHING",
-];
 </script>
 
 <template>
@@ -162,53 +155,24 @@ const theaters = [
           <div class="space-y-3 text-sm text-[#c6c6c6] leading-relaxed">
             <p>
               I am a Manhattan-based Senior Full Stack Engineer with over a
-              decade of experience building resilient interfaces and systems for
+              decade of experience building interfaces and systems for
               high-traffic web products. Originally from Punta Cana, Dominican
               Republic, I moved to the United States to expand my technical
               foundation and am currently pursuing a Master’s in Information
               Systems at Baruch College.
             </p>
             <p>
-              My recent experience centers on engineering scalable platforms for
-              the fintech and decentralized tech sectors. I built the
-              architecture and automated pipelines behind real-time financial
-              news platforms and analytics tools that serve over one million
-              unique monthly users. Additionally, as a founding frontend
-              engineer for Canopy Network, I owned the frontend architecture
-              from zero through a testnet launch that successfully supported
-              more than 20,000 concurrent users in its first week.
+              My recent work centers on scalable systems for fintech and
+              financial education. Products I’ve shipped handle 25K+ concurrent
+              users and serve more than 1M unique visitors each month.
             </p>
 
             <p>
-              In the near future, I want to keep moving toward more ambiguous
-              and ambitious problems than the ones I have faced before and
-              collaborate with new people and keep growing as an engineer. I’ve
-              heard here in the states is where you get to work with the best
-              and brightest and I want to become one of those.
+              In the near future, I want to keep moving toward different and
+              bigger problems than the ones I have faced before and collaborate
+              with new people and keep growing as an engineer.
             </p>
           </div>
-        </div>
-
-        <div class="border border-[#474747]/40 p-4 bg-[#1f1f1f]/20">
-          <span class="hud-label mb-3">ORIGIN_LOG</span>
-          <dl class="space-y-2">
-            <div
-              v-for="row in origin"
-              :key="row.label"
-              class="flex items-baseline justify-between gap-4"
-            >
-              <dt
-                class="font-mono text-[9px] text-[#919191] tracking-widest shrink-0"
-              >
-                {{ row.label }}
-              </dt>
-              <dd
-                class="font-mono text-[9px] text-[#e2e2e2] tracking-wider text-right"
-              >
-                {{ row.value }}
-              </dd>
-            </div>
-          </dl>
         </div>
 
         <div class="border border-[#474747]/40 p-4 bg-[#1f1f1f]/20">
@@ -250,7 +214,7 @@ const theaters = [
       </div>
 
       <div class="lg:col-span-7 flex flex-col lg:min-h-0 overflow-y-auto">
-        <span class="hud-label mb-3 flex-shrink-0">KEY_OPS</span>
+        <span class="hud-label mb-3 flex-shrink-0">RECENT_EXPERIENCE</span>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
           <div
             v-for="op in keyOps"
@@ -278,7 +242,7 @@ const theaters = [
         </div>
 
         <span class="hud-label mb-4 flex-shrink-0">TIMELINE_LOGS</span>
-        <div class="space-y-8 pl-2">
+        <div class="space-y-8 pl-2 mb-24">
           <div
             v-for="org in timeline"
             :key="org.company"
@@ -341,19 +305,6 @@ const theaters = [
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="border border-[#474747]/40 p-4 bg-[#1f1f1f]/20 mt-8">
-          <span class="hud-label mb-3">THEATERS</span>
-          <div class="flex flex-wrap gap-2">
-            <span
-              v-for="theater in theaters"
-              :key="theater"
-              class="font-mono text-[8px] tracking-widest text-[#e2e2e2] border border-[#474747]/40 px-2 py-1"
-            >
-              {{ theater }}
-            </span>
           </div>
         </div>
       </div>

@@ -40,9 +40,7 @@ defineProps<{
           'xl:px-3 xl:border-r-2 xl:border-b-0 xl:cursor-pointer xl:group',
           focusedSkill === i
             ? 'xl:bg-[#353535] xl:border-white xl:translate-x-0.5'
-            : skill.active
-              ? 'xl:bg-[#2a2a2a] xl:border-white xl:hover:translate-x-0.5'
-              : 'xl:bg-[#353535]/10 xl:border-[#474747]/50 xl:hover:bg-[#1f1f1f] xl:hover:translate-x-0.5',
+            : 'xl:bg-[#353535]/10 xl:border-[#474747]/50 xl:hover:bg-[#1f1f1f] xl:hover:translate-x-0.5',
         ]"
       >
         <div class="flex items-center gap-3">
@@ -69,7 +67,7 @@ defineProps<{
         </div>
         <div
           class="w-10 h-px shrink-0 bg-[#474747]/60"
-          :class="focusedSkill === i || skill.active ? 'xl:bg-white' : ''"
+          :class="focusedSkill === i ? 'xl:bg-white' : ''"
         />
       </div>
     </div>

@@ -43,13 +43,9 @@ const upgrades: Upgrade[] = [
   {
     icon: "layers",
     label: "FRONTEND",
-    tooltip: ["HEADLESS CMS", "MICRO-FRONTENDS", "PERFORMANCE OPS"],
+    tooltip: ["HEADLESS CMS", "MICRO-FRONTENDS", "FRONTEND ARCHITECTURE"],
   },
-  {
-    icon: "phone_iphone",
-    label: "MOBILE_DEV",
-    tooltip: ["iOS // SWIFT", "SWIFTUI", "APP STORE PUBLISHING"],
-  },
+
   {
     icon: "cloud",
     label: "CLOUD_OPS",
@@ -64,7 +60,7 @@ const upgrades: Upgrade[] = [
   {
     icon: "storage",
     label: "DATABASES",
-    tooltip: ["SQL // POSTGRESQL", "DYNAMODB", "FIRESTORE", "NOSQL DATABASES"],
+    tooltip: ["SQL", "POSTGRESQL", "DYNAMODB", "NOSQL DATABASES"],
   },
   {
     icon: "translate",
@@ -108,12 +104,12 @@ const skills = [
   },
   {
     iconSrc: "/images/nodejs-svgrepo-com.svg",
-    name: "NODE_JS_RUNTIME",
+    name: "NODE_JS",
     metadata: "node.js, rest api, supabase",
   },
   {
     iconSrc: "/images/aws-lambda-svgrepo-com.svg",
-    name: "AWS_CLOUD",
+    name: "AWS",
     metadata: "aws, dynamodb, s3, lambdas, ec2",
   },
   {
@@ -138,7 +134,7 @@ const skills = [
   },
   {
     iconSrc: "/images/database-svgrepo-com.svg",
-    name: "DATABASE_SYSTEMS",
+    name: "DATABASES",
     metadata: "database",
   },
   {
@@ -150,11 +146,6 @@ const skills = [
     iconSrc: "/images/css.svg",
     name: "CSS_TAILWIND",
     metadata: "css, sass, tailwind",
-  },
-  {
-    iconSrc: "/images/swift-svgrepo-com.svg",
-    name: "SWIFT_SWIFTUI",
-    metadata: "swift, ios development",
   },
 ];
 
