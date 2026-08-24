@@ -1,6 +1,7 @@
 import { definePerson } from "nuxt-schema-org/schema";
 import projects from "./data/projects.json";
 import {
+  GA_MEASUREMENT_ID,
   GITHUB_URL,
   LINKEDIN_URL,
   SITE_DESCRIPTION,
@@ -64,6 +65,12 @@ export default defineNuxtConfig({
     "/og-export": { robots: false },
   },
 
+  runtimeConfig: {
+    public: {
+      gaMeasurementId: process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID,
+    },
+  },
+
   nitro: {
     prerender: {
       crawlLinks: true,
@@ -118,6 +125,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/images/favicon.ico" },
+        { rel: "preconnect", href: "https://www.googletagmanager.com" },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         {
           rel: "preconnect",
