@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { useAudio } from '~/composables/useAudio';
+// import { useAudio } from '~/composables/useAudio';
 import { LINKEDIN_URL } from '~/utils/site';
 
 const router = useRouter();
 const route = useRoute();
 const hudKey = useHudNav();
-const { isMuted, initAudio, toggleMute, playHover, playClick, playHaptic } = useAudio();
+// Audio temporarily disabled
+// const { isMuted, initAudio, toggleMute, playHover, playClick, playHaptic } = useAudio();
+const playHaptic = () => {
+  if (typeof navigator !== "undefined" && navigator.vibrate) {
+    navigator.vibrate(15);
+  }
+};
 
 const pages = ["/", "/projects", "/bio"];
 
@@ -98,31 +104,32 @@ function animateWarp(now: number) {
   warpRaf = requestAnimationFrame(animateWarp);
 }
 
-let lastHoveredElement: HTMLElement | null = null;
+// let lastHoveredElement: HTMLElement | null = null;
 
-function onGlobalMouseOver(e: MouseEvent) {
-  const target = (e.target as HTMLElement).closest(
-    'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]'
-  ) as HTMLElement | null;
-
-  if (target) {
-    if (target !== lastHoveredElement) {
-      lastHoveredElement = target;
-      playHover();
-    }
-  } else {
-    lastHoveredElement = null;
-  }
-}
-
-function onGlobalMouseOut(e: MouseEvent) {
-  if (lastHoveredElement && !lastHoveredElement.contains(e.relatedTarget as Node)) {
-    lastHoveredElement = null;
-  }
-}
+// Audio temporarily disabled
+// function onGlobalMouseOver(e: MouseEvent) {
+//   const target = (e.target as HTMLElement).closest(
+//     'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]'
+//   ) as HTMLElement | null;
+//
+//   if (target) {
+//     if (target !== lastHoveredElement) {
+//       lastHoveredElement = target;
+//       playHover();
+//     }
+//   } else {
+//     lastHoveredElement = null;
+//   }
+// }
+//
+// function onGlobalMouseOut(e: MouseEvent) {
+//   if (lastHoveredElement && !lastHoveredElement.contains(e.relatedTarget as Node)) {
+//     lastHoveredElement = null;
+//   }
+// }
 
 function onGlobalClick(e: MouseEvent) {
-  playClick();
+  // playClick();
 
   // Trigger brief vibration on tapping links, buttons, and navigation elements
   const target = (e.target as HTMLElement).closest(
@@ -134,11 +141,11 @@ function onGlobalClick(e: MouseEvent) {
 }
 
 onMounted(() => {
-  initAudio();
+  // initAudio();
   window.addEventListener("keydown", onKeydown);
   window.addEventListener("click", onGlobalClick);
-  window.addEventListener("mouseover", onGlobalMouseOver);
-  window.addEventListener("mouseout", onGlobalMouseOut);
+  // window.addEventListener("mouseover", onGlobalMouseOver);
+  // window.addEventListener("mouseout", onGlobalMouseOut);
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!reduce) warpRaf = requestAnimationFrame(animateWarp);
@@ -147,8 +154,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("keydown", onKeydown);
   window.removeEventListener("click", onGlobalClick);
-  window.removeEventListener("mouseover", onGlobalMouseOver);
-  window.removeEventListener("mouseout", onGlobalMouseOut);
+  // window.removeEventListener("mouseover", onGlobalMouseOver);
+  // window.removeEventListener("mouseout", onGlobalMouseOut);
   cancelAnimationFrame(warpRaf);
 });
 
@@ -310,6 +317,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           <span class="xl:hidden">WIP</span>
           <span class="hidden xl:inline">WORK_IN_PROGRESS</span>
         </span>
+        <!-- Audio temporarily disabled
         <button
           class="flex p-2 text-[#919191] hover:text-white hover:bg-[#353535] transition-all focus:outline-none"
           :aria-label="isMuted ? 'Unmute Audio' : 'Mute Audio'"
@@ -319,6 +327,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             {{ isMuted ? 'volume_off' : 'volume_up' }}
           </span>
         </button>
+        -->
         <a
           :href="LINKEDIN_URL"
           target="_blank"
