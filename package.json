@@ -24,6 +24,7 @@
     "@types/node": "^22.0.0",
     "@types/three": "^0.184.1",
     "@vueuse/core": "^11.0.0",
+    "agentation-vue": "^0.3.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-vue-next": "^0.468.0",

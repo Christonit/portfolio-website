@@ -12,4 +12,8 @@ const pageTransition = computed(() => ({
   <NuxtLayout>
     <NuxtPage :transition="pageTransition" />
   </NuxtLayout>
+
+  <DevOnly>
+    <DevAgentation />
+  </DevOnly>
 </template>
