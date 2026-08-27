@@ -45,20 +45,16 @@ function onKeydown(e: KeyboardEvent) {
   if (tag === "INPUT" || tag === "TEXTAREA") return;
 
   switch (e.key) {
-    case "l":
-    case "L":
-    case "[":
-    case "PageUp":
+    case "a":
+    case "A":
       e.preventDefault();
-      flash("ArrowLeft");
+      flash("A");
       prevPage();
       break;
-    case "r":
-    case "R":
-    case "]":
-    case "PageDown":
+    case "d":
+    case "D":
       e.preventDefault();
-      flash("ArrowRight");
+      flash("D");
       nextPage();
       break;
     case "ArrowUp":
@@ -80,28 +76,6 @@ function onKeydown(e: KeyboardEvent) {
       flash("Enter");
       break;
   }
-}
-
-// ── Animated CRT displacement warp (SVG filter) ──────────────────
-const turbEl = ref<SVGFETurbulenceElement | null>(null);
-const dispEl = ref<SVGFEDisplacementMapElement | null>(null);
-let warpRaf = 0;
-let warpStart = 0;
-
-function animateWarp(now: number) {
-  if (!warpStart) warpStart = now;
-  const t = (now - warpStart) / 1000;
-
-  // Slow vertical "swim" — the picture gently wobbles like bad sync.
-  const fy = 0.0006 + 0.0006 * (0.5 + 0.5 * Math.sin(t * 0.9));
-  turbEl.value?.setAttribute("baseFrequency", `0 ${fy.toFixed(5)}`);
-
-  // Mostly tiny displacement, with brief horizontal "tears".
-  const chaos = Math.sin(t * 13.0) * Math.sin(t * 7.3);
-  const scale = chaos > 0.92 ? 16 : 2.5;
-  dispEl.value?.setAttribute("scale", String(scale));
-
-  warpRaf = requestAnimationFrame(animateWarp);
 }
 
 // let lastHoveredElement: HTMLElement | null = null;
@@ -147,8 +121,6 @@ onMounted(() => {
   // window.addEventListener("mouseover", onGlobalMouseOver);
   // window.addEventListener("mouseout", onGlobalMouseOut);
 
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!reduce) warpRaf = requestAnimationFrame(animateWarp);
 });
 
 onUnmounted(() => {
@@ -156,22 +128,20 @@ onUnmounted(() => {
   window.removeEventListener("click", onGlobalClick);
   // window.removeEventListener("mouseover", onGlobalMouseOver);
   // window.removeEventListener("mouseout", onGlobalMouseOut);
-  cancelAnimationFrame(warpRaf);
 });
 
 // ── Desktop nav items ─────────────────────────────────────────────
 const navItems = [
-  { label: "STATS", path: "/" },
+  { label: "HOME", path: "/" },
   { label: "PROJECTS", path: "/projects" },
-  { label: "BIO", path: "/bio" },
-  { label: "GET_IN_TOUCH", path: "https://www.linkedin.com/in/chrisalesant/" },
+  { label: "ABOUT", path: "/bio" },
 ];
 
 // ── Mobile bottom nav items ───────────────────────────────────────
 const mobileNavItems = [
-  { label: "STATS", path: "/", icon: "analytics" },
+  { label: "HOME", path: "/", icon: "analytics" },
   { label: "PROJECTS", path: "/projects", icon: "grid_view" },
-  { label: "BIO", path: "/bio", icon: "fingerprint" },
+  { label: "ABOUT", path: "/bio", icon: "fingerprint" },
   {
     label: "CONNECT",
     path: "https://www.linkedin.com/in/chrisalesant/",
@@ -200,43 +170,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
 
 <template>
   <div class="relative h-screen overflow-hidden bg-[#131313] text-[#e2e2e2]">
-    <!-- CRT displacement filter (animated via JS, applied to <main>) -->
-    <svg class="crt-svg-filter" aria-hidden="true" focusable="false">
-      <filter
-        id="crt-distort"
-        x="-5%"
-        y="-5%"
-        width="110%"
-        height="110%"
-        color-interpolation-filters="sRGB"
-      >
-        <feTurbulence
-          ref="turbEl"
-          type="fractalNoise"
-          baseFrequency="0 0.0007"
-          numOctaves="1"
-          seed="7"
-          result="noise"
-        />
-        <feDisplacementMap
-          ref="dispEl"
-          in="SourceGraphic"
-          in2="noise"
-          scale="2.5"
-          xChannelSelector="R"
-          yChannelSelector="G"
-        />
-      </filter>
-    </svg>
-
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
-
-    <!-- ── Animated CRT / old-TV overlay ─────────────────────── -->
-    <div class="crt-overlay fixed inset-0 z-[999]">
-      <div class="absolute inset-0 crt-scanlines" />
-      <div class="absolute inset-0 overflow-hidden crt-roll" />
-      <div class="absolute inset-0 crt-flicker" />
-    </div>
 
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
     <nav
@@ -247,11 +181,10 @@ watch(() => route.path, scrollMainToTopOnMobile);
         to="/"
         class="text-white font-semibold text-sm xl:text-lg tracking-tighter uppercase select-none mr-auto"
       >
-        <span class="xl:hidden">CH_SANTANA</span>
-        <span class="hidden xl:inline">CH_SANTANA_OS_V3</span>
+        CHRISTOPHER SANTANA
       </NuxtLink>
 
-      <!-- L button (desktop only) -->
+      <!-- Previous-page keyboard control (desktop only) -->
 
       <div
         class="flex flex-row mx-auto absolute left-0 right-0"
@@ -260,19 +193,20 @@ watch(() => route.path, scrollMainToTopOnMobile);
         <button
           class="hidden xl:block mr-6 transition-all duration-100 focus:outline-none"
           :class="
-            isPressed('ArrowLeft')
+            isPressed('A')
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Previous tab"
+          aria-label="Previous page (A)"
+          aria-keyshortcuts="A"
           @click="prevPage"
         >
-          <img
-            src="/images/left-btn-icon.png"
-            alt="L"
-            class="w-[21px] h-[21px]"
-            draggable="false"
-          />
+          <kbd
+            class="flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 font-mono text-xs font-semibold text-white shadow-[0_2px_0_#3a3a3a]"
+            aria-hidden="true"
+          >
+            A
+          </kbd>
         </button>
 
         <!-- Page links (desktop only — mobile uses bottom nav) -->
@@ -281,9 +215,9 @@ watch(() => route.path, scrollMainToTopOnMobile);
             <NuxtLink
               :to="item.path"
               :class="[
-                'font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
+                'relative pb-1 font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
                 isActive(item.path)
-                  ? 'text-white border-b border-white pb-px'
+                  ? 'text-white after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[calc(100%-0.2em)] after:-translate-x-1/2 after:bg-white'
                   : 'text-[#919191] hover:text-white',
               ]"
             >
@@ -292,31 +226,28 @@ watch(() => route.path, scrollMainToTopOnMobile);
           </li>
         </ul>
 
-        <!-- R button (desktop only) -->
+        <!-- Next-page keyboard control (desktop only) -->
         <button
           class="hidden xl:block ml-6 transition-all duration-100 focus:outline-none"
           :class="
-            isPressed('ArrowRight')
+            isPressed('D')
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Next tab"
+          aria-label="Next page (D)"
+          aria-keyshortcuts="D"
           @click="nextPage"
         >
-          <img
-            src="/images/right-btn-icon.png"
-            alt="R"
-            class="w-[21px] h-[21px]"
-            draggable="false"
-          />
+          <kbd
+            class="flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 font-mono text-xs font-semibold text-white shadow-[0_2px_0_#3a3a3a]"
+            aria-hidden="true"
+          >
+            D
+          </kbd>
         </button>
       </div>
 
       <div class="flex items-center gap-2 shrink-0 z-10">
-        <span class="wip-badge" role="status" aria-label="Work in progress">
-          <span class="xl:hidden">WIP</span>
-          <span class="hidden xl:inline">WORK_IN_PROGRESS</span>
-        </span>
         <!-- Audio temporarily disabled
         <button
           class="flex p-2 text-[#919191] hover:text-white hover:bg-[#353535] transition-all focus:outline-none"
@@ -349,16 +280,15 @@ watch(() => route.path, scrollMainToTopOnMobile);
             />
           </svg>
         </a>
-        <LocalTime />
       </div>
     </nav>
 
     <!-- ── MAIN CONTENT ────────────────────────────────────── -->
     <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
-    <!-- Desktop: overflow-hidden, sits between top nav and keyboard+footer bars -->
+    <!-- Desktop: uses the full viewport below the top navigation -->
     <main
       ref="mainRef"
-      class="hud-page crt-warp absolute lg:relative inset-x-0 top-14 z-10 bottom-16 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-[72px] xl:h-[calc(100vh-132px)] xl:overflow-hidden"
+      class="hud-page absolute inset-x-0 top-14 z-10 bottom-16 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
     >
       <slot />
     </main>
@@ -394,207 +324,11 @@ watch(() => route.path, scrollMainToTopOnMobile);
           item.icon
         }}</span>
         <span
-          class="font-mono text-[8px] uppercase tracking-widest font-bold"
+          class="font-mono text-xs uppercase tracking-widest font-bold"
           >{{ item.label }}</span
         >
       </NuxtLink>
     </nav>
 
-    <!-- ── KEYBOARD NAVIGATION BAR (desktop only) ─────────── -->
-    <div
-      class="hidden xl:flex fixed bottom-10 inset-x-0 h-9 z-50 items-center gap-4 px-8 bg-black border-t border-white/5"
-    >
-      <span class="hud-label !text-[8px] shrink-0">NAVIGATION</span>
-
-      <div class="flex items-center gap-0.5">
-        <button
-          class="transition-all duration-100 focus:outline-none leading-none"
-          :class="
-            isPressed('ArrowLeft')
-              ? 'opacity-100 scale-90'
-              : 'opacity-60 hover:opacity-100'
-          "
-          aria-label="Focus left"
-          @click="
-            () => {
-              hudKey = 'ArrowLeft';
-              nextTick(() => {
-                hudKey = null;
-              });
-            }
-          "
-        >
-          <img
-            src="/images/left-arrow.png"
-            alt="←"
-            class="h-7 w-auto"
-            draggable="false"
-          />
-        </button>
-        <button
-          class="transition-all duration-100 focus:outline-none leading-none"
-          :class="
-            isPressed('ArrowUp')
-              ? 'opacity-100 scale-90'
-              : 'opacity-60 hover:opacity-100'
-          "
-          aria-label="Focus up"
-          @click="
-            () => {
-              hudKey = 'ArrowUp';
-              nextTick(() => {
-                hudKey = null;
-              });
-            }
-          "
-        >
-          <img
-            src="/images/top-arrow.png"
-            alt="↑"
-            class="h-7 w-auto"
-            draggable="false"
-          />
-        </button>
-        <button
-          class="transition-all duration-100 focus:outline-none leading-none"
-          :class="
-            isPressed('ArrowDown')
-              ? 'opacity-100 scale-90'
-              : 'opacity-60 hover:opacity-100'
-          "
-          aria-label="Focus down"
-          @click="
-            () => {
-              hudKey = 'ArrowDown';
-              nextTick(() => {
-                hudKey = null;
-              });
-            }
-          "
-        >
-          <img
-            src="/images/down-arrow.png"
-            alt="↓"
-            class="h-7 w-auto"
-            draggable="false"
-          />
-        </button>
-        <button
-          class="transition-all duration-100 focus:outline-none leading-none"
-          :class="
-            isPressed('ArrowRight')
-              ? 'opacity-100 scale-90'
-              : 'opacity-60 hover:opacity-100'
-          "
-          aria-label="Focus right"
-          @click="
-            () => {
-              hudKey = 'ArrowRight';
-              nextTick(() => {
-                hudKey = null;
-              });
-            }
-          "
-        >
-          <img
-            src="/images/right-arrow.png"
-            alt="→"
-            class="h-7 w-auto"
-            draggable="false"
-          />
-        </button>
-      </div>
-
-      <div class="w-px h-5 bg-[#474747] shrink-0" />
-
-      <span class="hud-label !text-[8px] shrink-0">INTERACT</span>
-
-      <button
-        class="transition-all duration-100 focus:outline-none leading-none"
-        :class="
-          isPressed('Enter')
-            ? 'opacity-100 scale-90'
-            : 'opacity-60 hover:opacity-100'
-        "
-        aria-label="Interact"
-      >
-        <svg
-          width="64"
-          height="28"
-          viewBox="0 0 64 28"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect
-            x="0.75"
-            y="0.75"
-            width="62.5"
-            height="26.5"
-            rx="4.5"
-            stroke="white"
-            stroke-opacity="0.75"
-            stroke-width="1.5"
-          />
-          <text
-            x="32"
-            y="18"
-            text-anchor="middle"
-            font-family="monospace"
-            font-size="8.5"
-            fill="white"
-            fill-opacity="0.75"
-            letter-spacing="0.3"
-          >
-            ↵ return
-          </text>
-        </svg>
-      </button>
-
-      <div class="w-px h-5 bg-[#474747] shrink-0" />
-
-      <button
-        class="transition-all duration-100 focus:outline-none leading-none"
-        :class="
-          isPressed('Escape')
-            ? 'opacity-100 scale-90'
-            : 'opacity-60 hover:opacity-100'
-        "
-        aria-label="Go to STATS"
-        @click="router.push('/')"
-      >
-        <img
-          src="/images/esc-key.png"
-          alt="Esc"
-          class="h-7 w-auto"
-          draggable="false"
-        />
-      </button>
-    </div>
-
-    <!-- ── BOTTOM STATUS BAR (desktop only) ──────────────────── -->
-    <footer
-      class="hidden xl:flex fixed bottom-0 inset-x-0 h-10 z-50 items-center justify-between px-8 bg-black border-t border-white/10"
-    >
-      <div class="flex items-center gap-6">
-        <div class="flex items-center gap-2">
-          <div class="w-2 h-2 bg-white animate-pulse" />
-          <span
-            class="font-mono text-[8px] text-white uppercase tracking-[0.15em]"
-            >SYSTEM SYNCHRONIZED</span
-          >
-        </div>
-        <span class="font-mono text-[8px] text-[#919191]"
-          >LOC: 40.7128° N, 74.0060° W</span
-        >
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="font-mono text-[8px] text-[#919191]"
-          >RAM: 128GB // NEURAL_LINK: 1.2TBPS</span
-        >
-        <div class="w-32 h-1.5 bg-[#353535] relative">
-          <div class="absolute inset-y-0 left-0 bg-white" style="width: 70%" />
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
