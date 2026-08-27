@@ -43,7 +43,6 @@ function bindCard(el: Element | null, i: number) {
 
 function readColumns() {
   if (typeof window === "undefined") return 1;
-  if (window.innerWidth >= 1280) return 3;
   if (window.innerWidth >= 768) return 2;
   return 1;
 }
@@ -115,7 +114,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="flex flex-col gap-8 px-4 py-5 pb-8 xl:h-[calc(100vh-132px)] xl:overflow-y-auto xl:px-8"
+    class="projects-rail flex flex-col gap-8 py-5 pb-8 xl:h-full xl:overflow-y-auto"
   >
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// PROJECTS</span>
@@ -133,7 +132,7 @@ onUnmounted(() => {
 
     <section aria-label="Selected work">
       <ul
-        class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 xl:gap-6"
+        class="grid grid-cols-1 gap-5 md:grid-cols-2"
         role="list"
       >
         <li
@@ -164,3 +163,22 @@ onUnmounted(() => {
     </section>
   </div>
 </template>
+
+<style scoped>
+.projects-rail {
+  width: min(800px, calc(100% - 32px));
+  margin-inline: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.projects-rail::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .projects-rail {
+    width: min(800px, calc(100% - 24px));
+  }
+}
+</style>

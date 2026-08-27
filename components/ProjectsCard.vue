@@ -130,7 +130,7 @@ const ariaLabel = computed(() => {
         >
           NEW MISSION
         </h2>
-        <p class="mt-2 max-w-[220px] font-mono text-[11px] leading-relaxed text-[#474747]">
+        <p class="mt-2 max-w-[220px] font-mono text-xs leading-relaxed text-[#474747]">
           Awaiting deployment — drop your next project here.
         </p>
       </div>
@@ -171,7 +171,7 @@ const ariaLabel = computed(() => {
             {{ project.name }}
           </h2>
           <p
-            class="line-clamp-2 font-mono text-[11px] leading-relaxed text-[#919191]"
+            class="line-clamp-2 font-mono text-xs leading-relaxed text-[#919191]"
           >
             {{ project.description || project.tasks[0] }}
           </p>
@@ -180,7 +180,7 @@ const ariaLabel = computed(() => {
         <ul v-if="badges.length" class="flex flex-wrap gap-1.5" role="list">
           <li v-for="badge in badges" :key="badge">
             <span
-              class="inline-flex items-center border border-[#3a3a3a] px-1.5 py-1 font-mono text-[8px] uppercase tracking-[0.14em] text-[#c6c6c6]"
+              class="inline-flex items-center border border-[#3a3a3a] px-1.5 py-1 font-mono text-xs uppercase tracking-[0.14em] text-[#c6c6c6]"
             >
               {{ badge }}
             </span>
@@ -190,13 +190,13 @@ const ariaLabel = computed(() => {
         <div class="mt-auto flex flex-col gap-3">
           <div class="flex items-end justify-between gap-3 pt-1">
             <span
-              class="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-white"
+              class="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-white"
             >
               {{ ctaLabel }}
               <span class="projects-card__arrow" aria-hidden="true">-></span>
             </span>
             <span
-              class="font-mono text-[9px] tabular-nums tracking-widest text-[#474747]"
+              class="font-mono text-xs tabular-nums tracking-widest text-[#474747]"
             >
               {{ counter }}
             </span>

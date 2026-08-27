@@ -2,14 +2,14 @@
 import { IDENTITY_ID, pageTitle } from "~/utils/site";
 
 usePageSeo({
-  title: pageTitle("Bio"),
+  title: pageTitle("About"),
   description:
     "Christopher Santana — from Punta Cana to Manhattan. Senior Full Stack Engineer behind real-time news and quote systems used by 1M+ monthly users.",
   pageType: "AboutPage",
   mainEntity: { "@id": IDENTITY_ID },
   extraSchema: () => [
     defineBreadcrumb({
-      itemListElement: [{ name: "Home", item: "/" }, { name: "Bio" }],
+      itemListElement: [{ name: "Home", item: "/" }, { name: "About" }],
     }),
   ],
 });
@@ -35,23 +35,6 @@ const education = [
     degree: "AS MULTIMEDIA TECHNOLOGIES",
     school: "ITLA",
     year: "AUG 2012 – APR 2014",
-  },
-];
-
-const keyOps = [
-  {
-    code: "01",
-    org: "STOCKS_TO_TRADE",
-    metric: "",
-    detail:
-      "Real-time news platform and quote lookup. Analytics tools, scanners, watchlists and webinars website similar to Yahoo News and Google Finance.",
-  },
-  {
-    code: "02",
-    org: "CANOPY NETWORK",
-    metric: "20K+ CONCURRENT // WEEK 1",
-    detail:
-      "Founding frontend engineer for a blockchain superapp. Owned the interface architecture from zero through testnet launch.",
   },
 ];
 
@@ -131,23 +114,26 @@ const timeline = [
 
 <template>
   <div
-    class="lg:h-full flex flex-col px-4 lg:px-8 py-5 gap-6 lg:overflow-hidden pb-16 lg:pb-0"
+    class="bio-rail flex flex-col gap-8 py-5 pb-16 xl:h-full xl:overflow-y-auto xl:pb-8"
   >
-    <div class="flex items-center gap-4 flex-shrink-0">
-      <span
-        class="font-mono text-[10px] text-[#919191] tracking-widest uppercase"
-        >01.</span
+    <header class="flex max-w-3xl flex-col gap-3 pt-2">
+      <span class="hud-label">// ABOUT</span>
+      <h1
+        class="font-semibold uppercase tracking-tighter text-white"
+        style="font-size: clamp(2.1rem, 4.4vw, 3.6rem); line-height: 0.92"
       >
-      <h2 class="font-semibold text-2xl uppercase tracking-tighter text-white">
-        BIO_DATABASE
-      </h2>
-      <div class="flex-1 h-px bg-[#474747]/40 max-w-xs" />
-    </div>
+        ABOUT ME
+      </h1>
+      <p class="max-w-xl font-mono text-xs leading-relaxed text-[#919191] xl:text-sm">
+        From Punta Cana to Manhattan — a decade of building high-traffic web
+        products and scalable systems.
+      </p>
+    </header>
 
     <div
-      class="flex flex-col gap-4 lg:grid grid-cols-12 gap-8 flex-1 lg:min-h-0 lg:overflow-hidden"
+      class="flex flex-col gap-10"
     >
-      <div class="col-span-5 flex flex-col gap-5 overflow-y-auto pr-2">
+      <div class="flex flex-col gap-5">
         <div class="relative border-l-[3px] border-white pl-4 lg:pr-3 lg:py-2">
           <div class="corner-tr-w" />
           <div class="corner-br-w" />
@@ -184,65 +170,22 @@ const timeline = [
               class="border-b border-[#474747]/20 pb-2 last:border-0 last:pb-0"
             >
               <div
-                class="font-bold text-[10px] uppercase tracking-wider text-[#e2e2e2]"
+                class="font-bold text-xs uppercase tracking-wider text-[#e2e2e2]"
               >
                 {{ edu.degree }}
               </div>
-              <div class="font-mono text-[8px] text-[#919191] mt-0.5">
+              <div class="font-mono text-xs text-[#919191] mt-0.5">
                 {{ edu.school }} // {{ edu.year }}
               </div>
             </div>
           </div>
         </div>
 
-        <div class="border border-[#474747]/40 p-4 bg-[#1f1f1f]/20">
-          <span class="hud-label mb-3">AWARDS</span>
-          <div class="flex items-start gap-2">
-            <div class="w-[2px] bg-white/40 shrink-0 self-stretch" />
-            <div>
-              <div
-                class="font-bold text-[10px] uppercase tracking-wider text-[#e2e2e2]"
-              >
-                1ST PLACE — BRANDING DESIGN CONTEST
-              </div>
-              <div class="font-mono text-[8px] text-[#919191] mt-0.5">
-                MINISTRY OF FOREIGN AFFAIRS // DOMINICAN REPUBLIC // NOV 2017
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div class="lg:col-span-7 flex flex-col lg:min-h-0 overflow-y-auto">
-        <span class="hud-label mb-3 flex-shrink-0">RECENT_EXPERIENCE</span>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-          <div
-            v-for="op in keyOps"
-            :key="op.org"
-            class="border border-[#474747]/40 p-4 bg-[#1f1f1f]/20"
-          >
-            <div class="flex items-center justify-between gap-3 mb-2">
-              <span class="font-mono text-[9px] text-[#919191] tracking-widest"
-                >{{ op.code }}.</span
-              >
-              <span
-                class="font-mono text-[8px] text-white tracking-widest text-right"
-                >{{ op.metric }}</span
-              >
-            </div>
-            <div
-              class="font-semibold uppercase text-sm tracking-wider text-white"
-            >
-              {{ op.org }}
-            </div>
-            <p class="mt-2 text-xs text-[#c6c6c6] leading-relaxed">
-              {{ op.detail }}
-            </p>
-          </div>
-        </div>
-
+      <div class="flex flex-col">
         <span class="hud-label mb-4 flex-shrink-0">TIMELINE_LOGS</span>
-        <div class="space-y-8 pl-2 mb-24">
+        <div class="space-y-8 pl-2 mb-10">
           <div
             v-for="org in timeline"
             :key="org.company"
@@ -258,7 +201,7 @@ const timeline = [
               :class="org.active ? 'bg-white' : 'bg-[#474747]'"
             />
             <div
-              class="font-mono text-[9px] tracking-widest mb-1"
+              class="font-mono text-xs tracking-widest mb-1"
               :class="org.active ? 'text-white' : 'text-[#919191]'"
             >
               {{ org.span }}
@@ -271,7 +214,7 @@ const timeline = [
             </div>
             <div
               v-if="org.location"
-              class="font-mono text-[8px] text-[#474747] mt-0.5"
+              class="font-mono text-xs text-[#474747] mt-0.5"
             >
               // {{ org.location }}
             </div>
@@ -286,13 +229,13 @@ const timeline = [
                     {{ item.role }}
                   </div>
                   <div
-                    class="font-mono text-[8px] text-[#919191] tracking-widest"
+                    class="font-mono text-xs text-[#919191] tracking-widest"
                   >
                     {{ item.type }}
                   </div>
                 </div>
                 <div
-                  class="font-mono text-[8px] tracking-widest mt-0.5"
+                  class="font-mono text-xs tracking-widest mt-0.5"
                   :class="item.current ? 'text-white' : 'text-[#919191]'"
                 >
                   {{ item.period }}
@@ -300,9 +243,26 @@ const timeline = [
                 <p class="text-xs text-[#c6c6c6] leading-relaxed mt-1.5">
                   {{ item.note }}
                 </p>
-                <div class="font-mono text-[8px] text-[#474747] mt-1">
+                <div class="font-mono text-xs text-[#474747] mt-1">
                   // {{ item.tags }}
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border border-[#474747]/40 p-4 bg-[#1f1f1f]/20">
+          <span class="hud-label mb-3">AWARDS</span>
+          <div class="flex items-start gap-2">
+            <div class="w-[2px] bg-white/40 shrink-0 self-stretch" />
+            <div>
+              <div
+                class="font-bold text-xs uppercase tracking-wider text-[#e2e2e2]"
+              >
+                1ST PLACE — BRANDING DESIGN CONTEST
+              </div>
+              <div class="font-mono text-xs text-[#919191] mt-0.5">
+                MINISTRY OF FOREIGN AFFAIRS // DOMINICAN REPUBLIC // NOV 2017
               </div>
             </div>
           </div>
@@ -311,3 +271,22 @@ const timeline = [
     </div>
   </div>
 </template>
+
+<style scoped>
+.bio-rail {
+  width: min(800px, calc(100% - 32px));
+  margin-inline: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.bio-rail::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .bio-rail {
+    width: min(800px, calc(100% - 24px));
+  }
+}
+</style>
