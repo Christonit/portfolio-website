@@ -125,7 +125,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
             </div>
             <div>
               <p class="identity-mission">
-                AI SYSTEMS, FRONTEND ARCHITECTURE &amp; DATA PIPELINES //<br />
+                CURRENTLY AT<br />
                 <NuxtLink to="/project/stockstotrade">
                   STOCKSTOTRADE
                 </NuxtLink>
@@ -136,6 +136,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
         <div class="identity-portrait" aria-hidden="true">
           <img src="/images/og-image.webp" alt="" />
+          <img
+            class="identity-portrait__color"
+            src="/images/og-image.webp"
+            alt=""
+          />
           <div class="identity-scanline" />
         </div>
 
@@ -162,6 +167,15 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
               class="dossier-card"
               :class="{ 'is-focused': focusedCard === index }"
             >
+              <span
+                class="dossier-card__corner dossier-card__corner--tl"
+                aria-hidden="true"
+              />
+              <span
+                class="dossier-card__corner dossier-card__corner--br"
+                aria-hidden="true"
+              />
+
               <div class="dossier-card__image">
                 <img
                   v-if="project.image"
@@ -252,9 +266,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   grid-template-columns: minmax(0, 1fr) 190px;
   min-height: 252px;
   overflow: hidden;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
-    rgba(11, 11, 11, 0.44);
+  background: #0a0a0a;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
 }
 
@@ -329,10 +341,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .identity-portrait {
+  --portrait-hover-scale: 1.2;
+  --portrait-scale: 1.18;
+
   position: relative;
   min-width: 0;
   overflow: hidden;
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
   background: #0a0a0a;
 }
 
@@ -350,7 +364,29 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   object-fit: cover;
   object-position: 50% center;
   filter: grayscale(0.68) contrast(1.08) brightness(0.92);
-  transform: scale(1.18);
+  transform: scale(var(--portrait-scale));
+  transition: transform 180ms ease-out;
+}
+
+.identity-portrait .identity-portrait__color {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  filter: saturate(1.06) contrast(1.04) brightness(0.98);
+  opacity: 0;
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
+}
+
+.identity-panel:hover .identity-portrait img,
+.identity-panel:focus-within .identity-portrait img {
+  transform: scale(var(--portrait-hover-scale)) translate3d(-1.5%, 0, 0);
+}
+
+.identity-panel:hover .identity-portrait__color,
+.identity-panel:focus-within .identity-portrait__color {
+  opacity: 1;
 }
 
 .identity-scanline {
@@ -382,6 +418,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .dossier-card {
+  position: relative;
   display: flex;
   height: 100%;
   min-height: 250px;
@@ -393,7 +430,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   text-decoration: none;
   transition:
     border-color 150ms ease,
-    transform 150ms ease,
     background-color 150ms ease;
 }
 
@@ -403,7 +439,37 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   border-color: rgba(103, 245, 122, 0.72);
   background: #0a0a0a;
   outline: none;
-  transform: translateY(-2px);
+}
+
+.dossier-card__corner {
+  position: absolute;
+  z-index: 3;
+  width: 14px;
+  height: 14px;
+  border-color: #67f57a;
+  opacity: 0.42;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.dossier-card__corner--tl {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid #67f57a;
+  border-left: 2px solid #67f57a;
+}
+
+.dossier-card__corner--br {
+  right: -1px;
+  bottom: -1px;
+  border-right: 2px solid #67f57a;
+  border-bottom: 2px solid #67f57a;
+}
+
+.dossier-card:hover .dossier-card__corner,
+.dossier-card:focus-visible .dossier-card__corner,
+.dossier-card.is-focused .dossier-card__corner {
+  opacity: 1;
 }
 
 .dossier-card__image {
@@ -431,14 +497,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  transition: filter 180ms ease, transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.dossier-card:hover .dossier-card__image img,
-.dossier-card:focus-visible .dossier-card__image img,
-.dossier-card.is-focused .dossier-card__image img {
-  filter: saturate(1.08) contrast(1.04);
-  transform: scale(1.02);
 }
 
 .dossier-card__body {
@@ -634,7 +692,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
   .identity-portrait img {
     object-position: 49% center;
-    transform: scale(1.35);
+  }
+
+  .identity-portrait {
+    --portrait-hover-scale: 1.37;
+    --portrait-scale: 1.35;
   }
 
   .featured-work,
@@ -674,15 +736,15 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 @media (prefers-reduced-motion: reduce) {
   .dossier-card,
-  .dossier-card__image img,
+  .dossier-card__corner,
+  .identity-portrait img,
   .articles-index a {
     transition: none;
   }
 
-  .dossier-card:hover,
-  .dossier-card:focus-visible,
-  .dossier-card.is-focused {
-    transform: none;
+  .identity-panel:hover .identity-portrait img,
+  .identity-panel:focus-within .identity-portrait img {
+    transform: scale(var(--portrait-scale));
   }
 }
 </style>
