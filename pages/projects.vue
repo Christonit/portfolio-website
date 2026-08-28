@@ -119,12 +119,11 @@ onUnmounted(() => {
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// PROJECTS</span>
       <h1
-        class="font-semibold uppercase tracking-tighter text-white"
-        style="font-size: clamp(2.1rem, 4.4vw, 3.6rem); line-height: 0.92"
+        class="text-display uppercase tracking-tighter text-white"
       >
         SELECTED WORK
       </h1>
-      <p class="max-w-xl font-mono text-xs leading-relaxed text-[#919191] xl:text-sm">
+      <p class="text-body-compact max-w-xl text-[#919191]">
         A collection of web apps and projects I've collaborated on over the
         years, along with technical articles I'm proud of.
       </p>

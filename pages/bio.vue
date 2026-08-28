@@ -122,14 +122,11 @@ const timeline: ExperienceOrg[] = [
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// BIO</span>
       <h1
-        class="font-semibold uppercase tracking-tighter text-white"
-        style="font-size: clamp(2.1rem, 4.4vw, 3.6rem); line-height: 0.92"
+        class="text-display uppercase tracking-tighter text-white"
       >
         ABOUT ME
       </h1>
-      <p
-        class="max-w-xl font-mono text-xs leading-relaxed text-[#919191] xl:text-sm"
-      >
+      <p class="text-body-compact max-w-xl text-[#919191]">
         Manhattan-based Senior Full Stack Engineer with over a decade of
         experience building interfaces and lately systems for high-traffic web
         products.
@@ -140,7 +137,7 @@ const timeline: ExperienceOrg[] = [
       <div class="flex flex-col gap-5">
         <div class="relative border-l-[3px] border-white pl-4 lg:pr-3 lg:py-2">
           <HudCorners :corners="['tr', 'br']" />
-          <div class="space-y-3 text-sm text-[#c6c6c6] leading-relaxed">
+          <div class="text-body-prose space-y-3 text-[#c6c6c6]">
             <p>
               Originally from Punta Cana, Dominican Republic, I moved to the
               United States to pursue a Master’s in Information Systems at
@@ -169,11 +166,11 @@ const timeline: ExperienceOrg[] = [
               class="border-b border-[#474747]/20 pb-2 last:border-0 last:pb-0"
             >
               <div
-                class="font-bold text-xs uppercase tracking-wider text-[#e2e2e2]"
+                class="text-title-ui uppercase tracking-wider text-[#e2e2e2]"
               >
                 {{ edu.degree }}
               </div>
-              <div class="font-mono text-xs text-[#919191] mt-0.5">
+              <div class="text-label-data mt-0.5 text-[#919191]">
                 {{ edu.school }} // {{ edu.year }}
               </div>
             </div>
@@ -191,11 +188,11 @@ const timeline: ExperienceOrg[] = [
             <div class="w-[2px] bg-white/40 shrink-0 self-stretch" />
             <div>
               <div
-                class="font-bold text-xs uppercase tracking-wider text-[#e2e2e2]"
+                class="text-title-ui uppercase tracking-wider text-[#e2e2e2]"
               >
                 1ST PLACE — BRANDING DESIGN CONTEST
               </div>
-              <div class="font-mono text-xs text-[#919191] mt-0.5">
+              <div class="text-label-data mt-0.5 text-[#919191]">
                 MINISTRY OF FOREIGN AFFAIRS // DOMINICAN REPUBLIC // NOV 2017
               </div>
             </div>

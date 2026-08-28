@@ -126,11 +126,11 @@ const ariaLabel = computed(() => {
       </div>
       <div>
         <h2
-          class="text-sm font-semibold uppercase tracking-[0.18em] text-[#919191] transition-colors duration-150 group-hover:text-white"
+          class="text-title-ui uppercase tracking-[0.18em] text-[#919191] transition-colors duration-150 group-hover:text-white"
         >
           NEW MISSION
         </h2>
-        <p class="mt-2 max-w-[220px] font-mono text-xs leading-relaxed text-[#474747]">
+        <p class="text-body-compact mt-2 max-w-[220px] text-[#474747]">
           Awaiting deployment — drop your next project here.
         </p>
       </div>
@@ -166,12 +166,12 @@ const ariaLabel = computed(() => {
       <div class="flex flex-1 flex-col gap-4 px-5 pb-5 pt-5">
         <div class="flex flex-col gap-2">
           <h2
-            class="line-clamp-2 text-[1.15rem] font-semibold uppercase leading-[1.05] tracking-tight text-white"
+            class="text-title-ui line-clamp-2 uppercase tracking-tight text-white"
           >
             {{ project.name }}
           </h2>
           <p
-            class="line-clamp-2 font-mono text-xs leading-relaxed text-[#919191]"
+            class="text-body-compact line-clamp-2 text-[#919191]"
           >
             {{ project.description || project.tasks[0] }}
           </p>
@@ -180,7 +180,7 @@ const ariaLabel = computed(() => {
         <ul v-if="badges.length" class="flex flex-wrap gap-1.5" role="list">
           <li v-for="badge in badges" :key="badge">
             <span
-              class="inline-flex items-center border border-[#3a3a3a] px-1.5 py-1 font-mono text-xs uppercase tracking-[0.14em] text-[#c6c6c6]"
+              class="text-label-data inline-flex items-center border border-[#3a3a3a] px-1.5 py-1 uppercase tracking-[0.14em] text-[#c6c6c6]"
             >
               {{ badge }}
             </span>
@@ -190,13 +190,13 @@ const ariaLabel = computed(() => {
         <div class="mt-auto flex flex-col gap-3">
           <div class="flex items-end justify-between gap-3 pt-1">
             <span
-              class="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-white"
+              class="text-label-data inline-flex items-center gap-1.5 uppercase tracking-[0.16em] text-white"
             >
               {{ ctaLabel }}
               <span class="projects-card__arrow" aria-hidden="true">-></span>
             </span>
             <span
-              class="font-mono text-xs tabular-nums tracking-widest text-[#474747]"
+              class="text-label-data tabular-nums tracking-widest text-[#474747]"
             >
               {{ counter }}
             </span>

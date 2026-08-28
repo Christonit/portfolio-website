@@ -1,4 +1,23 @@
-import type { Config } from 'tailwindcss'
+import type { Config, PluginAPI } from 'tailwindcss/types/config'
+import { typography } from './utils/typography'
+
+const typographyFamilies = {
+  display: 'Tomorrow, sans-serif',
+  sans: 'Tomorrow, sans-serif',
+  mono: '"Departure Mono", monospace',
+} as const
+
+const semanticTypographyUtilities = Object.fromEntries(
+  Object.entries(typography).map(([name, style]) => [
+    `.text-${name}`,
+    {
+      fontFamily: typographyFamilies[style.familyRole],
+      fontSize: style.size,
+      fontWeight: String(style.weight),
+      lineHeight: style.lineHeight,
+    },
+  ]),
+)
 
 export default {
   darkMode: ['class'],
@@ -12,7 +31,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Tomorrow', 'sans-serif'],
-        mono: ['Tomorrow', 'Cuisine', 'monospace'],
+        mono: ['Departure Mono', 'monospace'],
         display: ['Tomorrow', 'sans-serif'],
       },
       colors: {
@@ -50,5 +69,9 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    ({ addUtilities }: PluginAPI) => {
+      addUtilities(semanticTypographyUtilities)
+    },
+  ],
 } satisfies Config

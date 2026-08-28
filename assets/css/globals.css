@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Departure Mono';
+  src: url('/fonts/departure-mono-v1.500.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 @layer base {
 
   :root,
@@ -36,8 +44,6 @@
     --color-body: #e2e2e2;
     --color-ink: #ffffff;
     --color-signal: #67f57a;
-    --font-size-min: 12px;
-
     /* transitions-dev motion tokens */
     --duration-stagger: 40ms;
     --duration-micro: 80ms;
@@ -91,7 +97,7 @@
   body {
     height: 100%;
     overflow: hidden;
-    font-family: 'Tomorrow', 'Cuisine', sans-serif;
+    @apply text-body-compact;
     background-color: #131313;
     color: #e2e2e2;
     -webkit-font-smoothing: antialiased;
@@ -151,12 +157,17 @@
 }
 
 @layer components {
+  .font-mono,
+  .text-label-data {
+    font-synthesis: none;
+  }
+
   .hud-label {
-    @apply block font-mono text-xs tracking-[0.2em] uppercase text-[#919191];
+    @apply block text-label-data tracking-[0.2em] uppercase text-[#919191];
   }
 
   .hud-kbd {
-    @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] font-mono text-xs text-[#919191] leading-none;
+    @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] text-label-data text-[#919191];
   }
 
 }
