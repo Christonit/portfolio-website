@@ -22,10 +22,25 @@ const colors = [
 const typeScale = [
   { name: "DISPLAY XL", size: "56px", weight: "600", sample: "SYSTEM INDEX" },
   { name: "DISPLAY MD", size: "36px", weight: "600", sample: "SELECTED WORK" },
-  { name: "HEADING", size: "24px", weight: "600", sample: "Interface architecture" },
+  {
+    name: "HEADING",
+    size: "24px",
+    weight: "600",
+    sample: "Interface architecture",
+  },
   { name: "TITLE", size: "18px", weight: "600", sample: "Tomorrow Semibold" },
-  { name: "BODY", size: "14px", weight: "400", sample: "Readable body copy for product stories and project details." },
-  { name: "LABEL / MIN", size: "12px", weight: "500", sample: "MINIMUM UI TEXT — 12 PX" },
+  {
+    name: "BODY",
+    size: "14px",
+    weight: "400",
+    sample: "Readable body copy for product stories and project details.",
+  },
+  {
+    name: "LABEL / MIN",
+    size: "12px",
+    weight: "500",
+    sample: "MINIMUM UI TEXT — 12 PX",
+  },
 ];
 </script>
 
@@ -92,7 +107,7 @@ const typeScale = [
       <div class="component-row">
         <span class="hud-label">// SECTION LABEL</span>
         <span class="system-badge">FRONTEND_ARCHITECTURE</span>
-        <button class="system-button" type="button">VIEW PROJECT →</button>
+        <button class="system-button" type="button">VIEW PROJECT</button>
         <kbd class="system-key">A</kbd>
       </div>
     </section>
