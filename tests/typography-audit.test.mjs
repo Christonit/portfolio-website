@@ -27,8 +27,9 @@ test('allows compliant live Vue and CSS typography', async () => {
   await withFixture(
     {
       'app.vue': '<template><main class="text-label-data">Ready</main></template>\n',
-      'assets/css/globals.css': '@font-face { font-family: "Departure Mono"; font-weight: 400; }\n.card { font-size: 12px; }\n',
-      'components/Status.vue': '<template><p class="text-[12px]">Online</p></template>\n',
+      'assets/css/globals.css': '@font-face { font-family: "Departure Mono"; font-weight: 400; }\n.card { font-size: 12px; font: 12px/1 Tomorrow, sans-serif; }\n',
+      'components/Status.js': 'export const style = { fontSize: "12px" }\n',
+      'components/Status.vue': '<template><p class="text-[12px] text-[0.75rem] font-mono">Online</p></template>\n',
       'public/export.svg': '<text font-size="8">Excluded artwork</text>\n',
     },
     async (fixtureRoot) => {
@@ -71,6 +72,52 @@ test('reports typed arbitrary Tailwind sizes below 12px with their file and line
           file: 'components/Metric.vue',
           line: 2,
           message: 'Tailwind text-[length:11px] is below the 12px minimum',
+        },
+      ])
+    },
+  )
+})
+
+test('reports sub-12 sizes in JavaScript styles, CSS font shorthands, and rem utilities', async () => {
+  await withFixture(
+    {
+      'components/InlineMetric.js': 'export const style = {\n  fontSize: "10px",\n}\n',
+      'components/Metric.vue': '<template>\n  <span class="text-[0.625rem]">10</span>\n</template>\n',
+      'assets/css/globals.css': '.tiny {\n  font: 10px/1 Tomorrow, sans-serif;\n}\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [
+        {
+          file: 'assets/css/globals.css',
+          line: 2,
+          message: 'font shorthand size 10px is below the 12px minimum',
+        },
+        {
+          file: 'components/InlineMetric.js',
+          line: 2,
+          message: 'fontSize 10px is below the 12px minimum',
+        },
+        {
+          file: 'components/Metric.vue',
+          line: 2,
+          message: 'Tailwind text-[0.625rem] computes to 10px, below the 12px minimum',
+        },
+      ])
+    },
+  )
+})
+
+test('reports arbitrary monospace font-family utilities with their file and line', async () => {
+  await withFixture(
+    {
+      'pages/index.vue': '<template>\n  <code class="font-[monospace]">status</code>\n</template>\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [
+        {
+          file: 'pages/index.vue',
+          line: 2,
+          message: 'arbitrary font family "monospace" is not allowed',
         },
       ])
     },
@@ -128,6 +175,7 @@ test('excludes artwork utilities while retaining in-scope OG views', async () =>
       'components/SvgArtwork.vue': '<template><span class="text-[8px]">excluded</span></template>\n',
       'components/RasterArtwork.vue': '<template><span class="text-[8px]">excluded</span></template>\n',
       'components/CanvasArtwork.vue': '<template><span class="text-[8px]">excluded</span></template>\n',
+      'components/CanvasArtwork.js': 'export const labelStyle = { fontSize: "8px" }\n',
       'components/ExportArtwork.vue': '<template><span class="text-[8px]">excluded</span></template>\n',
       'components/preview.svg': '<svg><text font-size="8">excluded</text></svg>\n',
       'components/preview.png': 'excluded raster artifact\n',

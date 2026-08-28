@@ -116,7 +116,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
       <section class="identity-panel" aria-labelledby="identity-name">
         <div class="identity-copy">
           <h1 id="identity-name" class="identity-name text-display">
-            CHRISTOPHER<br />SANTANA
+            CHRISTO<wbr />PHER<br />SANTANA
           </h1>
 
           <div class="identity-facts">
@@ -626,6 +626,23 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     min-height: 84px;
   }
 
+}
+
+@media (max-width: 539px) {
+  .identity-panel {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .identity-copy {
+    min-height: 278px;
+  }
+
+  .identity-portrait {
+    min-height: 156px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: 0;
+  }
 }
 
 @media (min-width: 1280px) {

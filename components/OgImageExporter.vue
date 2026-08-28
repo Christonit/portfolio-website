@@ -77,7 +77,7 @@ function exportPng() {
         Renders the 3D operator mesh at {{ OG_WIDTH }}×{{ OG_HEIGHT }} with the
         same lighting, pixel shader, grid background, and HUD overlays used on
         the site. Export the PNG and place it at
-        <code class="text-white">public/og-image.png</code>.
+        <code class="text-label-data text-white">public/og-image.png</code>.
       </p>
     </div>
 

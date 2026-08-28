@@ -44,8 +44,6 @@
     --color-body: #e2e2e2;
     --color-ink: #ffffff;
     --color-signal: #67f57a;
-    --font-size-min: 12px;
-
     /* transitions-dev motion tokens */
     --duration-stagger: 40ms;
     --duration-micro: 80ms;

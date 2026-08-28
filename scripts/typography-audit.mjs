@@ -3,8 +3,10 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 const LIVE_ROOTS = ['layouts', 'pages', 'components', 'assets/css']
-const SOURCE_EXTENSIONS = new Set(['.css', '.vue'])
+const SOURCE_EXTENSIONS = new Set(['.css', '.cjs', '.js', '.jsx', '.mjs', '.ts', '.tsx', '.vue'])
 const STALE_FONT_FAMILIES = ['Menlo', 'Inter', 'Cuisine', 'ui-monospace']
+const MIN_FONT_SIZE_PX = 12
+const ROOT_FONT_SIZE_PX = 16
 const ARTWORK_UTILITY_NAMES = new Set([
   'svg',
   'raster',
@@ -27,7 +29,7 @@ function isExcludedArtwork(relativePath) {
   return relativePath
     .toLowerCase()
     .split('/')
-    .some((segment) => ARTWORK_UTILITY_NAMES.has(segment.replace(/\.(?:css|vue|svg|png|jpe?g|webp|gif)$/i, '')))
+    .some((segment) => ARTWORK_UTILITY_NAMES.has(segment.replace(/\.(?:css|cjs|js|jsx|mjs|ts|tsx|vue|svg|png|jpe?g|webp|gif)$/i, '')))
 }
 
 async function sourceFiles(root) {
@@ -70,14 +72,31 @@ function auditSource(source, relativePath) {
   const add = (index, message) => violations.push({ file: relativePath, line: lineAt(source, index), message })
 
   for (const match of source.matchAll(/font-size\s*:\s*(\d+(?:\.\d+)?)px\b/gi)) {
-    if (Number(match[1]) < 12) add(match.index, `font-size ${match[1]}px is below the 12px minimum`)
+    if (Number(match[1]) < MIN_FONT_SIZE_PX) add(match.index, `font-size ${match[1]}px is below the 12px minimum`)
   }
 
-  for (const match of source.matchAll(/text-\[\s*(?:(length)\s*:\s*)?(\d+(?:\.\d+)?)px\s*\]/gi)) {
-    if (Number(match[2]) < 12) {
-      const value = match[1] ? `length:${match[2]}px` : `${match[2]}px`
-      add(match.index, `Tailwind text-[${value}] is below the 12px minimum`)
+  for (const match of source.matchAll(/\bfontSize\b\s*:\s*(['"`])\s*(\d+(?:\.\d+)?)px\b/gi)) {
+    if (Number(match[2]) < MIN_FONT_SIZE_PX) add(match.index, `fontSize ${match[2]}px is below the 12px minimum`)
+  }
+
+  for (const declaration of source.matchAll(/\bfont\s*:\s*([^;}\n]*)/gi)) {
+    const size = declaration[1].match(/(?:^|\s)(\d+(?:\.\d+)?)px(?=\s|\/|$)/i)
+    if (size && Number(size[1]) < MIN_FONT_SIZE_PX) {
+      add(declaration.index, `font shorthand size ${size[1]}px is below the 12px minimum`)
     }
+  }
+
+  for (const match of source.matchAll(/text-\[\s*(?:(length)\s*:\s*)?(\d+(?:\.\d+)?)(px|rem)\s*\]/gi)) {
+    const computedPixels = Number(match[2]) * (match[3].toLowerCase() === 'rem' ? ROOT_FONT_SIZE_PX : 1)
+    if (computedPixels < MIN_FONT_SIZE_PX) {
+      const value = `${match[1] ? 'length:' : ''}${match[2]}${match[3].toLowerCase()}`
+      const computation = match[3].toLowerCase() === 'rem' ? ` computes to ${computedPixels}px,` : ' is'
+      add(match.index, `Tailwind text-[${value}]${computation} below the 12px minimum`)
+    }
+  }
+
+  for (const match of source.matchAll(/font-\[\s*(?:family\s*:\s*)?['"]?monospace['"]?\s*\]/gi)) {
+    add(match.index, 'arbitrary font family "monospace" is not allowed')
   }
 
   for (const family of STALE_FONT_FAMILIES) {

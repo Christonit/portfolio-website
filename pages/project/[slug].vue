@@ -374,7 +374,7 @@ onBeforeUnmount(() => {
         >
           <button
             type="button"
-            class="flex min-h-11 min-w-11 items-center justify-center border-r border-white/20 text-lg text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
+            class="text-heading-section flex min-h-11 min-w-11 items-center justify-center border-r border-white/20 text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
             aria-label="Previous image"
             @click="prevFrame"
           >
@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
           </button>
           <button
             type="button"
-            class="flex min-h-11 min-w-11 items-center justify-center border-r border-white/20 text-lg text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
+            class="text-heading-section flex min-h-11 min-w-11 items-center justify-center border-r border-white/20 text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
             aria-label="Next image"
             @click="nextFrame"
           >
