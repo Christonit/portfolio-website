@@ -20,9 +20,28 @@ const ARTWORK_UTILITY_NAMES = new Set([
   'rasterartwork',
   'canvasartwork',
 ])
+const FONT_CONTEXT_PATTERNS = [
+  /font-family\s*:[^;}\n]*/gi,
+  /\bfontFamily\b\s*:[^,}\n]*/gi,
+  /\bfont\s*:[^;}\n]*/gi,
+  /\.font\s*=\s*(['"`])[^\n]*?\1/gi,
+  /font-\[[^\]\n]+\]/gi,
+]
 
 function lineAt(source, index) {
   return source.slice(0, index).split('\n').length
+}
+
+function toPixels(value, unit) {
+  return Number(value) * (unit.toLowerCase() === 'rem' ? ROOT_FONT_SIZE_PX : 1)
+}
+
+function sizeMessage(label, value, unit) {
+  const normalizedUnit = unit.toLowerCase()
+  const size = `${value}${normalizedUnit}`
+  const computedPixels = toPixels(value, normalizedUnit)
+  const computation = normalizedUnit === 'rem' ? ` computes to ${computedPixels}px,` : ' is'
+  return `${label} ${size}${computation} below the 12px minimum`
 }
 
 function isExcludedArtwork(relativePath) {
@@ -71,18 +90,22 @@ function auditSource(source, relativePath) {
   const violations = []
   const add = (index, message) => violations.push({ file: relativePath, line: lineAt(source, index), message })
 
-  for (const match of source.matchAll(/font-size\s*:\s*(\d+(?:\.\d+)?)px\b/gi)) {
-    if (Number(match[1]) < MIN_FONT_SIZE_PX) add(match.index, `font-size ${match[1]}px is below the 12px minimum`)
+  for (const match of source.matchAll(/font-size\s*:\s*(\d*\.?\d+)(px|rem)\b/gi)) {
+    if (toPixels(match[1], match[2]) < MIN_FONT_SIZE_PX) {
+      add(match.index, sizeMessage('font-size', match[1], match[2]))
+    }
   }
 
-  for (const match of source.matchAll(/\bfontSize\b\s*:\s*(['"`])\s*(\d+(?:\.\d+)?)px\b/gi)) {
-    if (Number(match[2]) < MIN_FONT_SIZE_PX) add(match.index, `fontSize ${match[2]}px is below the 12px minimum`)
+  for (const match of source.matchAll(/\bfontSize\b\s*:\s*(['"`])\s*(\d*\.?\d+)(px|rem)\b/gi)) {
+    if (toPixels(match[2], match[3]) < MIN_FONT_SIZE_PX) {
+      add(match.index, sizeMessage('fontSize', match[2], match[3]))
+    }
   }
 
   for (const declaration of source.matchAll(/\bfont\s*:\s*([^;}\n]*)/gi)) {
-    const size = declaration[1].match(/(?:^|\s)(\d+(?:\.\d+)?)px(?=\s|\/|$)/i)
-    if (size && Number(size[1]) < MIN_FONT_SIZE_PX) {
-      add(declaration.index, `font shorthand size ${size[1]}px is below the 12px minimum`)
+    const size = declaration[1].match(/(?:^|\s)(\d*\.?\d+)(px|rem)(?=\s|\/|$)/i)
+    if (size && toPixels(size[1], size[2]) < MIN_FONT_SIZE_PX) {
+      add(declaration.index, sizeMessage('font shorthand size', size[1], size[2]))
     }
   }
 
@@ -99,10 +122,15 @@ function auditSource(source, relativePath) {
     add(match.index, 'arbitrary font family "monospace" is not allowed')
   }
 
-  for (const family of STALE_FONT_FAMILIES) {
-    const expression = new RegExp(`\\b${family}\\b`, 'gi')
-    for (const match of source.matchAll(expression)) {
-      add(match.index, `stale font family "${family}" is not allowed`)
+  for (const pattern of FONT_CONTEXT_PATTERNS) {
+    for (const context of source.matchAll(pattern)) {
+      for (const family of STALE_FONT_FAMILIES) {
+        const expression = new RegExp(`\\b${family}\\b`, 'i')
+        const familyIndex = context[0].search(expression)
+        if (familyIndex !== -1) {
+          add(context.index + familyIndex, `stale font family "${family}" is not allowed`)
+        }
+      }
     }
   }
 

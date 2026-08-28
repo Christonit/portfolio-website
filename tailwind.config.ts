@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config, PluginAPI } from 'tailwindcss/types/config'
 import { typography } from './utils/typography'
 
 const typographyFamilies = {
@@ -70,7 +70,7 @@ export default {
     },
   },
   plugins: [
-    ({ addUtilities }) => {
+    ({ addUtilities }: PluginAPI) => {
       addUtilities(semanticTypographyUtilities)
     },
   ],

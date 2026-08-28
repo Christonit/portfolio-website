@@ -61,6 +61,45 @@ test('reports sub-12 pixel sizes with their file and line', async () => {
   )
 })
 
+test('reports sub-12 rem sizes in CSS declarations', async () => {
+  await withFixture(
+    {
+      'assets/css/globals.css': '.tiny {\n  font-size: 0.5rem;\n}\n.compact {\n  font: 0.625rem/1 Tomorrow, sans-serif;\n}\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [
+        {
+          file: 'assets/css/globals.css',
+          line: 2,
+          message: 'font-size 0.5rem computes to 8px, below the 12px minimum',
+        },
+        {
+          file: 'assets/css/globals.css',
+          line: 5,
+          message: 'font shorthand size 0.625rem computes to 10px, below the 12px minimum',
+        },
+      ])
+    },
+  )
+})
+
+test('reports sub-12 rem sizes in JavaScript styles', async () => {
+  await withFixture(
+    {
+      'components/InlineMetric.js': 'export const style = {\n  fontSize: "0.5rem",\n}\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [
+        {
+          file: 'components/InlineMetric.js',
+          line: 2,
+          message: 'fontSize 0.5rem computes to 8px, below the 12px minimum',
+        },
+      ])
+    },
+  )
+})
+
 test('reports typed arbitrary Tailwind sizes below 12px with their file and line', async () => {
   await withFixture(
     {
@@ -148,6 +187,17 @@ test('reports stale font families with their file and line', async () => {
           message: 'stale font family "Inter" is not allowed',
         },
       ])
+    },
+  )
+})
+
+test('ignores stale family names outside typography contexts', async () => {
+  await withFixture(
+    {
+      'pages/index.vue': '<script setup>\nconst migrationNote = "Inter replaced Menlo and ui-monospace"\n</script>\n<template><p>Inter migration notes</p></template>\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [])
     },
   )
 })
