@@ -25,6 +25,7 @@ const featuredOrder = [
   "canopy-super-app",
   "stockstotrade",
   "timothy-sykes",
+  "content-automation-ai",
 ];
 const featuredProjects = featuredOrder
   .map((slug) => projects.find((project) => project.slug === slug))
@@ -35,8 +36,27 @@ const hudKey = useHudNav();
 const featuredSkills: FeaturedSkill[] = [
   { iconSrc: "/images/typescript-svgrepo-com.svg", name: "TYPESCRIPT" },
   { iconSrc: "/images/react-svgrepo-com.svg", name: "REACT" },
-  { iconSrc: "/images/nextjs-svgrepo-com.svg", name: "NEXT JS" },
-  { iconSrc: "/images/vuejs-svgrepo-com.svg", name: "VUEJS" },
+  { iconSrc: "/images/nextjs-svgrepo-com.svg", name: "NEXT.JS" },
+  { iconSrc: "/images/vuejs-svgrepo-com.svg", name: "VUE.JS" },
+  { iconSrc: "/images/nuxt-js-svgrepo-com.svg", name: "NUXT" },
+  { iconSrc: "/images/nodejs-svgrepo-com.svg", name: "NODE.JS" },
+  { iconSrc: "/images/aws-lambda-svgrepo-com.svg", name: "AWS" },
+  {
+    iconSrc: "/images/google-cloud-svgrepo-com.svg",
+    name: "GOOGLE CLOUD PLATFORM",
+  },
+  { iconSrc: "/images/figma-svgrepo-com.svg", name: "FIGMA / UI DESIGN" },
+  {
+    iconSrc: "/images/graphql-svgrepo-com.svg",
+    name: "GRAPHQL / REST APIS",
+  },
+  { iconSrc: "/images/python-127-svgrepo-com.svg", name: "PYTHON" },
+  { iconSrc: "/images/database-svgrepo-com.svg", name: "DATABASES" },
+  {
+    iconSrc: "/images/headless.svg",
+    name: "WORDPRESS / HEADLESS CMS",
+  },
+  { iconSrc: "/images/css.svg", name: "CSS / TAILWIND" },
 ];
 
 const focusedCard = ref<number | null>(null);
@@ -105,9 +125,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
             </div>
             <div>
               <p class="identity-mission">
-                AI, FRONTEND, DATA_PIPELINES &amp; STUFF //<br />
+                AI SYSTEMS, FRONTEND ARCHITECTURE &amp; DATA PIPELINES //<br />
                 <NuxtLink to="/project/stockstotrade">
-                  @STOCKS_TO_TRADE
+                  STOCKSTOTRADE
                 </NuxtLink>
               </p>
             </div>
@@ -146,7 +166,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
                 <img
                   v-if="project.image"
                   :src="project.image"
-                  :alt="`${project.name} project preview`"
+                  :alt="`${project.name} featured work preview`"
                   loading="lazy"
                   decoding="async"
                 />
@@ -159,7 +179,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
                 <h3>{{ project.name }}</h3>
 
                 <div class="dossier-card__footer">
-                  <span>VIEW_PROJECT</span>
+                  <span>{{ isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT" }}</span>
                   <span>{{ projectCounter(index) }}</span>
                 </div>
               </div>
@@ -268,7 +288,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   color: #fff;
   font-size: clamp(2.15rem, 7.2vw, 3rem);
   font-weight: 650;
-  letter-spacing: -0.065em;
+  letter-spacing: -0.025em;
   line-height: 0.86;
   text-transform: uppercase;
   text-wrap: balance;
