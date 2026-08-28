@@ -4,6 +4,16 @@ type ProjectLink = {
   link?: string;
 };
 
+type ProjectMediaAlt = {
+  name: string;
+  description?: string;
+  imageAlt?: string;
+};
+
+export function projectMediaAlt(project: ProjectMediaAlt): string {
+  return project.imageAlt?.trim() || project.description?.trim() || project.name;
+}
+
 export function isArticle(project: Pick<ProjectLink, "category">): boolean {
   return project.category.toLowerCase() === "article";
 }

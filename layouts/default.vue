@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import { useAudio } from '~/composables/useAudio';
-import { LINKEDIN_URL } from '~/utils/site';
+import { LINKEDIN_URL } from "~/utils/site";
 
 const router = useRouter();
 const route = useRoute();
@@ -107,7 +107,7 @@ function onGlobalClick(e: MouseEvent) {
 
   // Trigger brief vibration on tapping links, buttons, and navigation elements
   const target = (e.target as HTMLElement).closest(
-    'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]'
+    'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]',
   );
   if (target) {
     playHaptic();
@@ -120,7 +120,6 @@ onMounted(() => {
   window.addEventListener("click", onGlobalClick);
   // window.addEventListener("mouseover", onGlobalMouseOver);
   // window.addEventListener("mouseout", onGlobalMouseOut);
-
 });
 
 onUnmounted(() => {
@@ -179,7 +178,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
       <!-- Logo: always visible -->
       <NuxtLink
         to="/"
-        class="text-white font-semibold text-sm xl:text-lg tracking-tighter uppercase select-none mr-auto"
+        class="inline-flex h-8 items-center px-1 text-white font-semibold text-sm xl:text-lg tracking-tighter uppercase select-none mr-auto"
       >
         CHRISTOPHER SANTANA
       </NuxtLink>
@@ -191,7 +190,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
         style="width: fit-content"
       >
         <button
-          class="hidden xl:block mr-6 transition-all duration-100 focus:outline-none"
+          class="site-nav-key mr-6 hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
             isPressed('A')
               ? 'opacity-100 scale-90'
@@ -202,10 +201,24 @@ watch(() => route.path, scrollMainToTopOnMobile);
           @click="prevPage"
         >
           <kbd
-            class="flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 font-mono text-xs font-semibold text-white shadow-[0_2px_0_#3a3a3a]"
+            class="flex items-center justify-center h-6 min-w-7 font-mono text-xs font-semibold text-white"
             aria-hidden="true"
           >
-            A
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              width="12"
+              height="12"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M10.25 3.25 5.5 8l4.75 4.75"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="square"
+              />
+            </svg>
           </kbd>
         </button>
 
@@ -215,20 +228,28 @@ watch(() => route.path, scrollMainToTopOnMobile);
             <NuxtLink
               :to="item.path"
               :class="[
-                'relative pb-1 font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
+                'inline-flex h-8 items-center px-1 font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
                 isActive(item.path)
-                  ? 'text-white after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[calc(100%-0.2em)] after:-translate-x-1/2 after:bg-white'
+                  ? 'text-white'
                   : 'text-[#919191] hover:text-white',
               ]"
             >
-              {{ item.label }}
+              <span
+                :class="
+                  isActive(item.path)
+                    ? 'relative pb-1 after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[calc(100%-0.2em)] after:-translate-x-1/2 after:bg-white'
+                    : ''
+                "
+              >
+                {{ item.label }}
+              </span>
             </NuxtLink>
           </li>
         </ul>
 
         <!-- Next-page keyboard control (desktop only) -->
         <button
-          class="hidden xl:block ml-6 transition-all duration-100 focus:outline-none"
+          class="site-nav-key ml-6 hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
             isPressed('D')
               ? 'opacity-100 scale-90'
@@ -239,10 +260,24 @@ watch(() => route.path, scrollMainToTopOnMobile);
           @click="nextPage"
         >
           <kbd
-            class="flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 font-mono text-xs font-semibold text-white shadow-[0_2px_0_#3a3a3a]"
+            class="flex items-center justify-center h-6 min-w-7 font-mono text-xs font-semibold text-white"
             aria-hidden="true"
           >
-            D
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              width="12"
+              height="12"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M5.75 3.25 10.5 8l-4.75 4.75"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="square"
+              />
+            </svg>
           </kbd>
         </button>
       </div>
@@ -263,7 +298,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           :href="LINKEDIN_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center justify-center text-[#919191] hover:text-white hover:bg-[#353535] transition-all focus:outline-none"
+          class="inline-flex h-8 items-center justify-center px-1 text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
           aria-label="LinkedIn profile"
         >
           <svg
@@ -323,12 +358,10 @@ watch(() => route.path, scrollMainToTopOnMobile);
         <span v-else class="material-symbols-outlined text-xl leading-none">{{
           item.icon
         }}</span>
-        <span
-          class="font-mono text-xs uppercase tracking-widest font-bold"
-          >{{ item.label }}</span
-        >
+        <span class="font-mono text-xs uppercase tracking-widest font-bold">{{
+          item.label
+        }}</span>
       </NuxtLink>
     </nav>
-
   </div>
 </template>

@@ -19,6 +19,7 @@ export interface ProjectPreview {
   tags: string;
   link?: string;
   image?: string;
+  imageAlt?: string;
   imageTone?: "dark" | "light";
   video?: string;
   tasks: string[];

@@ -140,6 +140,7 @@ onUnmounted(() => {
           :key="project.slug"
           class="min-h-0"
           :ref="(el) => bindCard(el as Element | null, i)"
+          v-reveal="(i % 2) * 60"
         >
           <ProjectsCard
             :project="project"

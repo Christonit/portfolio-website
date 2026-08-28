@@ -44,10 +44,8 @@ test("vertical HUD navigation can scroll the outer stacked project page", () => 
 });
 
 test("featured cards use stationary green hover cues", () => {
-  assert.match(homePage, /dossier-card__corner--tl/);
-  assert.match(homePage, /dossier-card__corner--br/);
-  assert.match(homePage, /border-top:\s*2px solid #67f57a/);
-  assert.match(homePage, /border-bottom:\s*2px solid #67f57a/);
+  assert.match(homePage, /<HudCorners reveal="hover" \/>/);
+  assert.match(homePage, /--distance-micro:\s*0px/);
   assert.doesNotMatch(homePage, /transform:\s*translateY\(-2px\)/);
   assert.doesNotMatch(homePage, /transform:\s*scale\(1\.02\)/);
 });

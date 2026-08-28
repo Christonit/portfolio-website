@@ -355,7 +355,7 @@ onBeforeUnmount(() => {
             muted
             loop
             playsinline
-            preload="auto"
+            preload="none"
             :aria-label="`${current.name} product demo`"
             @error="onVideoError"
           >
