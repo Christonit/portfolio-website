@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FeaturedSkill } from "~/components/StackIndex.vue";
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
 import {
@@ -15,11 +16,6 @@ usePageSeo({
   description: SITE_DESCRIPTION,
   pageType: "ProfilePage",
 });
-
-interface FeaturedSkill {
-  iconSrc: string;
-  name: string;
-}
 
 const projects = projectsJson as ProjectPreview[];
 const featuredOrder = [
@@ -62,6 +58,7 @@ const featuredSkills: FeaturedSkill[] = [
 
 const focusedCard = ref<number | null>(null);
 const cardRefs = ref<(HTMLElement | null)[]>([]);
+const portraitHover = ref(false);
 
 function bindCard(el: Element | null, index: number) {
   cardRefs.value[index] = el instanceof HTMLElement ? el : null;
@@ -114,7 +111,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 <template>
   <div class="home-console">
     <div class="home-rail">
-      <section class="identity-panel" aria-labelledby="identity-name">
+      <section
+        id="hero-banner"
+        class="identity-panel"
+        aria-labelledby="identity-name"
+      >
         <div class="identity-copy">
           <h1 id="identity-name" class="identity-name">
             CHRISTOPHER<br />SANTANA
@@ -137,15 +138,25 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           </div>
         </div>
 
-        <div class="identity-portrait" aria-hidden="true">
-          <img src="/images/og-image.webp" alt="" />
+        <div
+          class="identity-portrait"
+          :class="{ 'is-hovered': portraitHover }"
+          aria-hidden="true"
+          @mouseenter="portraitHover = true"
+          @mouseleave="portraitHover = false"
+        >
+          <PortraitPixelate :hovered="portraitHover" />
           <div class="identity-scanline" />
         </div>
 
         <HudCorners :corners="['tl', 'bl']" />
       </section>
 
-      <section class="featured-work" aria-labelledby="featured-work-title">
+      <section
+        id="featured-work"
+        class="featured-work"
+        aria-labelledby="featured-work-title"
+      >
         <div class="section-heading sr-only">
           <h2 id="featured-work-title">Featured projects</h2>
         </div>
@@ -203,27 +214,20 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         </ul>
       </section>
 
-      <section class="index-module" aria-labelledby="tech-stack-title">
+      <section
+        class="index-module"
+        id="tech-stack-list"
+        aria-labelledby="tech-stack-title"
+      >
         <header class="index-module__header">
           <h2 id="tech-stack-title">TECH STACK</h2>
         </header>
 
-        <ul class="stack-index" role="list">
-          <li
-            v-for="(skill, index) in featuredSkills"
-            :key="skill.name"
-            v-reveal="Math.min(index, 8) * 40"
-          >
-            <span class="stack-index__label">
-              <img :src="skill.iconSrc" alt="" width="18" height="18" />
-              <strong>{{ skill.name }}</strong>
-            </span>
-            <span class="stack-index__rule" aria-hidden="true" />
-          </li>
-        </ul>
+        <StackIndex :skills="featuredSkills" />
       </section>
 
       <section
+        id="articles-list"
         class="index-module articles-index"
         aria-labelledby="articles-index-title"
       >
@@ -231,37 +235,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           <h2 id="articles-index-title">ARTICLES</h2>
         </header>
 
-        <ul role="list">
-          <li
-            v-for="(article, index) in articles"
-            :key="article.slug"
-            v-reveal="index * 60"
-          >
-            <NuxtLink
-              :to="projectHref(article)"
-              :external="isExternalProjectHref(article)"
-              :target="isExternalProjectHref(article) ? '_blank' : undefined"
-              :rel="
-                isExternalProjectHref(article)
-                  ? 'noopener noreferrer'
-                  : undefined
-              "
-            >
-              <span class="articles-index__thumb" aria-hidden="true">
-                <img
-                  v-if="article.image"
-                  :src="article.image"
-                  alt=""
-                  loading="lazy"
-                />
-              </span>
-              <span class="articles-index__copy">
-                <strong>{{ article.name }}</strong>
-                <small>READ ARTICLE</small>
-              </span>
-            </NuxtLink>
-          </li>
-        </ul>
+        <ArticlesIndex :articles="articles" />
       </section>
     </div>
   </div>
@@ -388,19 +362,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   pointer-events: none;
 }
 
-.identity-portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% center;
-  filter: grayscale(0.68) contrast(1.08) brightness(0.92);
-  transform: scale(1.18);
-}
-
 .identity-scanline {
   position: absolute;
   inset: 0;
   z-index: 2;
+  pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.055) 0,
@@ -409,6 +375,47 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     transparent 3px
   );
   opacity: 0.35;
+  animation: identity-scan-crawl 5s linear infinite;
+  transition: opacity 320ms ease;
+}
+
+/* Bright band that sweeps down the portrait like a scanner beam. */
+.identity-scanline::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(103, 245, 122, 0.12) 46%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(103, 245, 122, 0.12) 54%,
+    transparent 100%
+  );
+  background-size: 100% 42%;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  animation: identity-scan-sweep 3.6s linear infinite;
+}
+
+/* Hovering the portrait clears the scan effects for a clean read. */
+.identity-portrait.is-hovered .identity-scanline {
+  opacity: 0;
+}
+
+@keyframes identity-scan-crawl {
+  to {
+    background-position: 0 30px;
+  }
+}
+
+@keyframes identity-scan-sweep {
+  0% {
+    background-position: 0 -50%;
+  }
+  100% {
+    background-position: 0 150%;
+  }
 }
 
 .featured-work {
@@ -533,8 +540,16 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .index-module {
   position: relative;
   margin-top: 40px;
-  overflow-x: hidden;
+  overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   background: rgba(16, 16, 16, 0.5);
+}
+
+.index-module::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .index-module__header {
@@ -556,112 +571,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   font: inherit;
 }
 
-.stack-index,
-.articles-index > ul {
-  position: relative;
-  z-index: 1;
-}
-
-.stack-index {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.stack-index li {
-  display: flex;
-  min-height: 42px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 0 12px;
-}
-
-.stack-index li:nth-child(odd) {
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.stack-index__label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #d6d6d6;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-}
-
-.stack-index__label img {
-  filter: brightness(0) invert(1);
-  opacity: 0.42;
-}
-
-.stack-index__rule {
-  width: 44px;
-  height: 1px;
-  background: #343434;
-}
-
 .articles-index {
   margin-top: 48px;
-}
-
-.articles-index li {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
-}
-
-.articles-index a {
-  display: grid;
-  grid-template-columns: 144px minmax(0, 1fr);
-  align-items: center;
-  gap: 20px;
-  min-height: 104px;
-  padding: 12px 0;
-  color: #d6d6d6;
-  text-decoration: none;
-  transition:
-    background-color 120ms ease,
-    color 120ms ease;
-}
-
-.articles-index a:hover,
-.articles-index a:focus-visible {
-  background: rgba(255, 255, 255, 0.035);
-  color: #fff;
-  outline: none;
-}
-
-.articles-index__thumb {
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border: 1px solid #292929;
-  background: #0b0b0b;
-}
-
-.articles-index__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.articles-index__copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.articles-index strong {
-  font-size: 16px;
-  letter-spacing: 0.015em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.articles-index small {
-  color: #919191;
-  font-family: monospace;
-  font-size: var(--font-size-min);
-  letter-spacing: 0.12em;
 }
 
 @media (max-width: 639px) {
@@ -684,11 +595,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
   .identity-portrait::after {
     background: linear-gradient(180deg, transparent 42%, #0d0d0d 100%);
-  }
-
-  .identity-portrait img {
-    object-position: 50% 28%;
-    transform: scale(1.22);
   }
 
   .identity-copy {
@@ -728,30 +634,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     gap: 24px;
   }
 
-  .stack-index {
-    grid-template-columns: 1fr;
-  }
-
-  .stack-index li:nth-child(odd) {
-    border-right: none;
-  }
-
   .dossier-card {
     min-height: 0;
   }
 
   .articles-index {
     margin-top: 36px;
-  }
-
-  .articles-index a {
-    grid-template-columns: 96px minmax(0, 1fr);
-    gap: 12px;
-    min-height: 84px;
-  }
-
-  .articles-index strong {
-    font-size: 14px;
   }
 }
 
@@ -762,9 +650,13 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .identity-scanline,
+  .identity-scanline::after {
+    animation: none;
+  }
+
   .dossier-card,
-  .dossier-card__image img,
-  .articles-index a {
+  .dossier-card__image img {
     transition: none;
   }
 
