@@ -49,11 +49,18 @@
     --duration-micro: 80ms;
     --duration-quick: 150ms;
     --duration-fast: 250ms;
+    --duration-very-slow: 750ms;
     --ease-out: ease-out;
     --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
     --scale-small: 0.98;
     --distance-micro: 4px;
+    --distance-medium: 12px;
     --blur-medium: 3px;
+
+    /* Scroll reveal — soft slide-up + fade */
+    --scroll-reveal-dur: var(--duration-very-slow);
+    --scroll-reveal-distance: 16px;
+    --scroll-reveal-ease: var(--ease-smooth-out);
 
     /* Page side-by-side / view transitions */
     --page-slide-dur: 420ms;
@@ -280,6 +287,27 @@
   view-transition-name: site-nav;
 }
 
+.site-nav-key {
+  border: 1px solid #686868;
+  background-color: #1b1b1b;
+  box-shadow: 0 2px 0 #3a3a3a;
+}
+
+.site-nav :is(a, button) {
+  outline: none;
+}
+
+.site-nav a:focus-visible,
+.site-nav button:focus-visible {
+  background-color: #1b1b1b;
+  box-shadow: inset 0 0 0 1px #686868, 0 2px 0 #3a3a3a;
+}
+
+.site-nav-key:focus-visible {
+  border-color: #919191;
+  box-shadow: 0 2px 0 #3a3a3a;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root),
 ::view-transition-group(root),
@@ -401,7 +429,24 @@ html[data-nav-dir="back"]::view-transition-new(hud-page) {
   filter: blur(var(--page-blur));
 }
 
+/* Scroll reveal — starts translated down + faded; data-reveal="shown"
+   flips to rest. Delay is set per-item via --reveal-delay. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--scroll-reveal-distance));
+  transition:
+    opacity var(--scroll-reveal-dur) var(--scroll-reveal-ease) var(--reveal-delay, 0ms),
+    transform var(--scroll-reveal-dur) var(--scroll-reveal-ease) var(--reveal-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
+
   html[data-nav-dir="forward"]::view-transition-old(hud-page),
   html[data-nav-dir="forward"]::view-transition-new(hud-page),
   html[data-nav-dir="back"]::view-transition-old(hud-page),
@@ -412,5 +457,12 @@ html[data-nav-dir="back"]::view-transition-new(hud-page) {
   .hud-back-leave-active {
     animation: none !important;
     transition: none !important;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
   }
 }

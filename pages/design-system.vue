@@ -117,7 +117,7 @@ const familyName = (familyRole: (typeof typography)[TypographyStyleKey]["familyR
       <div class="component-row">
         <span class="hud-label text-label-data uppercase tracking-[0.14em]">// SECTION LABEL</span>
         <span class="system-badge text-label-data uppercase tracking-[0.1em]">FRONTEND_ARCHITECTURE</span>
-        <button class="system-button text-title-ui" type="button">VIEW PROJECT →</button>
+        <button class="system-button text-title-ui" type="button">VIEW PROJECT</button>
         <kbd class="system-key text-label-data">A</kbd>
       </div>
     </section>

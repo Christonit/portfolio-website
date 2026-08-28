@@ -136,9 +136,17 @@ export default defineNuxtConfig({
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Tomorrow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,400;1,600&display=swap",
         },
+        // Subset to only the icons we actually render. The unsubsetted
+        // request (every axis at full range) ships a 3.9 MB variable font.
+        // NOTE: adding a new icon to a template requires adding its name to
+        // `icon_names` below, or it will render as literal text.
+        // @24,300,0,0 matches the fixed font-variation-settings in globals.css.
         {
           rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
+          href:
+            "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" +
+            "&icon_names=add,analytics,article,auto_awesome,candlestick_chart,deployed_code,fingerprint,fullscreen,grid_view,hexagon" +
+            "&display=block",
         },
       ],
     },

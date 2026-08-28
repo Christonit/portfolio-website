@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ExperienceOrg } from "~/components/ExperienceTimeline.vue";
 import { IDENTITY_ID, pageTitle } from "~/utils/site";
 
 usePageSeo({
@@ -38,7 +39,7 @@ const education = [
   },
 ];
 
-const timeline = [
+const timeline: ExperienceOrg[] = [
   {
     company: "StocksToTrade",
     span: "NOV 2020 — PRESENT",
@@ -49,16 +50,16 @@ const timeline = [
         period: "NOV 2023 — PRESENT",
         role: "Senior Full Stack Engineer",
         type: "FULL-TIME",
-        tags: "NUXT // AWS // NODE.JS // AI",
-        note: "Lead frontend for the Timothy Sykes and StocksToTrade websites and web apps — architecture behind high-traffic platforms that show real-time stock data and curate financial content.",
+        tags: "NUXT // AWS // NODE.JS // AI // WORDPRESS",
+        note: "Architecture, Systems Development and SEO for the Timothy Sykes and StocksToTrade websites — high-traffic financial educational and news platform and trading tools.",
         current: true,
       },
       {
         period: "NOV 2020 — OCT 2023",
         role: "Frontend Engineer",
-        type: "CONTRACT",
-        tags: "NUXT // GRIDSOME // TAILWIND // GRAPHQL",
-        note: "Migrated WordPress sites to a headless architecture with Nuxt, Gridsome, Tailwind, GraphQL, and REST — decoupling content from presentation to improve performance and deploys.",
+        type: "CONTRACTOR",
+        tags: "VUE.JS // GRIDSOME // TAILWIND // GRAPHQL // WORDPRESS",
+        note: "Microsites and web marketing campaigns development. Decoupled monolithic wordpress websites  to headless architecture.",
         current: false,
       },
     ],
@@ -72,9 +73,9 @@ const timeline = [
       {
         period: "NOV 2021 — OCT 2023",
         role: "React Developer",
-        type: "CONTRACT",
+        type: "CONTRACTOR",
         tags: "REACT 18 // MICRO-FRONTEND // MONOREPO",
-        note: "Led the migration of a micro-frontend monorepo of 60+ services from React 16 to React 18, clearing legacy debt and setting a modern baseline for the rest of the platform.",
+        note: "Implemented  Headless CMS (Builder) into React App. Worked at core frontend team for webapp comprising of 60+ micro-frontends - Collaborated  with a small team to solve technical debt and core features development. ",
         current: false,
       },
     ],
@@ -83,13 +84,14 @@ const timeline = [
     company: "Claro RD",
     span: "SEP 2019 — OCT 2021",
     active: false,
+    location: "Santo Domingo, DR",
     roles: [
       {
         period: "SEP 2019 — OCT 2021",
-        role: "Design Engineer",
+        role: "UX Engineer",
         type: "FULL-TIME",
-        tags: "REACT // UI LIBRARY // SASS",
-        note: "Maintained the React UI library and helped web developers implement newly designed interfaces in production HTML and CSS.",
+        tags: "REACT // HTML // SASS",
+        note: "Created and maintained the first version of the inhouse design language and React UI library. Also helped the full stack developers implementing the user flows using the oficial UI library.",
         current: false,
       },
     ],
@@ -97,14 +99,15 @@ const timeline = [
   {
     company: "StateTrust Group",
     span: "DEC 2017 — SEP 2019",
+    location: "Santo Domingo, DR",
     active: false,
     roles: [
       {
         period: "DEC 2017 — SEP 2019",
         role: "Front End Developer",
         type: "FULL-TIME",
-        tags: "HTML // CSS // JS // 20+ COUNTRIES",
-        note: "Frontend for wealth and investment management products used across 20+ countries.",
+        tags: "HTML // CSS // JS",
+        note: "Email marketing and dashboards for private wealth management and trading products.",
         current: false,
       },
     ],
@@ -117,34 +120,28 @@ const timeline = [
     class="bio-rail flex flex-col gap-8 py-5 pb-16 xl:h-full xl:overflow-y-auto xl:pb-8"
   >
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
-      <span class="hud-label">// ABOUT</span>
+      <span class="hud-label">// BIO</span>
       <h1
         class="text-display uppercase tracking-tighter text-white"
       >
         ABOUT ME
       </h1>
       <p class="text-body-compact max-w-xl text-[#919191]">
-        From Punta Cana to Manhattan — a decade of building high-traffic web
-        products and scalable systems.
+        Manhattan-based Senior Full Stack Engineer with over a decade of
+        experience building interfaces and lately systems for high-traffic web
+        products.
       </p>
     </header>
 
-    <div
-      class="flex flex-col gap-10"
-    >
+    <div class="flex flex-col gap-10">
       <div class="flex flex-col gap-5">
         <div class="relative border-l-[3px] border-white pl-4 lg:pr-3 lg:py-2">
-          <div class="corner-tr-w" />
-          <div class="corner-br-w" />
-          <span class="hud-label mb-3">IDENTITY_NARRATIVE</span>
+          <HudCorners :corners="['tr', 'br']" />
           <div class="text-body-prose space-y-3 text-[#c6c6c6]">
             <p>
-              I am a Manhattan-based Senior Full Stack Engineer with over a
-              decade of experience building interfaces and systems for
-              high-traffic web products. Originally from Punta Cana, Dominican
-              Republic, I moved to the United States to expand my technical
-              foundation and am currently pursuing a Master’s in Information
-              Systems at Baruch College.
+              Originally from Punta Cana, Dominican Republic, I moved to the
+              United States to pursue a Master’s in Information Systems at
+              Baruch College and to expand my technical knowledge.
             </p>
             <p>
               My recent work centers on scalable systems for fintech and
@@ -179,76 +176,11 @@ const timeline = [
             </div>
           </div>
         </div>
-
       </div>
 
       <div class="flex flex-col">
-        <span class="hud-label mb-4 flex-shrink-0">TIMELINE_LOGS</span>
-        <div class="space-y-8 pl-2 mb-10">
-          <div
-            v-for="org in timeline"
-            :key="org.company"
-            class="relative pl-6"
-            :class="
-              org.active
-                ? 'border-l-2 border-white'
-                : 'border-l-2 border-[#474747]/40'
-            "
-          >
-            <div
-              class="absolute top-0 left-[-5px] w-2.5 h-2.5"
-              :class="org.active ? 'bg-white' : 'bg-[#474747]'"
-            />
-            <div
-              class="text-label-data mb-1 tracking-widest"
-              :class="org.active ? 'text-white' : 'text-[#919191]'"
-            >
-              {{ org.span }}
-            </div>
-            <div
-              class="text-heading-section uppercase tracking-wider"
-              :class="org.active ? 'text-white' : 'text-[#c6c6c6]'"
-            >
-              {{ org.company }}
-            </div>
-            <div
-              v-if="org.location"
-              class="text-label-data mt-0.5 text-[#474747]"
-            >
-              // {{ org.location }}
-            </div>
-
-            <div class="mt-4 space-y-4">
-              <div v-for="item in org.roles" :key="item.role">
-                <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <div
-                    class="text-title-ui uppercase tracking-wider"
-                    :class="item.current ? 'text-white' : 'text-[#c6c6c6]'"
-                  >
-                    {{ item.role }}
-                  </div>
-                  <div
-                    class="text-label-data text-[#919191] tracking-widest"
-                  >
-                    {{ item.type }}
-                  </div>
-                </div>
-                <div
-                  class="text-label-data mt-0.5 tracking-widest"
-                  :class="item.current ? 'text-white' : 'text-[#919191]'"
-                >
-                  {{ item.period }}
-                </div>
-                <p class="text-body-prose mt-1.5 text-[#c6c6c6]">
-                  {{ item.note }}
-                </p>
-                <div class="text-label-data mt-1 text-[#474747]">
-                  // {{ item.tags }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <span class="hud-label mb-4 flex-shrink-0">EXPERIENCE</span>
+        <ExperienceTimeline :orgs="timeline" />
 
         <div class="border border-[#474747]/40 p-4 bg-[#1f1f1f]/20">
           <span class="hud-label mb-3">AWARDS</span>

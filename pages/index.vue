@@ -6,6 +6,7 @@ import {
   isExternalProjectHref,
   openProject,
   projectHref,
+  projectMediaAlt,
 } from "~/utils/projects";
 import { SITE_DESCRIPTION, SITE_TITLE } from "~/utils/site";
 
@@ -125,9 +126,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
             </div>
             <div>
               <p class="identity-mission text-body-compact">
-                AI SYSTEMS, FRONTEND ARCHITECTURE &amp; DATA PIPELINES //<br />
-                <NuxtLink to="/project/stockstotrade">
-                  STOCKSTOTRADE
+                <span class="identity-mission__lead">
+                  AI SYSTEMS, FRONTEND ARCHITECTURE, SEO &amp; DATA PIPELINES
+                </span>
+                <NuxtLink to="https://stockstotrade.com/">
+                  // STOCKSTOTRADE
                 </NuxtLink>
               </p>
             </div>
@@ -136,11 +139,15 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
         <div class="identity-portrait" aria-hidden="true">
           <img src="/images/og-image.webp" alt="" />
+          <img
+            class="identity-portrait__color"
+            src="/images/og-image.webp"
+            alt=""
+          />
           <div class="identity-scanline" />
         </div>
 
-        <div class="corner-tl-w" />
-        <div class="corner-bl-w" />
+        <HudCorners :corners="['tl', 'bl']" />
       </section>
 
       <section class="featured-work" aria-labelledby="featured-work-title">
@@ -153,24 +160,35 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
             v-for="(project, index) in featuredProjects"
             :key="project.slug"
             :ref="(el) => bindCard(el as Element | null, index)"
+            v-reveal="index * 60"
           >
             <NuxtLink
               :to="projectHref(project)"
               :external="isExternalProjectHref(project)"
               :target="isExternalProjectHref(project) ? '_blank' : undefined"
-              :rel="isExternalProjectHref(project) ? 'noopener noreferrer' : undefined"
-              class="dossier-card"
+              :rel="
+                isExternalProjectHref(project)
+                  ? 'noopener noreferrer'
+                  : undefined
+              "
+              class="dossier-card group"
               :class="{ 'is-focused': focusedCard === index }"
             >
+              <HudCorners reveal="hover" />
+
               <div class="dossier-card__image">
                 <img
                   v-if="project.image"
                   :src="project.image"
-                  :alt="`${project.name} featured work preview`"
+                  :alt="projectMediaAlt(project)"
                   loading="lazy"
                   decoding="async"
                 />
-                <span v-else class="material-symbols-outlined" aria-hidden="true">
+                <span
+                  v-else
+                  class="material-symbols-outlined"
+                  aria-hidden="true"
+                >
                   {{ project.icon || "deployed_code" }}
                 </span>
               </div>
@@ -179,7 +197,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
                 <h3 class="text-title-ui">{{ project.name }}</h3>
 
                 <div class="dossier-card__footer text-label-data">
-                  <span>{{ isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT" }}</span>
+                  <span>{{
+                    isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT"
+                  }}</span>
                   <span>{{ projectCounter(index) }}</span>
                 </div>
               </div>
@@ -194,7 +214,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         </header>
 
         <ul class="stack-index" role="list">
-          <li v-for="skill in featuredSkills" :key="skill.name">
+          <li
+            v-for="(skill, index) in featuredSkills"
+            :key="skill.name"
+            v-reveal="Math.min(index, 8) * 40"
+          >
             <span class="stack-index__label">
               <img :src="skill.iconSrc" alt="" width="18" height="18" />
               <strong class="text-body-compact">{{ skill.name }}</strong>
@@ -204,21 +228,37 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         </ul>
       </section>
 
-      <section class="index-module articles-index" aria-labelledby="articles-index-title">
+      <section
+        class="index-module articles-index"
+        aria-labelledby="articles-index-title"
+      >
         <header class="index-module__header">
           <h2 id="articles-index-title" class="text-heading-section">ARTICLES</h2>
         </header>
 
         <ul role="list">
-          <li v-for="article in articles" :key="article.slug">
+          <li
+            v-for="(article, index) in articles"
+            :key="article.slug"
+            v-reveal="index * 60"
+          >
             <NuxtLink
               :to="projectHref(article)"
               :external="isExternalProjectHref(article)"
               :target="isExternalProjectHref(article) ? '_blank' : undefined"
-              :rel="isExternalProjectHref(article) ? 'noopener noreferrer' : undefined"
+              :rel="
+                isExternalProjectHref(article)
+                  ? 'noopener noreferrer'
+                  : undefined
+              "
             >
               <span class="articles-index__thumb" aria-hidden="true">
-                <img v-if="article.image" :src="article.image" alt="" loading="lazy" />
+                <img
+                  v-if="article.image"
+                  :src="article.image"
+                  alt=""
+                  loading="lazy"
+                />
               </span>
               <span class="articles-index__copy">
                 <strong class="text-title-ui">{{ article.name }}</strong>
@@ -252,9 +292,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   grid-template-columns: minmax(0, 1fr) 190px;
   min-height: 252px;
   overflow: hidden;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
-    rgba(11, 11, 11, 0.44);
+  background: #0a0a0a;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
 }
 
@@ -304,6 +342,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .identity-mission {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   margin-top: 3px;
   color: #c6c6c6;
   text-transform: uppercase;
@@ -322,10 +363,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .identity-portrait {
+  --portrait-hover-scale: 1.2;
+  --portrait-scale: 1.18;
+
   position: relative;
   min-width: 0;
   overflow: hidden;
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
   background: #0a0a0a;
 }
 
@@ -333,7 +376,13 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #0d0d0d 0%, transparent 26%, transparent 76%, #0d0d0d 100%);
+  background: linear-gradient(
+    90deg,
+    #0d0d0d 0%,
+    transparent 26%,
+    transparent 76%,
+    #0d0d0d 100%
+  );
   pointer-events: none;
 }
 
@@ -343,7 +392,29 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   object-fit: cover;
   object-position: 50% center;
   filter: grayscale(0.68) contrast(1.08) brightness(0.92);
-  transform: scale(1.18);
+  transform: scale(var(--portrait-scale));
+  transition: transform 180ms ease-out;
+}
+
+.identity-portrait .identity-portrait__color {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  filter: saturate(1.06) contrast(1.04) brightness(0.98);
+  opacity: 0;
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
+}
+
+.identity-panel:hover .identity-portrait img,
+.identity-panel:focus-within .identity-portrait img {
+  transform: scale(var(--portrait-hover-scale)) translate3d(-1.5%, 0, 0);
+}
+
+.identity-panel:hover .identity-portrait__color,
+.identity-panel:focus-within .identity-portrait__color {
+  opacity: 1;
 }
 
 .identity-scanline {
@@ -375,6 +446,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .dossier-card {
+  position: relative;
   display: flex;
   height: 100%;
   min-height: 250px;
@@ -386,8 +458,10 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   text-decoration: none;
   transition:
     border-color 150ms ease,
-    transform 150ms ease,
     background-color 150ms ease;
+  --hud-corner-size: 16px;
+  --hud-corner-inset: 0px;
+  --distance-micro: 0px;
 }
 
 .dossier-card:hover,
@@ -396,7 +470,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   border-color: rgba(103, 245, 122, 0.72);
   background: #0a0a0a;
   outline: none;
-  transform: translateY(-2px);
 }
 
 .dossier-card__image {
@@ -424,14 +497,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  transition: filter 180ms ease, transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.dossier-card:hover .dossier-card__image img,
-.dossier-card:focus-visible .dossier-card__image img,
-.dossier-card.is-focused .dossier-card__image img {
-  filter: saturate(1.08) contrast(1.04);
-  transform: scale(1.02);
 }
 
 .dossier-card__body {
@@ -470,7 +535,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .index-module {
   position: relative;
   margin-top: 40px;
-  overflow: hidden;
+  overflow-x: hidden;
   background: rgba(16, 16, 16, 0.5);
 }
 
@@ -492,6 +557,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   z-index: 1;
 }
 
+.stack-index {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .stack-index li {
   display: flex;
   min-height: 42px;
@@ -500,6 +570,10 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   gap: 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding: 0 12px;
+}
+
+.stack-index li:nth-child(odd) {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .stack-index__label {
@@ -538,7 +612,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   padding: 12px 0;
   color: #d6d6d6;
   text-decoration: none;
-  transition: background-color 120ms ease, color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
 
 .articles-index a:hover,
@@ -585,21 +661,44 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-panel {
-    grid-template-columns: minmax(0, 1fr) 34%;
-    min-height: 238px;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .identity-portrait {
+    --portrait-hover-scale: 1.24;
+    --portrait-scale: 1.22;
+
+    order: -1;
+    height: 168px;
+    border-left: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .identity-portrait::after {
+    background: linear-gradient(180deg, transparent 42%, #0d0d0d 100%);
+  }
+
+  .identity-portrait img {
+    object-position: 50% 28%;
+    transform: scale(var(--portrait-scale));
   }
 
   .identity-copy {
-    padding: 18px 12px 16px;
+    padding: 16px 14px 18px;
+  }
+
+  .identity-name {
+    margin-top: 0;
+  }
+
+  .identity-facts {
+    gap: 8px;
+    margin-top: 16px;
   }
 
   .identity-role {
     letter-spacing: 0.08em;
-  }
-
-  .identity-portrait img {
-    object-position: 49% center;
-    transform: scale(1.35);
   }
 
   .featured-work,
@@ -609,7 +708,15 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
   .featured-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 24px;
+  }
+
+  .stack-index {
+    grid-template-columns: 1fr;
+  }
+
+  .stack-index li:nth-child(odd) {
+    border-right: none;
   }
 
   .dossier-card {
@@ -653,15 +760,14 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 @media (prefers-reduced-motion: reduce) {
   .dossier-card,
-  .dossier-card__image img,
+  .identity-portrait img,
   .articles-index a {
     transition: none;
   }
 
-  .dossier-card:hover,
-  .dossier-card:focus-visible,
-  .dossier-card.is-focused {
-    transform: none;
+  .identity-panel:hover .identity-portrait img,
+  .identity-panel:focus-within .identity-portrait img {
+    transform: scale(var(--portrait-scale));
   }
 }
 </style>

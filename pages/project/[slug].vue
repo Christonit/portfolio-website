@@ -88,6 +88,7 @@ const galleryCount = computed(() => frames.value.length);
 const beatCount = computed(() => dossierBeats.value.length);
 const gallerySteps = computed(() => Math.max(galleryCount.value - 1, 1));
 
+const projectPageRef = ref<HTMLElement | null>(null);
 const dossierRef = ref<HTMLElement | null>(null);
 const activeIndex = ref(0);
 const cssScrollDriven = ref(false);
@@ -206,9 +207,32 @@ function pauseDemo() {
 }
 
 function scrollDossier(direction: 1 | -1) {
-  dossierRef.value?.scrollBy({
+  const page = projectPageRef.value;
+  const dossier = dossierRef.value;
+  if (!dossier) return;
+
+  const behavior = prefersReducedMotion() ? "auto" : "smooth";
+
+  if (page) {
+    const pageRect = page.getBoundingClientRect();
+    const dossierRect = dossier.getBoundingClientRect();
+    const pageCanScrollDown =
+      page.scrollTop + page.clientHeight < page.scrollHeight - 1;
+    const pageCanScrollUp = page.scrollTop > 1;
+    const dossierExtendsBelowPage = dossierRect.bottom > pageRect.bottom + 1;
+
+    if (
+      (direction === 1 && pageCanScrollDown && dossierExtendsBelowPage) ||
+      (direction === -1 && dossier.scrollTop <= 1 && pageCanScrollUp)
+    ) {
+      page.scrollBy({ top: direction * 140, behavior });
+      return;
+    }
+  }
+
+  dossier.scrollBy({
     top: direction * 140,
-    behavior: prefersReducedMotion() ? "auto" : "smooth",
+    behavior,
   });
 }
 
@@ -236,7 +260,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="project-page flex min-h-0 flex-col gap-3 overflow-visible px-4 py-4 xl:h-full xl:gap-4 xl:overflow-hidden xl:px-8 xl:py-5"
+    ref="projectPageRef"
+    class="project-page flex min-h-0 flex-col gap-3 overflow-visible px-4 py-4 xl:h-full xl:gap-4 xl:overflow-y-auto xl:px-8 xl:py-5"
     :style="{
       '--gallery-count': galleryCount,
       '--gallery-steps': gallerySteps,
@@ -244,7 +269,7 @@ onBeforeUnmount(() => {
   >
     <nav
       class="flex shrink-0 items-center justify-between gap-3"
-      aria-label="Breadcrumb"
+      aria-label="Project navigation"
     >
       <ol
         class="text-label-data flex min-w-0 items-center gap-2 uppercase tracking-[0.18em] text-[#919191]"
@@ -259,12 +284,6 @@ onBeforeUnmount(() => {
             &lt;
           </NuxtLink>
         </li>
-        <li class="hidden xl:inline">
-          <NuxtLink to="/" data-nav-back class="hover:text-white">
-            STATS
-          </NuxtLink>
-        </li>
-        <li class="hidden xl:inline" aria-hidden="true">/</li>
         <li>
           <NuxtLink
             to="/projects"
@@ -278,19 +297,37 @@ onBeforeUnmount(() => {
         <li class="truncate text-white">{{ current.name }}</li>
       </ol>
 
-      <a
-        v-if="visitUrl"
-        :href="visitUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-label-data shrink-0 uppercase tracking-[0.18em] text-[#67F57A] hover:text-white"
-      >
-        VISIT_PROJECT
-      </a>
+      <div class="flex shrink-0 items-center gap-2">
+        <a
+          v-if="visitUrl"
+          :href="visitUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-label-data inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center uppercase tracking-[0.18em] text-[#67F57A] hover:text-white focus-visible:text-white focus-visible:underline"
+          aria-label="Visit project"
+        >
+          <span class="md:hidden">VISIT</span>
+          <span class="hidden md:inline">VISIT_PROJECT</span>
+        </a>
+        <NuxtLink
+          to="/projects"
+          data-nav-back
+          class="project-close text-label-data"
+          aria-label="Close project and return to projects"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] leading-none"
+            aria-hidden="true"
+          >
+            close
+          </span>
+          <span class="hidden sm:inline">CLOSE</span>
+        </NuxtLink>
+      </div>
     </nav>
 
     <div
-      class="project-shell mb-8 relative grid overflow-visible border border-white/25 xl:min-h-0 xl:flex-1 xl:grid-cols-12 xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden"
+      class="project-shell mb-8 relative grid overflow-visible border border-white/25"
     >
       <div class="corner-tl-w" />
       <div class="corner-tr-w" />
@@ -298,7 +335,7 @@ onBeforeUnmount(() => {
       <div class="corner-br-w" />
 
       <section
-        class="relative flex flex-col border-b border-white/15 xl:col-span-7 xl:min-h-0 xl:border-b-0 xl:border-r xl:border-white/15"
+        class="relative flex flex-col border-b border-white/15"
         :aria-roledescription="hasVideo ? undefined : 'carousel'"
         :aria-label="hasVideo ? 'Project demo video' : 'Project image gallery'"
       >
@@ -307,7 +344,7 @@ onBeforeUnmount(() => {
           :class="
             hasVideo
               ? 'project-gallery-stage--video'
-              : 'min-h-[220px] overflow-hidden xl:min-h-0 xl:flex-1'
+              : 'min-h-[220px] overflow-hidden xl:aspect-video xl:min-h-0'
           "
         >
           <video
@@ -318,7 +355,7 @@ onBeforeUnmount(() => {
             muted
             loop
             playsinline
-            preload="auto"
+            preload="none"
             :aria-label="`${current.name} product demo`"
             @error="onVideoError"
           >
@@ -407,7 +444,7 @@ onBeforeUnmount(() => {
       </section>
 
       <section
-        class="project-dossier-panel relative flex flex-col xl:col-span-5 xl:min-h-0"
+        class="project-dossier-panel relative flex flex-col xl:h-[38vh] xl:max-h-[420px] xl:min-h-[280px]"
         aria-label="Project dossier"
       >
         <header class="shrink-0 border-b border-white/10 px-4 py-4 xl:px-5">
@@ -485,12 +522,45 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.project-page {
+  width: 100%;
+  max-width: 1000px;
+  margin-inline: auto;
+}
+
 @media (min-width: 1280px) {
   .project-page {
     height: calc(100vh - 132px);
     max-height: calc(100vh - 132px);
   }
 }
+
+.project-close {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding-inline: 0.75rem;
+  color: #fff;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.project-close:hover,
+.project-close:focus-visible {
+  border-color: #67f57a;
+  background: #67f57a;
+  color: #071008;
+  outline: none;
+}
+
 .project-shell {
   timeline-scope: --dossier;
 }
