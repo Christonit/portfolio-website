@@ -1,6 +1,24 @@
 import type { Config } from 'tailwindcss'
 import { typography } from './utils/typography'
 
+const typographyFamilies = {
+  display: 'Tomorrow, sans-serif',
+  sans: 'Tomorrow, sans-serif',
+  mono: '"Departure Mono", monospace',
+} as const
+
+const semanticTypographyUtilities = Object.fromEntries(
+  Object.entries(typography).map(([name, style]) => [
+    `.text-${name}`,
+    {
+      fontFamily: typographyFamilies[style.familyRole],
+      fontSize: style.size,
+      fontWeight: String(style.weight),
+      lineHeight: style.lineHeight,
+    },
+  ]),
+)
+
 export default {
   darkMode: ['class'],
   content: [
@@ -16,12 +34,6 @@ export default {
         mono: ['Departure Mono', 'monospace'],
         display: ['Tomorrow', 'sans-serif'],
       },
-      fontSize: Object.fromEntries(
-        Object.entries(typography).map(([name, style]) => [
-          name,
-          [style.size, { lineHeight: style.lineHeight, fontWeight: String(style.weight) }],
-        ]),
-      ),
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -57,5 +69,9 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    ({ addUtilities }) => {
+      addUtilities(semanticTypographyUtilities)
+    },
+  ],
 } satisfies Config

@@ -5,17 +5,29 @@ import { pathToFileURL } from 'node:url'
 const LIVE_ROOTS = ['layouts', 'pages', 'components', 'assets/css']
 const SOURCE_EXTENSIONS = new Set(['.css', '.vue'])
 const STALE_FONT_FAMILIES = ['Menlo', 'Inter', 'Cuisine', 'ui-monospace']
+const ARTWORK_UTILITY_NAMES = new Set([
+  'svg',
+  'raster',
+  'canvas',
+  'export-artwork',
+  'svg-artwork',
+  'raster-artwork',
+  'canvas-artwork',
+  'exportartwork',
+  'svgartwork',
+  'rasterartwork',
+  'canvasartwork',
+])
 
 function lineAt(source, index) {
   return source.slice(0, index).split('\n').length
 }
 
-function isFontFaceContext(source, index) {
-  return source.lastIndexOf('@font-face', index) > source.lastIndexOf('}', index)
-}
-
 function isExcludedArtwork(relativePath) {
-  return /(?:^|\/)(?:canvas|export-artwork)(?:[._-]|\/|$)/i.test(relativePath)
+  return relativePath
+    .toLowerCase()
+    .split('/')
+    .some((segment) => ARTWORK_UTILITY_NAMES.has(segment.replace(/\.(?:css|vue|svg|png|jpe?g|webp|gif)$/i, '')))
 }
 
 async function sourceFiles(root) {
@@ -61,8 +73,11 @@ function auditSource(source, relativePath) {
     if (Number(match[1]) < 12) add(match.index, `font-size ${match[1]}px is below the 12px minimum`)
   }
 
-  for (const match of source.matchAll(/text-\[\s*(\d+(?:\.\d+)?)px\s*\]/gi)) {
-    if (Number(match[1]) < 12) add(match.index, `Tailwind text-[${match[1]}px] is below the 12px minimum`)
+  for (const match of source.matchAll(/text-\[\s*(?:(length)\s*:\s*)?(\d+(?:\.\d+)?)px\s*\]/gi)) {
+    if (Number(match[2]) < 12) {
+      const value = match[1] ? `length:${match[2]}px` : `${match[2]}px`
+      add(match.index, `Tailwind text-[${value}] is below the 12px minimum`)
+    }
   }
 
   for (const family of STALE_FONT_FAMILIES) {
@@ -73,7 +88,7 @@ function auditSource(source, relativePath) {
   }
 
   for (const match of source.matchAll(/font-family\s*:[^;}]*\bmonospace\b/gi)) {
-    if (!isFontFaceContext(source, match.index)) add(match.index, 'bare font-family: monospace is not allowed')
+    add(match.index, 'bare font-family: monospace is not allowed')
   }
 
   return violations.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.message.localeCompare(right.message))
