@@ -33,18 +33,18 @@ const biometrics: Biometric[] = [
       <div class="absolute inset-y-0 left-0 bg-white" style="width: 85%" />
     </div>
 
-    <div class="flex gap-2 text-center justify-between w-full">
+    <div class="grid w-full grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
       <div class="text-left">
         <span class="hud-label mb-0.5">EXPERIENCE</span>
-        <span class="text-title-ui block text-white">10_YEARS</span>
+        <span class="text-label-data block text-white">10_YEARS</span>
       </div>
-      <div>
+      <div class="text-right sm:text-center">
         <span class="hud-label mb-0.5">COFFEE_CUPS</span>
-        <span class="text-title-ui block text-white">+99</span>
+        <span class="text-label-data block text-white">+99</span>
       </div>
-      <div class="text-right">
+      <div class="col-span-2 text-left sm:col-span-1 sm:text-right">
         <span class="hud-label mb-0.5">PROJECTS</span>
-        <span class="text-title-ui block text-white">+99</span>
+        <span class="text-label-data block text-white">+99</span>
       </div>
     </div>
   </div>
