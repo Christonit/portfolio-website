@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import { typography } from './utils/typography'
 
 export default {
   darkMode: ['class'],
@@ -12,9 +13,15 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Tomorrow', 'sans-serif'],
-        mono: ['Tomorrow', 'Cuisine', 'monospace'],
+        mono: ['Departure Mono', 'monospace'],
         display: ['Tomorrow', 'sans-serif'],
       },
+      fontSize: Object.fromEntries(
+        Object.entries(typography).map(([name, style]) => [
+          name,
+          [style.size, { lineHeight: style.lineHeight, fontWeight: String(style.weight) }],
+        ]),
+      ),
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

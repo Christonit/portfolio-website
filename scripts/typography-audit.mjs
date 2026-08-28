@@ -1,0 +1,113 @@
+import { readdir, readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+
+const LIVE_ROOTS = ['layouts', 'pages', 'components', 'assets/css']
+const SOURCE_EXTENSIONS = new Set(['.css', '.vue'])
+const STALE_FONT_FAMILIES = ['Menlo', 'Inter', 'Cuisine', 'ui-monospace']
+
+function lineAt(source, index) {
+  return source.slice(0, index).split('\n').length
+}
+
+function isFontFaceContext(source, index) {
+  return source.lastIndexOf('@font-face', index) > source.lastIndexOf('}', index)
+}
+
+function isExcludedArtwork(relativePath) {
+  return /(?:^|\/)(?:canvas|export-artwork)(?:[._-]|\/|$)/i.test(relativePath)
+}
+
+async function sourceFiles(root) {
+  const files = []
+
+  async function visit(relativePath) {
+    const absolutePath = path.join(root, relativePath)
+    let entries
+
+    try {
+      entries = await readdir(absolutePath, { withFileTypes: true })
+    } catch (error) {
+      if (error.code === 'ENOENT') return
+      throw error
+    }
+
+    for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+      const childPath = path.join(relativePath, entry.name)
+      if (entry.isDirectory()) {
+        await visit(childPath)
+      } else if (SOURCE_EXTENSIONS.has(path.extname(entry.name)) && !isExcludedArtwork(childPath)) {
+        files.push(childPath)
+      }
+    }
+  }
+
+  try {
+    await readFile(path.join(root, 'app.vue'))
+    files.push('app.vue')
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error
+  }
+
+  for (const directory of LIVE_ROOTS) await visit(directory)
+  return files.sort((a, b) => a.localeCompare(b))
+}
+
+function auditSource(source, relativePath) {
+  const violations = []
+  const add = (index, message) => violations.push({ file: relativePath, line: lineAt(source, index), message })
+
+  for (const match of source.matchAll(/font-size\s*:\s*(\d+(?:\.\d+)?)px\b/gi)) {
+    if (Number(match[1]) < 12) add(match.index, `font-size ${match[1]}px is below the 12px minimum`)
+  }
+
+  for (const match of source.matchAll(/text-\[\s*(\d+(?:\.\d+)?)px\s*\]/gi)) {
+    if (Number(match[1]) < 12) add(match.index, `Tailwind text-[${match[1]}px] is below the 12px minimum`)
+  }
+
+  for (const family of STALE_FONT_FAMILIES) {
+    const expression = new RegExp(`\\b${family}\\b`, 'gi')
+    for (const match of source.matchAll(expression)) {
+      add(match.index, `stale font family "${family}" is not allowed`)
+    }
+  }
+
+  for (const match of source.matchAll(/font-family\s*:[^;}]*\bmonospace\b/gi)) {
+    if (!isFontFaceContext(source, match.index)) add(match.index, 'bare font-family: monospace is not allowed')
+  }
+
+  return violations.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.message.localeCompare(right.message))
+}
+
+export async function auditTypography(root = process.cwd()) {
+  const violations = []
+
+  for (const relativePath of await sourceFiles(root)) {
+    const source = await readFile(path.join(root, relativePath), 'utf8')
+    violations.push(...auditSource(source, relativePath))
+  }
+
+  return violations.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.message.localeCompare(right.message))
+}
+
+async function runCli() {
+  const root = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd()
+  const violations = await auditTypography(root)
+
+  if (violations.length === 0) {
+    console.log('Typography audit passed.')
+    return
+  }
+
+  for (const violation of violations) {
+    console.error(`${violation.file}:${violation.line} ${violation.message}`)
+  }
+  process.exitCode = 1
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  runCli().catch((error) => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}
