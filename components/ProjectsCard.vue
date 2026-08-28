@@ -103,7 +103,9 @@ const ariaLabel = computed(() => {
     :class="[
       'projects-card group relative flex h-full min-h-[320px] flex-col border bg-[#0c0c0c] text-left no-underline outline-none',
       'transition-[border-color,background-color] duration-150',
-      focused ? 'is-focused border-[#67F57A]' : 'border-[#2a2a2a] hover:border-[#67F57A]/55 focus-visible:border-[#67F57A]',
+      focused
+        ? 'is-focused border-[#67F57A]'
+        : 'border-[#2a2a2a] hover:border-[#67F57A]/55 focus-visible:border-[#67F57A]',
       isMission ? 'justify-center' : '',
     ]"
   >
@@ -130,7 +132,9 @@ const ariaLabel = computed(() => {
         >
           NEW MISSION
         </h2>
-        <p class="mt-2 max-w-[220px] font-mono text-xs leading-relaxed text-[#474747]">
+        <p
+          class="mt-2 max-w-[220px] font-mono text-xs leading-relaxed text-[#474747]"
+        >
           Awaiting deployment — drop your next project here.
         </p>
       </div>
@@ -193,7 +197,6 @@ const ariaLabel = computed(() => {
               class="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-white"
             >
               {{ ctaLabel }}
-              <span class="projects-card__arrow" aria-hidden="true">-></span>
             </span>
             <span
               class="font-mono text-xs tabular-nums tracking-widest text-[#474747]"
