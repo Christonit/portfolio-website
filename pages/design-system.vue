@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { pageTitle } from "~/utils/site";
+import { typography, type TypographyStyleKey } from "~/utils/typography";
 
 usePageSeo({
   title: pageTitle("Design System"),
@@ -19,22 +20,32 @@ const colors = [
   { name: "SIGNAL", token: "--color-signal", value: "#67F57A" },
 ];
 
-const typeScale = [
-  { name: "DISPLAY XL", size: "56px", weight: "600", sample: "SYSTEM INDEX" },
-  { name: "DISPLAY MD", size: "36px", weight: "600", sample: "SELECTED WORK" },
-  { name: "HEADING", size: "24px", weight: "600", sample: "Interface architecture" },
-  { name: "TITLE", size: "18px", weight: "600", sample: "Tomorrow Semibold" },
-  { name: "BODY", size: "14px", weight: "400", sample: "Readable body copy for product stories and project details." },
-  { name: "LABEL / MIN", size: "12px", weight: "500", sample: "MINIMUM UI TEXT — 12 PX" },
-];
+const typographyUtilities = {
+  display: "text-display",
+  "heading-lg": "text-heading-lg",
+  "heading-section": "text-heading-section",
+  "title-ui": "text-title-ui",
+  "body-compact": "text-body-compact",
+  "body-prose": "text-body-prose",
+  "label-data": "text-label-data",
+} satisfies Record<TypographyStyleKey, string>;
+
+const typeScale = (Object.keys(typography) as TypographyStyleKey[]).map((key) => ({
+  key,
+  utility: typographyUtilities[key],
+  ...typography[key],
+}));
+
+const familyName = (familyRole: (typeof typography)[TypographyStyleKey]["familyRole"]) =>
+  familyRole === "mono" ? "Departure Mono" : "Tomorrow";
 </script>
 
 <template>
   <div class="system-rail">
     <header class="system-hero">
-      <span class="hud-label">// DESIGN SYSTEM</span>
-      <h1>SYSTEM INDEX</h1>
-      <p>
+      <span class="hud-label text-label-data uppercase tracking-[0.14em]">// DESIGN SYSTEM</span>
+      <h1 class="text-display">SYSTEM INDEX</h1>
+      <p class="text-body-compact">
         A working inventory of the visual language used across the portfolio.
         The minimum interface type size is 12px.
       </p>
@@ -42,42 +53,56 @@ const typeScale = [
 
     <section class="system-section" aria-labelledby="type-heading">
       <header class="system-section__header">
-        <h2 id="type-heading">TYPEFACE + SCALE</h2>
-        <span>TOMORROW / 100–700</span>
+        <h2 id="type-heading" class="text-heading-section">TYPEFACE + SCALE</h2>
+        <span class="text-label-data uppercase tracking-[0.14em]">TOMORROW + DEPARTURE MONO</span>
       </header>
 
-      <div class="font-card">
-        <span class="font-card__meta">PRIMARY FAMILY</span>
-        <strong>TOMORROW</strong>
-        <p>ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</p>
+      <div class="font-specimens">
+        <div class="font-card">
+          <span class="font-card__meta text-label-data uppercase tracking-[0.1em]">PRIMARY FAMILY</span>
+          <strong class="text-display">TOMORROW</strong>
+          <p class="text-body-compact">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</p>
+        </div>
+        <div class="font-card">
+          <span class="font-card__meta text-label-data uppercase tracking-[0.1em]">DATA FAMILY</span>
+          <strong class="text-label-data uppercase tracking-[0.1em]">DEPARTURE MONO</strong>
+          <p class="text-label-data tabular-nums">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</p>
+        </div>
       </div>
 
       <ul class="type-scale" role="list">
-        <li v-for="style in typeScale" :key="style.name">
+        <li v-for="style in typeScale" :key="style.key">
           <div class="type-scale__meta">
-            <strong>{{ style.name }}</strong>
-            <span>{{ style.size }} / {{ style.weight }}</span>
+            <strong class="text-label-data">{{ style.semanticName }}</strong>
+            <span class="text-label-data">{{ style.size }} / {{ style.lineHeight }}</span>
+            <span class="text-label-data">{{ familyName(style.familyRole) }} / {{ style.weight }}</span>
           </div>
-          <p :style="{ fontSize: style.size, fontWeight: style.weight }">
-            {{ style.sample }}
-          </p>
+          <div class="type-scale__sample">
+            <p :class="style.utility">{{ style.sample }}</p>
+            <span class="text-label-data">{{ style.usage }}</span>
+          </div>
         </li>
       </ul>
+
+      <div class="modifier-demo">
+        <span class="text-label-data uppercase tracking-[0.14em]">SYSTEM STATUS</span>
+        <span class="text-label-data tabular-nums">BUILD 026 / 14:32:08</span>
+      </div>
     </section>
 
     <section class="system-section" aria-labelledby="color-heading">
       <header class="system-section__header">
-        <h2 id="color-heading">COLOR TOKENS</h2>
-        <span>08 CORE VALUES</span>
+        <h2 id="color-heading" class="text-heading-section">COLOR TOKENS</h2>
+        <span class="text-label-data uppercase tracking-[0.14em]">08 CORE VALUES</span>
       </header>
 
       <ul class="color-grid" role="list">
         <li v-for="color in colors" :key="color.token">
           <div class="color-swatch" :style="{ backgroundColor: color.value }" />
           <div class="color-meta">
-            <strong>{{ color.name }}</strong>
-            <span>{{ color.value }}</span>
-            <code>{{ color.token }}</code>
+            <strong class="text-label-data">{{ color.name }}</strong>
+            <span class="text-label-data">{{ color.value }}</span>
+            <code class="text-label-data">{{ color.token }}</code>
           </div>
         </li>
       </ul>
@@ -85,15 +110,15 @@ const typeScale = [
 
     <section class="system-section" aria-labelledby="ui-heading">
       <header class="system-section__header">
-        <h2 id="ui-heading">INTERFACE PARTS</h2>
-        <span>LIVE SAMPLES</span>
+        <h2 id="ui-heading" class="text-heading-section">INTERFACE PARTS</h2>
+        <span class="text-label-data uppercase tracking-[0.14em]">LIVE SAMPLES</span>
       </header>
 
       <div class="component-row">
-        <span class="hud-label">// SECTION LABEL</span>
-        <span class="system-badge">FRONTEND_ARCHITECTURE</span>
-        <button class="system-button" type="button">VIEW PROJECT →</button>
-        <kbd class="system-key">A</kbd>
+        <span class="hud-label text-label-data uppercase tracking-[0.14em]">// SECTION LABEL</span>
+        <span class="system-badge text-label-data uppercase tracking-[0.1em]">FRONTEND_ARCHITECTURE</span>
+        <button class="system-button text-title-ui" type="button">VIEW PROJECT →</button>
+        <kbd class="system-key text-label-data">A</kbd>
       </div>
     </section>
   </div>
@@ -122,18 +147,12 @@ const typeScale = [
 
 .system-hero h1 {
   color: var(--color-ink);
-  font-size: clamp(2.1rem, 5vw, 3.6rem);
-  font-weight: 600;
   letter-spacing: -0.05em;
-  line-height: 0.92;
 }
 
 .system-hero p {
   max-width: 620px;
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: 14px;
-  line-height: 1.6;
 }
 
 .system-section {
@@ -148,14 +167,16 @@ const typeScale = [
   gap: 16px;
   border-bottom: 1px solid var(--color-rule);
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: var(--font-size-min);
-  letter-spacing: 0.14em;
 }
 
 .system-section__header h2 {
   color: var(--color-body);
-  font: inherit;
+}
+
+.font-specimens {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
 }
 
 .font-card {
@@ -165,20 +186,16 @@ const typeScale = [
   padding: 28px 0;
 }
 
-.font-card__meta,
-.font-card p {
+.font-card__meta {
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: var(--font-size-min);
-  letter-spacing: 0.1em;
 }
 
 .font-card strong {
   color: var(--color-ink);
-  font-size: clamp(2.5rem, 8vw, 5.5rem);
-  font-weight: 600;
-  letter-spacing: -0.06em;
-  line-height: 0.9;
+}
+
+.font-card p {
+  color: var(--color-muted);
 }
 
 .type-scale li {
@@ -195,20 +212,37 @@ const typeScale = [
   flex-direction: column;
   gap: 4px;
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: var(--font-size-min);
 }
 
 .type-scale__meta strong {
   color: var(--color-body);
 }
 
-.type-scale p {
+.type-scale__sample {
+  display: grid;
+  gap: 8px;
   min-width: 0;
+}
+
+.type-scale__sample p {
   overflow-wrap: anywhere;
   color: var(--color-ink);
   letter-spacing: -0.025em;
-  line-height: 1.12;
+}
+
+.type-scale__sample span {
+  color: var(--color-muted);
+}
+
+.modifier-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-rule);
+  padding: 16px 0;
+  color: var(--color-muted);
 }
 
 .color-grid {
@@ -233,8 +267,6 @@ const typeScale = [
   flex-direction: column;
   gap: 5px;
   padding: 12px;
-  font-family: monospace;
-  font-size: var(--font-size-min);
 }
 
 .color-meta strong {
@@ -259,9 +291,6 @@ const typeScale = [
 .system-key {
   border: 1px solid var(--color-rule);
   color: var(--color-body);
-  font-family: monospace;
-  font-size: var(--font-size-min);
-  letter-spacing: 0.1em;
 }
 
 .system-badge {
@@ -293,6 +322,11 @@ const typeScale = [
   .type-scale li {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .font-specimens {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 
   .color-grid {
