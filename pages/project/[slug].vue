@@ -247,7 +247,7 @@ onBeforeUnmount(() => {
       aria-label="Breadcrumb"
     >
       <ol
-        class="flex min-w-0 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#919191]"
+        class="text-label-data flex min-w-0 items-center gap-2 uppercase tracking-[0.18em] text-[#919191]"
       >
         <li class="xl:hidden">
           <NuxtLink
@@ -283,7 +283,7 @@ onBeforeUnmount(() => {
         :href="visitUrl"
         target="_blank"
         rel="noopener noreferrer"
-        class="shrink-0 font-mono text-[9px] uppercase tracking-[0.18em] text-[#67F57A] hover:text-white xl:text-[10px]"
+        class="text-label-data shrink-0 uppercase tracking-[0.18em] text-[#67F57A] hover:text-white"
       >
         VISIT_PROJECT
       </a>
@@ -327,7 +327,7 @@ onBeforeUnmount(() => {
           <button
             v-if="hasVideo"
             type="button"
-            class="project-demo-expand flex xl:hidden"
+            class="project-demo-expand text-label-data flex xl:hidden"
             aria-label="Maximize video"
             @click="expandDemo"
           >
@@ -392,12 +392,12 @@ onBeforeUnmount(() => {
             class="flex min-w-0 flex-1 items-center justify-between gap-3 px-3"
           >
             <span
-              class="font-mono text-[10px] uppercase tracking-[0.28em] text-[#919191]"
+              class="text-label-data uppercase tracking-[0.28em] text-[#919191]"
             >
               IMAGES
             </span>
             <span
-              class="font-mono text-[11px] tabular-nums tracking-[0.18em] text-white"
+              class="text-label-data tabular-nums tracking-[0.18em] text-white"
               aria-live="polite"
             >
               {{ counter }}
@@ -412,7 +412,7 @@ onBeforeUnmount(() => {
       >
         <header class="shrink-0 border-b border-white/10 px-4 py-4 xl:px-5">
           <h1
-            class="font-mono text-[13px] uppercase leading-snug tracking-[0.12em] text-white xl:text-sm"
+            class="text-heading-section uppercase tracking-[0.12em] text-white"
           >
             // {{ current.name }}
           </h1>
@@ -430,7 +430,7 @@ onBeforeUnmount(() => {
               class="project-dossier-beat flex flex-col gap-4"
             >
               <p
-                class="project-dossier-copy font-mono text-base leading-relaxed tracking-wide text-[#c6c6c6]"
+                class="project-dossier-copy text-body-prose tracking-wide text-[#c6c6c6]"
               >
                 {{ beat.text }}
               </p>
@@ -446,7 +446,7 @@ onBeforeUnmount(() => {
                 <li
                   v-for="task in current.tasks"
                   :key="task"
-                  class="flex items-start gap-2 font-mono text-base uppercase leading-relaxed tracking-wide text-[#e2e2e2]"
+                  class="text-body-prose flex items-start gap-2 uppercase tracking-wide text-[#e2e2e2]"
                 >
                   <span class="mt-px text-[#67F57A]" aria-hidden="true"
                     >&gt;</span
@@ -465,7 +465,7 @@ onBeforeUnmount(() => {
               <ul class="flex flex-wrap gap-1.5" role="list">
                 <li v-for="(item, ti) in current.tech" :key="item">
                   <span
-                    class="inline-flex items-center border px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.14em]"
+                    class="text-label-data inline-flex items-center border px-1.5 py-1 uppercase tracking-[0.14em]"
                     :class="
                       ti === 0
                         ? 'border-[#67F57A] text-[#67F57A]'
@@ -615,11 +615,7 @@ onBeforeUnmount(() => {
   background: rgba(0, 0, 0, 0.72);
   padding: 0 0.7rem;
   color: #e2e2e2;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10px;
-  font-weight: 600;
   letter-spacing: 0.18em;
-  line-height: 1;
 }
 
 .project-demo-expand:hover,

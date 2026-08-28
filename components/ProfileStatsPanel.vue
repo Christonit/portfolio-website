@@ -24,7 +24,7 @@ const biometrics: Biometric[] = [
 
     <div class="flex justify-between items-center mb-2">
       <span class="hud-label">SERVICE_RECORD</span>
-      <span class="font-mono text-[10px] text-white tracking-wider"
+      <span class="text-label-data tracking-wider text-white"
         >LVL_10</span
       >
     </div>
@@ -35,16 +35,16 @@ const biometrics: Biometric[] = [
 
     <div class="flex gap-2 text-center justify-between w-full">
       <div class="text-left">
-        <span class="hud-label !text-[10px] mb-0.5">EXPERIENCE</span>
-        <span class="font-bold text-base block text-white">10_YEARS</span>
+        <span class="hud-label mb-0.5">EXPERIENCE</span>
+        <span class="text-title-ui block text-white">10_YEARS</span>
       </div>
       <div>
-        <span class="hud-label !text-[10px] mb-0.5">COFFEE_CUPS</span>
-        <span class="font-bold text-base block text-white">+99</span>
+        <span class="hud-label mb-0.5">COFFEE_CUPS</span>
+        <span class="text-title-ui block text-white">+99</span>
       </div>
       <div class="text-right">
-        <span class="hud-label !text-[10px] mb-0.5">PROJECTS</span>
-        <span class="font-bold text-base block text-white">+99</span>
+        <span class="hud-label mb-0.5">PROJECTS</span>
+        <span class="text-title-ui block text-white">+99</span>
       </div>
     </div>
   </div>
@@ -63,10 +63,10 @@ const biometrics: Biometric[] = [
         :key="bio.label"
         class="flex justify-between items-center border-b border-[#474747]/25 pb-1.5"
       >
-        <span class="font-mono text-[12px] uppercase text-[#919191]">{{
+        <span class="text-label-data uppercase text-[#919191]">{{
           bio.label
         }}</span>
-        <span class="font-mono text-[12px] text-white">{{ bio.value }}</span>
+        <span class="text-label-data text-white">{{ bio.value }}</span>
       </div>
     </div>
   </div>

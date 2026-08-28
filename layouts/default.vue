@@ -179,7 +179,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
       <!-- Logo: always visible -->
       <NuxtLink
         to="/"
-        class="text-white font-semibold text-sm xl:text-lg tracking-tighter uppercase select-none mr-auto"
+        class="text-title-ui mr-auto select-none uppercase tracking-tighter text-white"
       >
         CHRISTOPHER SANTANA
       </NuxtLink>
@@ -202,7 +202,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           @click="prevPage"
         >
           <kbd
-            class="flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 font-mono text-xs font-semibold text-white shadow-[0_2px_0_#3a3a3a]"
+            class="text-label-data flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 text-white shadow-[0_2px_0_#3a3a3a]"
             aria-hidden="true"
           >
             A
@@ -215,7 +215,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             <NuxtLink
               :to="item.path"
               :class="[
-                'relative pb-1 font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
+                'text-label-data relative pb-1 tracking-[0.2em] uppercase transition-colors duration-150',
                 isActive(item.path)
                   ? 'text-white after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[calc(100%-0.2em)] after:-translate-x-1/2 after:bg-white'
                   : 'text-[#919191] hover:text-white',
@@ -239,7 +239,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           @click="nextPage"
         >
           <kbd
-            class="flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 font-mono text-xs font-semibold text-white shadow-[0_2px_0_#3a3a3a]"
+            class="text-label-data flex h-[24px] min-w-[24px] items-center justify-center border border-[#686868] bg-[#1b1b1b] px-1.5 text-white shadow-[0_2px_0_#3a3a3a]"
             aria-hidden="true"
           >
             D
@@ -324,7 +324,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           item.icon
         }}</span>
         <span
-          class="font-mono text-xs uppercase tracking-widest font-bold"
+          class="text-label-data uppercase tracking-widest"
           >{{ item.label }}</span
         >
       </NuxtLink>

@@ -119,12 +119,11 @@ const timeline = [
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// ABOUT</span>
       <h1
-        class="font-semibold uppercase tracking-tighter text-white"
-        style="font-size: clamp(2.1rem, 4.4vw, 3.6rem); line-height: 0.92"
+        class="text-display uppercase tracking-tighter text-white"
       >
         ABOUT ME
       </h1>
-      <p class="max-w-xl font-mono text-xs leading-relaxed text-[#919191] xl:text-sm">
+      <p class="text-body-compact max-w-xl text-[#919191]">
         From Punta Cana to Manhattan — a decade of building high-traffic web
         products and scalable systems.
       </p>
@@ -138,7 +137,7 @@ const timeline = [
           <div class="corner-tr-w" />
           <div class="corner-br-w" />
           <span class="hud-label mb-3">IDENTITY_NARRATIVE</span>
-          <div class="space-y-3 text-sm text-[#c6c6c6] leading-relaxed">
+          <div class="text-body-prose space-y-3 text-[#c6c6c6]">
             <p>
               I am a Manhattan-based Senior Full Stack Engineer with over a
               decade of experience building interfaces and systems for
@@ -170,11 +169,11 @@ const timeline = [
               class="border-b border-[#474747]/20 pb-2 last:border-0 last:pb-0"
             >
               <div
-                class="font-bold text-xs uppercase tracking-wider text-[#e2e2e2]"
+                class="text-title-ui uppercase tracking-wider text-[#e2e2e2]"
               >
                 {{ edu.degree }}
               </div>
-              <div class="font-mono text-xs text-[#919191] mt-0.5">
+              <div class="text-label-data mt-0.5 text-[#919191]">
                 {{ edu.school }} // {{ edu.year }}
               </div>
             </div>
@@ -201,20 +200,20 @@ const timeline = [
               :class="org.active ? 'bg-white' : 'bg-[#474747]'"
             />
             <div
-              class="font-mono text-xs tracking-widest mb-1"
+              class="text-label-data mb-1 tracking-widest"
               :class="org.active ? 'text-white' : 'text-[#919191]'"
             >
               {{ org.span }}
             </div>
             <div
-              class="font-semibold uppercase text-sm tracking-wider"
+              class="text-heading-section uppercase tracking-wider"
               :class="org.active ? 'text-white' : 'text-[#c6c6c6]'"
             >
               {{ org.company }}
             </div>
             <div
               v-if="org.location"
-              class="font-mono text-xs text-[#474747] mt-0.5"
+              class="text-label-data mt-0.5 text-[#474747]"
             >
               // {{ org.location }}
             </div>
@@ -223,27 +222,27 @@ const timeline = [
               <div v-for="item in org.roles" :key="item.role">
                 <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <div
-                    class="font-semibold uppercase text-xs tracking-wider"
+                    class="text-title-ui uppercase tracking-wider"
                     :class="item.current ? 'text-white' : 'text-[#c6c6c6]'"
                   >
                     {{ item.role }}
                   </div>
                   <div
-                    class="font-mono text-xs text-[#919191] tracking-widest"
+                    class="text-label-data text-[#919191] tracking-widest"
                   >
                     {{ item.type }}
                   </div>
                 </div>
                 <div
-                  class="font-mono text-xs tracking-widest mt-0.5"
+                  class="text-label-data mt-0.5 tracking-widest"
                   :class="item.current ? 'text-white' : 'text-[#919191]'"
                 >
                   {{ item.period }}
                 </div>
-                <p class="text-xs text-[#c6c6c6] leading-relaxed mt-1.5">
+                <p class="text-body-prose mt-1.5 text-[#c6c6c6]">
                   {{ item.note }}
                 </p>
-                <div class="font-mono text-xs text-[#474747] mt-1">
+                <div class="text-label-data mt-1 text-[#474747]">
                   // {{ item.tags }}
                 </div>
               </div>
@@ -257,11 +256,11 @@ const timeline = [
             <div class="w-[2px] bg-white/40 shrink-0 self-stretch" />
             <div>
               <div
-                class="font-bold text-xs uppercase tracking-wider text-[#e2e2e2]"
+                class="text-title-ui uppercase tracking-wider text-[#e2e2e2]"
               >
                 1ST PLACE — BRANDING DESIGN CONTEST
               </div>
-              <div class="font-mono text-xs text-[#919191] mt-0.5">
+              <div class="text-label-data mt-0.5 text-[#919191]">
                 MINISTRY OF FOREIGN AFFAIRS // DOMINICAN REPUBLIC // NOV 2017
               </div>
             </div>

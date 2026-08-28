@@ -115,16 +115,16 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     <div class="home-rail">
       <section class="identity-panel" aria-labelledby="identity-name">
         <div class="identity-copy">
-          <h1 id="identity-name" class="identity-name">
+          <h1 id="identity-name" class="identity-name text-display">
             CHRISTOPHER<br />SANTANA
           </h1>
 
           <div class="identity-facts">
             <div>
-              <p class="identity-role">FULL_STACK_ENGINEER</p>
+              <p class="identity-role text-title-ui">FULL_STACK_ENGINEER</p>
             </div>
             <div>
-              <p class="identity-mission">
+              <p class="identity-mission text-body-compact">
                 AI SYSTEMS, FRONTEND ARCHITECTURE &amp; DATA PIPELINES //<br />
                 <NuxtLink to="/project/stockstotrade">
                   STOCKSTOTRADE
@@ -176,9 +176,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
               </div>
 
               <div class="dossier-card__body">
-                <h3>{{ project.name }}</h3>
+                <h3 class="text-title-ui">{{ project.name }}</h3>
 
-                <div class="dossier-card__footer">
+                <div class="dossier-card__footer text-label-data">
                   <span>{{ isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT" }}</span>
                   <span>{{ projectCounter(index) }}</span>
                 </div>
@@ -190,14 +190,14 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
       <section class="index-module" aria-labelledby="tech-stack-title">
         <header class="index-module__header">
-          <h2 id="tech-stack-title">TECH STACK</h2>
+          <h2 id="tech-stack-title" class="text-heading-section">TECH STACK</h2>
         </header>
 
         <ul class="stack-index" role="list">
           <li v-for="skill in featuredSkills" :key="skill.name">
             <span class="stack-index__label">
               <img :src="skill.iconSrc" alt="" width="18" height="18" />
-              <strong>{{ skill.name }}</strong>
+              <strong class="text-body-compact">{{ skill.name }}</strong>
             </span>
             <span class="stack-index__rule" aria-hidden="true" />
           </li>
@@ -206,7 +206,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
       <section class="index-module articles-index" aria-labelledby="articles-index-title">
         <header class="index-module__header">
-          <h2 id="articles-index-title">ARTICLES</h2>
+          <h2 id="articles-index-title" class="text-heading-section">ARTICLES</h2>
         </header>
 
         <ul role="list">
@@ -221,8 +221,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
                 <img v-if="article.image" :src="article.image" alt="" loading="lazy" />
               </span>
               <span class="articles-index__copy">
-                <strong>{{ article.name }}</strong>
-                <small>READ ARTICLE</small>
+                <strong class="text-title-ui">{{ article.name }}</strong>
+                <small class="text-label-data">READ ARTICLE</small>
               </span>
             </NuxtLink>
           </li>
@@ -286,10 +286,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .identity-name {
   margin-top: 10px;
   color: #fff;
-  font-size: clamp(2.15rem, 7.2vw, 3rem);
-  font-weight: 650;
   letter-spacing: -0.025em;
-  line-height: 0.86;
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -303,16 +300,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .identity-role {
   margin-top: 2px;
   color: #fff;
-  font-size: 13px;
-  font-weight: 700;
   letter-spacing: 0.13em;
 }
 
 .identity-mission {
   margin-top: 3px;
   color: #c6c6c6;
-  font-size: var(--font-size-min);
-  line-height: 1.35;
   text-transform: uppercase;
 }
 
@@ -453,10 +446,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .dossier-card__body h3 {
   overflow: hidden;
   color: #fff;
-  font-size: 15px;
-  font-weight: 700;
   letter-spacing: -0.015em;
-  line-height: 1.1;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -470,15 +460,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   margin-top: auto;
   padding-top: 3px;
   color: #fff;
-  font-family: monospace;
-  font-size: var(--font-size-min);
-  font-weight: 700;
   letter-spacing: 0.11em;
 }
 
 .dossier-card__footer span:last-child {
   color: #3f3f3f;
-  font-weight: 400;
 }
 
 .index-module {
@@ -497,14 +483,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   min-height: 48px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: #777;
-  font-family: monospace;
-  font-size: 16px;
-  font-weight: 600;
   letter-spacing: 0.14em;
-}
-
-.index-module__header h2 {
-  font: inherit;
 }
 
 .stack-index,
@@ -528,7 +507,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   align-items: center;
   gap: 12px;
   color: #d6d6d6;
-  font-size: 12px;
   letter-spacing: 0.02em;
 }
 
@@ -591,16 +569,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .articles-index strong {
-  font-size: 16px;
   letter-spacing: 0.015em;
-  line-height: 1.2;
   text-transform: uppercase;
 }
 
 .articles-index small {
   color: #919191;
-  font-family: monospace;
-  font-size: var(--font-size-min);
   letter-spacing: 0.12em;
 }
 
@@ -619,17 +593,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     padding: 18px 12px 16px;
   }
 
-  .identity-name {
-    font-size: clamp(1.75rem, 9.3vw, 2.5rem);
-  }
-
   .identity-role {
-    font-size: var(--font-size-min);
     letter-spacing: 0.08em;
-  }
-
-  .identity-mission {
-    font-size: var(--font-size-min);
   }
 
   .identity-portrait img {
@@ -661,9 +626,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     min-height: 84px;
   }
 
-  .articles-index strong {
-    font-size: 14px;
-  }
 }
 
 @media (min-width: 1280px) {

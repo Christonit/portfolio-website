@@ -401,7 +401,7 @@ onUnmounted(() => {
       class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10"
     >
       <span
-        class="font-mono text-[9px] uppercase tracking-[0.3em] text-[#919191] animate-pulse"
+        class="text-label-data animate-pulse uppercase tracking-[0.3em] text-[#919191]"
       >
         DECODING_SUIT_MESH…
       </span>
@@ -411,7 +411,7 @@ onUnmounted(() => {
       class="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
     >
       <span
-        class="font-mono text-[9px] uppercase tracking-[0.3em] text-red-400/80"
+        class="text-label-data uppercase tracking-[0.3em] text-red-400/80"
       >
         SIGNAL_LOST // MESH_UNAVAILABLE
       </span>
