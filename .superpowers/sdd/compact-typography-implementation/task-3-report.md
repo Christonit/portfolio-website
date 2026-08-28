@@ -17,4 +17,5 @@
 ## Review
 
 - Reviewed the branch diff against `rafael-uxreview`; its existing foundation and migration changes remain scoped to the typography initiative, while this task changes only the design-system page and this report.
+- Removed the remaining `.system-button` `font-weight` declaration so `text-title-ui` is its only source of semantic type metrics.
 - Left the untracked `.playwright-mcp/` directory untouched.

@@ -301,7 +301,6 @@ const familyName = (familyRole: (typeof typography)[TypographyStyleKey]["familyR
   padding: 11px 14px;
   background: var(--color-ink);
   color: var(--color-canvas);
-  font-weight: 600;
 }
 
 .system-key {
