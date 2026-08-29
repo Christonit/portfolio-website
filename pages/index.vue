@@ -115,6 +115,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         id="hero-banner"
         class="identity-panel"
         aria-labelledby="identity-name"
+        @mouseenter="portraitHover = true"
+        @mouseleave="portraitHover = false"
+        @touchstart.passive="portraitHover = true"
+        @touchend.passive="portraitHover = false"
+        @touchcancel.passive="portraitHover = false"
       >
         <div class="identity-copy">
           <h1 id="identity-name" class="identity-name">
@@ -138,15 +143,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           </div>
         </div>
 
-        <div
-          class="identity-portrait"
-          :class="{ 'is-hovered': portraitHover }"
-          aria-hidden="true"
-          @mouseenter="portraitHover = true"
-          @mouseleave="portraitHover = false"
-        >
+        <div class="identity-portrait" aria-hidden="true">
           <PortraitPixelate :hovered="portraitHover" />
-          <div class="identity-scanline" />
         </div>
 
         <HudCorners :corners="['tl', 'bl']" />
@@ -257,7 +255,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .identity-panel {
   position: relative;
-  display: grid;
+  display: flex;
   grid-template-columns: minmax(0, 1fr) 190px;
   min-height: 252px;
   overflow: hidden;
@@ -273,14 +271,26 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(
+  background-image: repeating-linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.025) 0,
     rgba(255, 255, 255, 0.025) 1px,
     transparent 1px,
     transparent 4px
   );
+  background-size: 100% 4px;
   opacity: 0.65;
+  animation: scanline-scan 6s linear infinite;
+}
+
+@keyframes scanline-scan {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 120px;
+  }
 }
 
 .identity-copy {
@@ -290,6 +300,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   flex-direction: column;
   min-width: 0;
   padding: 22px 18px 20px;
+  width: 100%;
 }
 
 .identity-name {
@@ -346,6 +357,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   overflow: hidden;
   border-left: 1px solid rgba(255, 255, 255, 0.07);
   background: #0a0a0a;
+  min-width: 262px;
 }
 
 .identity-portrait::after {
@@ -360,62 +372,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     #0d0d0d 100%
   );
   pointer-events: none;
-}
-
-.identity-scanline {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.055) 0,
-    rgba(255, 255, 255, 0.055) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  opacity: 0.35;
-  animation: identity-scan-crawl 5s linear infinite;
-  transition: opacity 320ms ease;
-}
-
-/* Bright band that sweeps down the portrait like a scanner beam. */
-.identity-scanline::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(103, 245, 122, 0.12) 46%,
-    rgba(255, 255, 255, 0.22) 50%,
-    rgba(103, 245, 122, 0.12) 54%,
-    transparent 100%
-  );
-  background-size: 100% 42%;
-  background-repeat: no-repeat;
-  mix-blend-mode: screen;
-  animation: identity-scan-sweep 3.6s linear infinite;
-}
-
-/* Hovering the portrait clears the scan effects for a clean read. */
-.identity-portrait.is-hovered .identity-scanline {
-  opacity: 0;
-}
-
-@keyframes identity-scan-crawl {
-  to {
-    background-position: 0 30px;
-  }
-}
-
-@keyframes identity-scan-sweep {
-  0% {
-    background-position: 0 -50%;
-  }
-  100% {
-    background-position: 0 150%;
-  }
 }
 
 .featured-work {
@@ -582,13 +538,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-panel {
-    grid-template-columns: minmax(0, 1fr);
-    min-height: 0;
+    flex-direction: column;
   }
 
   .identity-portrait {
     order: -1;
-    height: 168px;
+    height: 324px;
     border-left: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
@@ -650,8 +605,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .identity-scanline,
-  .identity-scanline::after {
+  .identity-panel::after,
+  .index-module::after {
     animation: none;
   }
 
