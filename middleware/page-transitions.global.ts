@@ -1,5 +1,9 @@
 import { isSamePathIgnoringTrailingSlash } from "~/composables/useNavDirection";
 
+function isProjectDetail(path: string) {
+  return path.startsWith("/project/");
+}
+
 export default defineNuxtRouteMiddleware((to, from) => {
   if (import.meta.server) return;
 
@@ -18,6 +22,22 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // page, so the site paints, looks ready, and eats every click until the
   // transition times out. Neither hop is a page change: don't transition.
   if (isSamePathIgnoringTrailingSlash(to.path, from.path)) {
+    to.meta.viewTransition = false;
+    return;
+  }
+
+  // Pager hop between two dossiers (nav-dir "none"): the sheet already
+  // plays its own slide/fade on the payload, and CSS deliberately gives
+  // ::view-transition-old/new(hud-page) `animation: none` here, so the
+  // native view transition buys nothing visually. What it does buy is a
+  // browser-owned snapshot of `hud-page` (with the mobile sheet panel
+  // painted above the header via a descendant z-index) getting composited
+  // against `site-nav`'s independently-captured snapshot — two separate
+  // layers whose relative order isn't guaranteed to preserve that z-index
+  // relationship, which is what flashes the header for a frame. Skipping
+  // the view transition for this hop sidesteps that class of bug entirely
+  // rather than chasing its stacking order.
+  if (isProjectDetail(to.path) && isProjectDetail(from.path)) {
     to.meta.viewTransition = false;
   }
 });

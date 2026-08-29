@@ -370,7 +370,23 @@
   animation: none;
 }
 
+/* Explicit stacking for the view-transition groups: on mobile the dossier
+   sheet (captured as part of hud-page) rises to cover the header, so its
+   snapshot has to stay above site-nav's for the full life of any transition
+   that still runs here (the "modal-in"/"modal-out" open and dismiss). A
+   descendant's z-index inside hud-page's live DOM doesn't carry over to how
+   these two independent groups get stacked once captured — that's a
+   separate, default ordering — so without this the header can flash back
+   into view for a frame. The pager hop between two dossiers has the same
+   risk without any of the payoff (it's a hard cut either way), so
+   `middleware/page-transitions.global.ts` skips the view transition for
+   that case entirely rather than relying on this ordering alone. */
+::view-transition-group(site-nav) {
+  z-index: 1;
+}
+
 ::view-transition-group(hud-page) {
+  z-index: 2;
   overflow: hidden;
   animation: none;
 }
