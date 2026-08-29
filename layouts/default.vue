@@ -363,7 +363,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
     <!-- Desktop: uses the full viewport below the top navigation -->
     <main
       ref="mainRef"
-      class="hud-page absolute inset-x-0 top-14 z-10 pb-8 bottom-16 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden z-[99]"
+      class="hud-page absolute inset-x-0 top-14 z-10 pb-8 bottom-16 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
     >
       <slot />
     </main>

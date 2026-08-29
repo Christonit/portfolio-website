@@ -9,6 +9,10 @@ import {
  * projects board. It never runs edge to edge — the dim frame of board around
  * it, and the scrim you can click, are what say the page is still back there.
  *
+ * Teleported to document.body so position:fixed is viewport-relative. Inside
+ * hud-page, Safari treats overflow + view-transition-name as a containing
+ * block and clips the chrome that is supposed to cover the site header.
+ *
  * `role="dialog"` without `aria-modal`: the board is inert, but the site nav
  * and the project pager either side of the panel are meant to stay reachable,
  * and `aria-modal` would hide them from assistive tech.
@@ -76,12 +80,13 @@ watch(hudKey, (key) => {
 </script>
 
 <template>
-  <div
-    class="project-sheet"
-    :data-enter="enter"
-    :data-step="step"
-    :data-state="closing ? 'closing' : 'open'"
-  >
+  <Teleport to="body">
+    <div
+      class="project-sheet"
+      :data-enter="enter"
+      :data-step="step"
+      :data-state="closing ? 'closing' : 'open'"
+    >
     <div
       class="project-sheet__scrim"
       aria-hidden="true"
@@ -135,14 +140,15 @@ watch(hudKey, (key) => {
 
     <!-- Pager rails. Outside the panel so they sit in the board gutters, and
          after it in the reading order so the dossier comes first. -->
-    <slot name="nav" />
-  </div>
+      <slot name="nav" />
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
-/* Both layers sit under the site chrome (z-50) on purpose — the nav stays
-   lit and usable, which is what keeps this reading as a layer rather than a
-   new page. */
+/* Teleported to body, so these z-indexes compete with the layout chrome
+   (site-nav 50, main 10, mobile bottom nav 100) rather than nesting inside
+   hud-page's stacking context. */
 .project-sheet__scrim {
   position: fixed;
   inset: 3.5rem 0 0 0;
@@ -179,8 +185,7 @@ watch(hudKey, (key) => {
   /* Phones and small tablets: the panel rises all the way to the top edge,
      covering the site header, so the dossier reads as a full-height layer
      rather than one still boxed in by the top nav. It stops short of the
-     mobile bottom nav (also fixed, z-50) so that stays reachable, which is
-     why the panel needs to sit above the top nav in the stacking order. */
+     mobile bottom nav (fixed, z-100) so that stays reachable. */
   inset: 0 0 4rem 0;
   z-index: 55;
   animation: sheet-rise-in var(--sheet-in-dur) var(--sheet-ease) both;

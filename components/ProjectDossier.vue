@@ -12,17 +12,19 @@ const hudKey = useHudNav();
 
 const frames = ref<GalleryFrame[]>([]);
 const videoFailed = ref(false);
+const needsGesture = ref(false);
 const activeIndex = ref(0);
 const demoVideo = ref<HTMLVideoElement | null>(null);
 
 const hasVideo = computed(
   () => Boolean(props.project.video) && !videoFailed.value,
 );
-// iOS/Safari has never supported the WebM container, so every reel also
-// ships an H.264 MP4 sibling (same basename) for those browsers to fall
-// back to; the <video> element itself picks whichever <source> it can play.
-const videoMp4Src = computed(() =>
-  props.project.video?.replace(/\.webm$/i, ".mp4"),
+// Safari (and every iOS browser) advertises WebM in canPlayType, then
+// stalls on the VP9 file — especially these reels, which were encoded
+// with alpha. A single H.264 src on the <video> itself skips that
+// source-selection bug entirely; Chromium still plays the MP4 fine.
+const demoSrc = computed(
+  () => props.project.video?.replace(/\.webm$/i, ".mp4") ?? "",
 );
 const galleryCount = computed(() => frames.value.length);
 const counter = computed(
@@ -47,6 +49,7 @@ function resetForProject() {
     props.project.image,
   );
   videoFailed.value = false;
+  needsGesture.value = false;
   activeIndex.value = 0;
 }
 
@@ -103,13 +106,22 @@ async function expandDemo() {
   }
 }
 
+function armVideo(el: HTMLVideoElement) {
+  el.muted = true;
+  el.defaultMuted = true;
+  el.playsInline = true;
+  el.setAttribute("webkit-playsinline", "true");
+}
+
 async function playDemo() {
   const el = demoVideo.value;
   if (!el) return;
+  armVideo(el);
   try {
     await el.play();
+    needsGesture.value = false;
   } catch {
-    /* Autoplay can be blocked; the reel stays muted and silent. */
+    needsGesture.value = true;
   }
 }
 
@@ -117,9 +129,19 @@ function pauseDemo() {
   demoVideo.value?.pause();
 }
 
+function onCanPlay() {
+  if (prefersReducedMotion()) return;
+  void playDemo();
+}
+
 async function startDemoIfReady() {
   await nextTick();
-  if (hasVideo.value && !prefersReducedMotion()) void playDemo();
+  const el = demoVideo.value;
+  if (!el || !hasVideo.value) return;
+  armVideo(el);
+  if (prefersReducedMotion()) return;
+  if (el.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) el.load();
+  void playDemo();
 }
 
 watch(hudKey, (key) => {
@@ -155,21 +177,27 @@ onBeforeUnmount(pauseDemo);
           v-if="hasVideo"
           ref="demoVideo"
           class="project-demo-video"
+          :src="demoSrc"
           :poster="project.image"
+          autoplay
           muted
           loop
           playsinline
-          preload="none"
+          preload="auto"
           :aria-label="`${project.name} product demo`"
+          @canplay="onCanPlay"
+          @playing="needsGesture = false"
           @error="onVideoError"
+        />
+        <button
+          v-if="hasVideo && needsGesture"
+          type="button"
+          class="project-demo-play"
+          aria-label="Play demo"
+          @click="playDemo"
         >
-          <!-- Order matters: the browser plays the first <source> it can
-               decode. WebM first keeps the smaller file for browsers that
-               support it; Safari/iOS, which can't decode WebM at all, skips
-               straight to the MP4. -->
-          <source :src="project.video" type="video/webm" />
-          <source :src="videoMp4Src" type="video/mp4" />
-        </video>
+          PLAY
+        </button>
         <button
           v-if="hasVideo"
           type="button"
@@ -410,6 +438,8 @@ onBeforeUnmount(pauseDemo);
 }
 
 .project-demo-video {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -417,6 +447,21 @@ onBeforeUnmount(pauseDemo);
   object-position: center top;
   background: #000;
   pointer-events: none;
+}
+
+.project-demo-play {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  color: #e2e2e2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.18em;
 }
 
 .project-demo-video:fullscreen,
