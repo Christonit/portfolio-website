@@ -120,7 +120,7 @@ onUnmounted(() => {
       <span class="hud-label">// PROJECTS</span>
       <h1
         class="font-semibold uppercase tracking-tighter text-white"
-        style="font-size: clamp(2.1rem, 4.4vw, 3.6rem); line-height: 0.92"
+        style="font-size: var(--text-display); line-height: 0.92"
       >
         SELECTED WORK
       </h1>

@@ -45,18 +45,7 @@ function onKeydown(e: KeyboardEvent) {
   if (tag === "INPUT" || tag === "TEXTAREA") return;
 
   switch (e.key) {
-    case "a":
-    case "A":
-      e.preventDefault();
-      flash("A");
-      prevPage();
-      break;
-    case "d":
-    case "D":
-      e.preventDefault();
-      flash("D");
-      nextPage();
-      break;
+    // A/D page navigation temporarily disabled
     case "ArrowUp":
     case "ArrowDown":
     case "ArrowLeft":
@@ -190,14 +179,13 @@ watch(() => route.path, scrollMainToTopOnMobile);
         style="width: fit-content"
       >
         <button
-          class="site-nav-key mr-6 hidden items-center justify-center transition-all duration-100 xl:inline-flex"
+          class="site-nav-key mr-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
             isPressed('A')
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Previous page (A)"
-          aria-keyshortcuts="A"
+          aria-label="Previous page"
           @click="prevPage"
         >
           <kbd
@@ -223,40 +211,32 @@ watch(() => route.path, scrollMainToTopOnMobile);
         </button>
 
         <!-- Page links (desktop only — mobile uses bottom nav) -->
-        <ul class="hidden xl:flex items-center gap-10">
-          <li v-for="item in navItems" :key="item.path">
+        <ul class="hidden xl:flex items-stretch">
+          <li v-for="item in navItems" :key="item.path" class="flex">
             <NuxtLink
               :to="item.path"
               :class="[
-                'inline-flex h-8 items-center px-1 font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
+                'relative inline-flex h-14 items-center px-4 font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
+                'after:absolute after:bottom-0 after:left-4 after:right-[calc(1rem+0.2em)] after:h-px',
                 isActive(item.path)
-                  ? 'text-white'
-                  : 'text-[#919191] hover:text-white',
+                  ? 'text-white after:bg-white'
+                  : 'text-[#919191] hover:text-white hover:bg-[#1f1f1f] after:bg-transparent',
               ]"
             >
-              <span
-                :class="
-                  isActive(item.path)
-                    ? 'relative pb-1 after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[calc(100%-0.2em)] after:-translate-x-1/2 after:bg-white'
-                    : ''
-                "
-              >
-                {{ item.label }}
-              </span>
+              {{ item.label }}
             </NuxtLink>
           </li>
         </ul>
 
         <!-- Next-page keyboard control (desktop only) -->
         <button
-          class="site-nav-key ml-6 hidden items-center justify-center transition-all duration-100 xl:inline-flex"
+          class="site-nav-key ml-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
             isPressed('D')
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Next page (D)"
-          aria-keyshortcuts="D"
+          aria-label="Next page"
           @click="nextPage"
         >
           <kbd
@@ -289,7 +269,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           :aria-label="isMuted ? 'Unmute Audio' : 'Mute Audio'"
           @click.stop="toggleMute"
         >
-          <span class="material-symbols-outlined text-xl">
+          <span class="material-symbols-outlined icon-md">
             {{ isMuted ? 'volume_off' : 'volume_up' }}
           </span>
         </button>
@@ -355,10 +335,10 @@ watch(() => route.path, scrollMainToTopOnMobile);
           "
           draggable="false"
         />
-        <span v-else class="material-symbols-outlined text-xl leading-none">{{
+        <span v-else class="material-symbols-outlined icon-md leading-none">{{
           item.icon
         }}</span>
-        <span class="font-mono text-xs uppercase tracking-widest font-bold">{{
+        <span class="font-mono text-xs uppercase tracking-widest font-semibold">{{
           item.label
         }}</span>
       </NuxtLink>

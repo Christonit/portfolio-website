@@ -122,7 +122,7 @@ const ariaLabel = computed(() => {
         style="border-radius: 9999px"
         aria-hidden="true"
       >
-        <span class="material-symbols-outlined text-[22px] leading-none"
+        <span class="material-symbols-outlined icon-md leading-none"
           >add</span
         >
       </div>
@@ -160,7 +160,7 @@ const ariaLabel = computed(() => {
         />
         <span
           v-else
-          class="relative z-[1] material-symbols-outlined text-[40px] text-white/90"
+          class="relative z-[1] material-symbols-outlined icon-lg text-white/90"
           aria-hidden="true"
         >
           {{ project.icon || "deployed_code" }}
@@ -170,12 +170,12 @@ const ariaLabel = computed(() => {
       <div class="flex flex-1 flex-col gap-4 px-5 pb-5 pt-5">
         <div class="flex flex-col gap-2">
           <h2
-            class="line-clamp-2 text-[1.15rem] font-semibold uppercase leading-[1.05] tracking-tight text-white"
+            class="line-clamp-2 text-lg font-semibold uppercase leading-[1.05] tracking-tight text-white"
           >
             {{ project.name }}
           </h2>
           <p
-            class="line-clamp-2 font-mono text-xs leading-relaxed text-[#919191]"
+            class="line-clamp-2 font-mono text-sm leading-relaxed text-[#919191]"
           >
             {{ project.description || project.tasks[0] }}
           </p>

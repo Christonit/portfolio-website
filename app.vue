@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import type { NavDir } from "~/composables/useNavDirection";
+
 useIdentitySchema();
 
 const navDir = useNavDirection();
 
+const TRANSITION_NAMES: Record<NavDir, string> = {
+  forward: "hud-forward",
+  back: "hud-back",
+  "modal-in": "hud-modal-in",
+  "modal-out": "hud-modal-out",
+};
+
 const pageTransition = computed(() => ({
-  name: navDir.value === "back" ? "hud-back" : "hud-forward",
+  name: TRANSITION_NAMES[navDir.value] ?? "hud-forward",
 }));
 </script>
 
