@@ -182,7 +182,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
 
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
     <nav
-      class="site-nav fixed top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10"
+      class="site-nav sticky top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10"
     >
       <!-- Logo: always visible -->
       <NuxtLink
