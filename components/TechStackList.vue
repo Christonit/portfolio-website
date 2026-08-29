@@ -18,7 +18,7 @@ defineProps<{
   <div class="order-3 xl:order-2 flex-shrink-0 xl:flex xl:flex-col xl:min-h-0">
     <div class="flex justify-between items-center mb-2 flex-shrink-0">
       <h3 class="hud-label font-semibold lg:font-normal">TECH STACK</h3>
-      <span class="font-mono text-[8px] text-[#919191]"
+      <span class="font-mono text-2xs text-[#919191]"
         >MOD_{{ String(skills.length).padStart(3, "0") }}</span
       >
     </div>
@@ -60,7 +60,7 @@ defineProps<{
             "
           />
           <span
-            class="lg:font-bold text-[12px] uppercase tracking-wider"
+            class="lg:font-semibold text-xs uppercase tracking-wider"
             :class="focusedSkill === i ? 'xl:text-white' : ''"
             >{{ skill.name }}</span
           >

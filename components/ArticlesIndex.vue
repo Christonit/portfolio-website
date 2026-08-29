@@ -98,7 +98,7 @@ defineProps<{
 }
 
 .articles-index-list strong {
-  font-size: 16px;
+  font-size: var(--text-sm);
   letter-spacing: 0.015em;
   line-height: 1.2;
   text-transform: uppercase;
@@ -106,8 +106,8 @@ defineProps<{
 
 .articles-index-list small {
   color: #919191;
-  font-family: monospace;
-  font-size: var(--font-size-min);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
 }
 
@@ -118,9 +118,6 @@ defineProps<{
     min-height: 84px;
   }
 
-  .articles-index-list strong {
-    font-size: 14px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -23,30 +23,57 @@ export default defineNuxtPlugin(() => {
       const target = event.target;
       if (!(target instanceof Element)) return;
 
-      if (target.closest("[data-nav-back]")) {
-        markDirection("back");
+      const anchor = target.closest("a");
+
+      // Pager controls may opt into a direction; other anchors resolve by path
+      // so leaving a project dossier dismisses the sheet.
+      if (isInternalAnchor(anchor)) {
+        markDirection(
+          navDirectionForNavigation(
+            anchor.pathname,
+            window.location.pathname,
+            anchor.dataset.navDirection,
+          ),
+        );
         return;
       }
 
-      const anchor = target.closest("a");
-      if (isInternalAnchor(anchor)) {
-        markDirection(
-          navDirectionForPath(anchor.pathname, window.location.pathname),
-        );
+      if (target.closest("[data-nav-back]")) {
+        markDirection("back");
       }
     },
     true,
   );
 
-  window.addEventListener("popstate", () => {
-    markDirection("back");
-  });
-
   const router = useRouter();
+
+  // vue-router stamps a monotonic `position` onto each history entry, and the
+  // browser has already swapped it in by the time our guard runs on a
+  // back/forward. A popstate listener can't be used here: the router's own
+  // listener is registered first, so its guards run before ours would fire.
+  const historyPosition = () =>
+    (window.history.state?.position as number | undefined) ?? 0;
+  let lastPosition = historyPosition();
+
   router.beforeEach((to, from) => {
+    // Pushes only write their position once the navigation is confirmed, so a
+    // position that already moved means the browser walked the stack for us.
+    const position = historyPosition();
+    const wentBackInHistory = position < lastPosition;
+
     if (!from.matched.length) {
       applyNavDirection("forward");
       hint.value = null;
+      return;
+    }
+
+    const dir = navDirectionForPath(to.path, from.path);
+
+    if (wentBackInHistory) {
+      hint.value = null;
+      // Retreating through the stack never plays as a forward slide, but a
+      // modal dismissal already reads as backwards and is kept.
+      applyNavDirection(dir === "forward" ? "back" : dir);
       return;
     }
 
@@ -56,6 +83,11 @@ export default defineNuxtPlugin(() => {
       return;
     }
 
-    applyNavDirection(navDirectionForPath(to.path, from.path));
+    applyNavDirection(dir);
+  });
+
+  // finalizeNavigation has written the new entry by the time afterEach runs.
+  router.afterEach(() => {
+    lastPosition = historyPosition();
   });
 });

@@ -20,26 +20,53 @@ const colors = [
 ];
 
 const typeScale = [
-  { name: "DISPLAY XL", size: "56px", weight: "600", sample: "SYSTEM INDEX" },
-  { name: "DISPLAY MD", size: "36px", weight: "600", sample: "SELECTED WORK" },
   {
-    name: "HEADING",
-    size: "24px",
+    name: "DISPLAY",
+    size: "34\u201354px",
+    css: "var(--text-display)",
+    family: "Tomorrow",
     weight: "600",
-    sample: "Interface architecture",
+    sample: "SYSTEM INDEX",
   },
-  { name: "TITLE", size: "18px", weight: "600", sample: "Tomorrow Semibold" },
+  {
+    name: "TITLE",
+    size: "20px",
+    css: "var(--text-lg)",
+    family: "Tomorrow",
+    weight: "600",
+    sample: "Selected work",
+  },
   {
     name: "BODY",
-    size: "14px",
+    size: "16px",
+    css: "var(--text-base)",
+    family: "Tomorrow",
     weight: "400",
     sample: "Readable body copy for product stories and project details.",
   },
   {
+    name: "BODY / COMPACT",
+    size: "14px",
+    css: "var(--text-sm)",
+    family: "Tomorrow",
+    weight: "400",
+    sample: "Denser copy for list rows and secondary blurbs.",
+  },
+  {
     name: "LABEL / MIN",
     size: "12px",
-    weight: "500",
-    sample: "MINIMUM UI TEXT — 12 PX",
+    css: "var(--text-xs)",
+    family: "Departure Mono",
+    weight: "400",
+    sample: "MINIMUM UI TEXT \u2014 12 PX",
+  },
+  {
+    name: "MICRO",
+    size: "10px",
+    css: "var(--text-2xs)",
+    family: "Departure Mono",
+    weight: "400",
+    sample: "TAGS / META / IDS",
   },
 ];
 </script>
@@ -51,19 +78,26 @@ const typeScale = [
       <h1>SYSTEM INDEX</h1>
       <p>
         A working inventory of the visual language used across the portfolio.
-        The minimum interface type size is 12px.
+        Two families, six sizes, two weights. Departure Mono is reserved for
+        labels, metadata and readouts; 12px is the floor for interface copy.
       </p>
     </header>
 
     <section class="system-section" aria-labelledby="type-heading">
       <header class="system-section__header">
         <h2 id="type-heading">TYPEFACE + SCALE</h2>
-        <span>TOMORROW / 100–700</span>
+        <span>02 FAMILIES / 06 SIZES</span>
       </header>
 
       <div class="font-card">
-        <span class="font-card__meta">PRIMARY FAMILY</span>
+        <span class="font-card__meta">READING FAMILY — 400 / 600</span>
         <strong>TOMORROW</strong>
+        <p>ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</p>
+      </div>
+
+      <div class="font-card">
+        <span class="font-card__meta">HUD FAMILY — 400</span>
+        <strong class="font-mono">DEPARTURE MONO</strong>
         <p>ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</p>
       </div>
 
@@ -72,8 +106,18 @@ const typeScale = [
           <div class="type-scale__meta">
             <strong>{{ style.name }}</strong>
             <span>{{ style.size }} / {{ style.weight }}</span>
+            <span>{{ style.family }}</span>
           </div>
-          <p :style="{ fontSize: style.size, fontWeight: style.weight }">
+          <p
+            :style="{
+              fontFamily:
+                style.family === 'Tomorrow'
+                  ? 'var(--font-sans)'
+                  : 'var(--font-mono)',
+              fontSize: style.css,
+              fontWeight: style.weight,
+            }"
+          >
             {{ style.sample }}
           </p>
         </li>
@@ -137,7 +181,7 @@ const typeScale = [
 
 .system-hero h1 {
   color: var(--color-ink);
-  font-size: clamp(2.1rem, 5vw, 3.6rem);
+  font-size: var(--text-display);
   font-weight: 600;
   letter-spacing: -0.05em;
   line-height: 0.92;
@@ -146,8 +190,8 @@ const typeScale = [
 .system-hero p {
   max-width: 620px;
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   line-height: 1.6;
 }
 
@@ -163,8 +207,8 @@ const typeScale = [
   gap: 16px;
   border-bottom: 1px solid var(--color-rule);
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: var(--font-size-min);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   letter-spacing: 0.14em;
 }
 
@@ -183,14 +227,14 @@ const typeScale = [
 .font-card__meta,
 .font-card p {
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: var(--font-size-min);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   letter-spacing: 0.1em;
 }
 
 .font-card strong {
   color: var(--color-ink);
-  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-size: var(--text-display);
   font-weight: 600;
   letter-spacing: -0.06em;
   line-height: 0.9;
@@ -210,8 +254,8 @@ const typeScale = [
   flex-direction: column;
   gap: 4px;
   color: var(--color-muted);
-  font-family: monospace;
-  font-size: var(--font-size-min);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
 }
 
 .type-scale__meta strong {
@@ -248,8 +292,8 @@ const typeScale = [
   flex-direction: column;
   gap: 5px;
   padding: 12px;
-  font-family: monospace;
-  font-size: var(--font-size-min);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
 }
 
 .color-meta strong {
@@ -274,8 +318,8 @@ const typeScale = [
 .system-key {
   border: 1px solid var(--color-rule);
   color: var(--color-body);
-  font-family: monospace;
-  font-size: var(--font-size-min);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   letter-spacing: 0.1em;
 }
 

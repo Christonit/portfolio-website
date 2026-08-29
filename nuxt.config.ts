@@ -125,6 +125,13 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/images/favicon.ico" },
+        {
+          rel: "preload",
+          as: "font",
+          type: "font/woff2",
+          href: "/fonts/DepartureMono-Regular.woff2",
+          crossorigin: "",
+        },
         { rel: "preconnect", href: "https://www.googletagmanager.com" },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         {
@@ -134,7 +141,7 @@ export default defineNuxtConfig({
         },
         {
           rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Tomorrow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,400;1,600&display=swap",
+          href: "https://fonts.googleapis.com/css2?family=Tomorrow:wght@400;600&display=swap",
         },
         // Subset to only the icons we actually render. The unsubsetted
         // request (every axis at full range) ships a 3.9 MB variable font.
@@ -145,7 +152,7 @@ export default defineNuxtConfig({
           rel: "stylesheet",
           href:
             "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" +
-            "&icon_names=add,analytics,article,auto_awesome,candlestick_chart,deployed_code,fingerprint,fullscreen,grid_view,hexagon" +
+            "&icon_names=add,analytics,article,auto_awesome,candlestick_chart,close,deployed_code,fingerprint,fullscreen,grid_view,hexagon" +
             "&display=block",
         },
       ],

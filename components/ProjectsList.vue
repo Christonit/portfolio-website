@@ -250,7 +250,7 @@ onUnmounted(() => {
           />
           <div class="flex flex-col gap-1">
             <span
-              class="font-bold text-[12px] leading-none block uppercase tracking-wider transition-colors"
+              class="font-semibold text-xs leading-none block uppercase tracking-wider transition-colors"
               :class="
                 highlightedIndex === i
                   ? 'text-white'
@@ -260,7 +260,7 @@ onUnmounted(() => {
               {{ mission.name }}
             </span>
             <span
-              class="font-mono text-[10px] leading-none text-[#919191] uppercase mt-0.5"
+              class="font-mono text-2xs leading-none text-[#919191] uppercase mt-0.5"
             >
               // {{ mission.tags }}
             </span>

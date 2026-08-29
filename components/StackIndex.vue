@@ -10,14 +10,20 @@ defineProps<{
 </script>
 
 <template>
-  <ul class="stack-index" role="list">
-    <li v-for="(skill, index) in skills" :key="skill.name">
-      <span class="stack-index__row" v-reveal="Math.min(index, 8) * 40">
+  <ul class="stack-index" role="list" v-reveal>
+    <li
+      v-for="(skill, index) in skills"
+      :key="skill.name"
+      :style="{
+        '--stack-row': Math.floor(index / 2),
+        '--stack-row-narrow': index,
+      }"
+    >
+      <span class="stack-index__row">
         <span class="stack-index__label">
           <img :src="skill.iconSrc" alt="" width="18" height="18" />
           <strong>{{ skill.name }}</strong>
         </span>
-        <span class="stack-index__rule" aria-hidden="true" />
       </span>
     </li>
   </ul>
@@ -34,6 +40,14 @@ defineProps<{
   -ms-overflow-style: none;
 }
 
+/* The list owns the observer while the rows own the staggered motion. */
+.stack-index[data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+  will-change: auto;
+}
+
 .stack-index::-webkit-scrollbar {
   display: none;
   width: 0;
@@ -43,15 +57,26 @@ defineProps<{
 .stack-index li {
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  --stack-delay: calc(var(--stack-row, 0) * 70ms);
 }
 
 .stack-index__row {
   display: flex;
   min-height: 42px;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
   padding: 0 12px;
+  opacity: 0;
+  transform: translateY(var(--scroll-reveal-distance));
+  transition:
+    opacity var(--scroll-reveal-dur) var(--scroll-reveal-ease)
+      var(--stack-delay),
+    transform var(--scroll-reveal-dur) var(--scroll-reveal-ease)
+      var(--stack-delay);
+}
+
+.stack-index[data-reveal="shown"] .stack-index__row {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .stack-index li:nth-child(odd) {
@@ -63,19 +88,13 @@ defineProps<{
   align-items: center;
   gap: 12px;
   color: #d6d6d6;
-  font-size: 12px;
+  font-size: var(--text-xs);
   letter-spacing: 0.02em;
 }
 
 .stack-index__label img {
   filter: brightness(0) invert(1);
   opacity: 0.42;
-}
-
-.stack-index__rule {
-  width: 44px;
-  height: 1px;
-  background: #343434;
 }
 
 @media (max-width: 639px) {
@@ -85,6 +104,18 @@ defineProps<{
 
   .stack-index li:nth-child(odd) {
     border-right: none;
+  }
+
+  .stack-index li {
+    --stack-delay: calc(var(--stack-row-narrow, 0) * 45ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stack-index__row {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 </style>

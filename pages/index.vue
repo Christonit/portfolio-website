@@ -147,7 +147,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           <PortraitPixelate :hovered="portraitHover" />
         </div>
 
-        <HudCorners :corners="['tl', 'bl']" />
+        <HudCorners />
       </section>
 
       <section
@@ -198,15 +198,24 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
               </div>
 
               <div class="dossier-card__body">
-                <h3>{{ project.name }}</h3>
-
-                <div class="dossier-card__footer">
-                  <span>{{
-                    isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT"
+                <div class="dossier-card__title-row">
+                  <h3>{{ project.name }}</h3>
+                  <span class="dossier-card__index">{{
+                    projectCounter(index)
                   }}</span>
-                  <span>{{ projectCounter(index) }}</span>
                 </div>
+
+                <p class="dossier-card__summary">
+                  {{ project.description || project.tasks[0] }}
+                </p>
               </div>
+
+              <span class="dossier-card__cta">
+                {{ isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT" }}
+                <span class="dossier-card__cta-arrow" aria-hidden="true"
+                  >&rarr;</span
+                >
+              </span>
             </NuxtLink>
           </li>
         </ul>
@@ -241,10 +250,18 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 <style scoped>
 .home-console {
+  /* Film grain lifted from the portrait plate — blended, not painted, so the
+     tone underneath stays put and only the texture comes through. */
+  --identity-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
   height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-gutter: stable;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.home-console::-webkit-scrollbar {
+  display: none;
 }
 
 .home-rail {
@@ -259,9 +276,17 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   grid-template-columns: minmax(0, 1fr) 190px;
   min-height: 252px;
   overflow: hidden;
+  /* Grain + tone are matched to the portrait plate so the whole card reads as
+     one continuous surface instead of copy-panel-plus-photo. */
   background:
+    var(--identity-grain),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
-    rgba(11, 11, 11, 0.44);
+    #101010;
+  background-size:
+    180px 180px,
+    auto,
+    auto;
+  background-blend-mode: overlay, normal, normal;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
 }
 
@@ -306,8 +331,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .identity-name {
   margin-top: 10px;
   color: #fff;
-  font-size: clamp(2.15rem, 7.2vw, 3rem);
-  font-weight: 650;
+  font-size: var(--text-display);
+  font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 0.86;
   text-transform: uppercase;
@@ -323,8 +348,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .identity-role {
   margin-top: 2px;
   color: #fff;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--text-sm);
+  font-weight: 600;
   letter-spacing: 0.13em;
 }
 
@@ -334,7 +359,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   gap: 2px;
   margin-top: 3px;
   color: #c6c6c6;
-  font-size: var(--font-size-min);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   line-height: 1.35;
   text-transform: uppercase;
 }
@@ -353,11 +379,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .identity-portrait {
   position: relative;
-  min-width: 0;
-  overflow: hidden;
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
-  background: #0a0a0a;
   min-width: 262px;
+  overflow: hidden;
+  background: #101010;
 }
 
 .identity-portrait::after {
@@ -366,10 +390,10 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   inset: 0;
   background: linear-gradient(
     90deg,
-    #0d0d0d 0%,
-    transparent 26%,
-    transparent 76%,
-    #0d0d0d 100%
+    #101010 0%,
+    rgba(16, 16, 16, 0) 34%,
+    rgba(16, 16, 16, 0) 78%,
+    #101010 100%
   );
   pointer-events: none;
 }
@@ -392,7 +416,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   position: relative;
   display: flex;
   height: 100%;
-  min-height: 250px;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid #292929;
@@ -419,7 +442,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .dossier-card__image {
   position: relative;
   display: flex;
-  aspect-ratio: 16 / 8.5;
+  aspect-ratio: 16 / 8;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -437,36 +460,39 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .dossier-card__image img {
-  width: 100%;
-  height: 100%;
+  /* Sources carry a 1px white edge on all four sides — bleed the image past
+     the frame on every axis so the overflow clip eats it. */
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  margin-block: -2px;
+  margin-inline: -2px;
   object-fit: cover;
   object-position: top center;
-  transition:
-    filter 180ms ease,
-    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* No hover scale: the crop is already tight, so zooming clipped the artwork
+     against the card edge. Tone-only response instead. */
+  transition: filter 180ms ease;
 }
 
 .dossier-card:hover .dossier-card__image img,
 .dossier-card:focus-visible .dossier-card__image img,
 .dossier-card.is-focused .dossier-card__image img {
   filter: saturate(1.08) contrast(1.04);
-  transform: scale(1.02);
 }
 
 .dossier-card__body {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 12px;
-  min-height: 92px;
-  padding: 16px 16px 14px;
+  gap: 7px;
+  padding: 14px 16px 16px;
 }
 
 .dossier-card__body h3 {
+  min-width: 0;
   overflow: hidden;
   color: #fff;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--text-sm);
+  font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.1;
   text-overflow: ellipsis;
@@ -474,23 +500,91 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   white-space: nowrap;
 }
 
-.dossier-card__footer {
+/* Slot number rides the title baseline on the opposite end of the row, so the
+   card reads as one line instead of a stranded number under the name. */
+.dossier-card__title-row {
   display: flex;
-  align-items: end;
+  min-width: 0;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 3px;
-  color: #fff;
-  font-family: monospace;
-  font-size: var(--font-size-min);
-  font-weight: 700;
+  gap: 12px;
+}
+
+.dossier-card__index {
+  flex-shrink: 0;
+  color: #3f3f3f;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   letter-spacing: 0.11em;
 }
 
-.dossier-card__footer span:last-child {
-  color: #3f3f3f;
-  font-weight: 400;
+/* Two lines of context under the name — same summary the projects index
+   shows, clamped so every card in the row keeps the same body height. */
+.dossier-card__summary {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Reads as the card's button: full-width strip on the bottom edge, lit by the
+   card's own hover state since the whole card is the link. */
+.dossier-card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  border-top: 1px solid #262626;
+  background: rgba(255, 255, 255, 0.025);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.dossier-card:hover .dossier-card__cta,
+.dossier-card:focus-visible .dossier-card__cta,
+.dossier-card.is-focused .dossier-card__cta {
+  border-color: rgba(103, 245, 122, 0.34);
+  background: rgba(103, 245, 122, 0.1);
+  color: var(--color-signal);
+}
+
+.dossier-card__cta-arrow {
+  transition: transform 150ms ease;
+}
+
+.dossier-card:hover .dossier-card__cta-arrow,
+.dossier-card:focus-visible .dossier-card__cta-arrow,
+.dossier-card.is-focused .dossier-card__cta-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dossier-card,
+  .dossier-card__cta,
+  .dossier-card__cta-arrow {
+    transition: none;
+  }
+
+  .dossier-card:hover,
+  .dossier-card:focus-visible,
+  .dossier-card.is-focused,
+  .dossier-card:hover .dossier-card__cta-arrow,
+  .dossier-card:focus-visible .dossier-card__cta-arrow,
+  .dossier-card.is-focused .dossier-card__cta-arrow {
+    transform: none;
+  }
 }
 
 .index-module {
@@ -517,8 +611,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   min-height: 48px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: #777;
-  font-family: monospace;
-  font-size: 16px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.14em;
 }
@@ -544,12 +638,10 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   .identity-portrait {
     order: -1;
     height: 324px;
-    border-left: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
 
   .identity-portrait::after {
-    background: linear-gradient(180deg, transparent 42%, #0d0d0d 100%);
+    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 42%, #101010 100%);
   }
 
   .identity-copy {
@@ -558,7 +650,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
   .identity-name {
     margin-top: 0;
-    font-size: clamp(1.75rem, 9.3vw, 2.5rem);
   }
 
   .identity-facts {
@@ -567,16 +658,18 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-role {
-    font-size: var(--font-size-min);
+    font-size: var(--text-xs);
     letter-spacing: 0.08em;
   }
 
   .identity-mission {
-    font-size: clamp(10px, 3.1vw, 12px);
+    font-size: var(--text-2xs);
   }
 
+  /* Departure Mono runs wider than the body face, so the mission line no
+     longer fits on one row at phone widths — let it wrap instead of clip. */
   .identity-mission__lead {
-    white-space: nowrap;
+    text-wrap: balance;
   }
 
   .featured-work,

@@ -174,8 +174,8 @@ onUnmounted(() => {
   background: transparent;
   color: #919191;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: var(--text-2xs);
+  font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1;
   white-space: nowrap;
@@ -349,8 +349,8 @@ onUnmounted(() => {
   left: 0.5rem;
   z-index: 2;
   color: #67f57a;
-  font-size: 8px;
-  font-weight: 700;
+  font-size: var(--text-2xs);
+  font-weight: 600;
   letter-spacing: 0.16em;
   line-height: 1;
   text-transform: uppercase;
@@ -367,8 +367,8 @@ onUnmounted(() => {
   border: 1px solid rgba(103, 245, 122, 0.35);
   background: rgba(12, 12, 12, 0.82);
   color: #67f57a;
-  font-size: 8px;
-  font-weight: 700;
+  font-size: var(--text-2xs);
+  font-weight: 600;
   letter-spacing: 0.16em;
   line-height: 1;
   text-decoration: none;
@@ -404,14 +404,14 @@ onUnmounted(() => {
 
 .local-time__kicker {
   color: #67f57a;
-  font-size: 8px;
-  font-weight: 700;
+  font-size: var(--text-2xs);
+  font-weight: 600;
   letter-spacing: 0.22em;
   line-height: 1;
 }
 
 .local-time__place strong {
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1.15;
@@ -421,7 +421,7 @@ onUnmounted(() => {
 
 .local-time__place span:last-child {
   color: #919191;
-  font-size: 10px;
+  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
   line-height: 1.25;
   text-transform: uppercase;
@@ -429,7 +429,7 @@ onUnmounted(() => {
 
 .local-time__card-clock {
   color: #e2e2e2;
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -438,7 +438,7 @@ onUnmounted(() => {
 
 @media (min-width: 1280px) {
   .local-time__trigger {
-    font-size: 11px;
+    font-size: var(--text-xs);
     padding: 0.25rem 0.65rem;
   }
 }

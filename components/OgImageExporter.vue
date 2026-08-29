@@ -70,7 +70,7 @@ function exportPng() {
   <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8">
     <div class="space-y-2">
       <span class="hud-label">OG_IMAGE_EXPORT</span>
-      <h1 class="text-white text-2xl font-semibold uppercase tracking-tight">
+      <h1 class="text-white text-lg font-semibold uppercase tracking-tight">
         Open Graph Image Generator
       </h1>
       <p class="font-mono text-xs text-[#919191] leading-relaxed max-w-2xl">
@@ -92,7 +92,7 @@ function exportPng() {
           step="0.01"
           class="w-full accent-white"
         />
-        <span class="font-mono text-[10px] text-[#919191]">
+        <span class="font-mono text-2xs text-[#919191]">
           {{ rotationY.toFixed(2) }} rad
         </span>
       </label>
@@ -131,7 +131,7 @@ function exportPng() {
           <div
             class="absolute top-2 left-2 border-l border-t border-white/15 px-2 py-0.5"
           >
-            <span class="font-mono text-[8px] text-[#919191] uppercase">
+            <span class="font-mono text-2xs text-[#919191] uppercase">
               SCAN_LOCK: TARGET_ACQUIRED
             </span>
           </div>
@@ -145,12 +145,12 @@ function exportPng() {
               />
             </div>
             <div
-              class="font-mono text-[9px] uppercase tracking-widest text-[#919191]"
+              class="font-mono text-2xs uppercase tracking-widest text-[#919191]"
             >
               SUIT INTEGRITY HIGH
             </div>
             <div
-              class="mt-0.5 font-mono text-[7px] uppercase tracking-widest text-[#474747]"
+              class="mt-0.5 font-mono text-2xs uppercase tracking-widest text-[#474747]"
             >
               OPTIMAL_V_2.4
             </div>
@@ -167,7 +167,7 @@ function exportPng() {
           class="absolute inset-0 z-20 flex items-center justify-center bg-[#131313]"
         >
           <span
-            class="animate-pulse font-mono text-[9px] uppercase tracking-[0.3em] text-[#919191]"
+            class="animate-pulse font-mono text-2xs uppercase tracking-[0.3em] text-[#919191]"
           >
             DECODING_SUIT_MESH…
           </span>
@@ -178,7 +178,7 @@ function exportPng() {
           class="absolute inset-0 z-20 flex items-center justify-center bg-[#131313]"
         >
           <span
-            class="font-mono text-[9px] uppercase tracking-[0.3em] text-red-400/80"
+            class="font-mono text-2xs uppercase tracking-[0.3em] text-red-400/80"
           >
             SIGNAL_LOST // MESH_UNAVAILABLE
           </span>

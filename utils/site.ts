@@ -6,6 +6,9 @@ export const SITE_DESCRIPTION =
 
 export const LINKEDIN_URL = "https://www.linkedin.com/in/chrisalesant/";
 export const GITHUB_URL = "https://github.com/chrisalesant";
+export const X_URL = "https://x.com/chrisalesant";
+export const EMAIL_ADDRESS = "hello@chsantana.com";
+export const EMAIL_URL = `mailto:${EMAIL_ADDRESS}`;
 export const GA_MEASUREMENT_ID = "G-24DBCT825P";
 export const IDENTITY_ID = `${SITE_URL}/#identity`;
 
