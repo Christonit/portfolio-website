@@ -87,58 +87,58 @@ watch(hudKey, (key) => {
       :data-step="step"
       :data-state="closing ? 'closing' : 'open'"
     >
-    <div
-      class="project-sheet__scrim"
-      aria-hidden="true"
-      @click="emit('close')"
-    />
+      <div
+        class="project-sheet__scrim"
+        aria-hidden="true"
+        @click="emit('close')"
+      />
 
-    <div
-      ref="panelRef"
-      class="project-sheet__panel"
-      role="dialog"
-      :aria-label="label"
-      tabindex="-1"
-    >
-      <div class="corner-tl-w" />
-      <div class="corner-tr-w" />
-      <div class="corner-bl-w" />
-      <div class="corner-br-w" />
+      <div
+        ref="panelRef"
+        class="project-sheet__panel"
+        role="dialog"
+        :aria-label="label"
+        tabindex="-1"
+      >
+        <div class="corner-tl-w" />
+        <div class="corner-tr-w" />
+        <div class="corner-bl-w" />
+        <div class="corner-br-w" />
 
-      <header class="project-sheet__chrome">
-        <div class="min-w-0 flex-1">
-          <slot name="title" />
-        </div>
+        <header class="project-sheet__chrome">
+          <div class="min-w-0 flex-1">
+            <slot name="title" />
+          </div>
 
-        <div class="flex shrink-0 items-center gap-3">
-          <slot name="actions" />
+          <div class="flex shrink-0 items-center gap-3">
+            <slot name="actions" />
 
-          <button
-            type="button"
-            class="project-sheet__close"
-            aria-label="Close project"
-            @click="emit('close')"
-          >
-            <span
-              class="material-symbols-outlined icon-md leading-none"
-              aria-hidden="true"
-              >close</span
+            <button
+              type="button"
+              class="project-sheet__close"
+              aria-label="Close project"
+              @click="emit('close')"
             >
-          </button>
-        </div>
-      </header>
+              <span
+                class="material-symbols-outlined icon-md leading-none"
+                aria-hidden="true"
+                >close</span
+              >
+            </button>
+          </div>
+        </header>
 
-      <div ref="bodyRef" class="project-sheet__body">
-        <!-- The payload moves on a pager step while the body stays put, so the
+        <div ref="bodyRef" class="project-sheet__body">
+          <!-- The payload moves on a pager step while the body stays put, so the
              travel is clipped by the scroll container rather than spilling
              over the panel border. -->
-        <div class="project-sheet__payload">
-          <slot />
+          <div class="project-sheet__payload">
+            <slot />
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Pager rails. Outside the panel so they sit in the board gutters, and
+      <!-- Pager rails. Outside the panel so they sit in the board gutters, and
          after it in the reading order so the dossier comes first. -->
       <slot name="nav" />
     </div>
@@ -259,10 +259,6 @@ watch(hudKey, (key) => {
   .project-sheet__close {
     height: 2.25rem;
     width: 2.25rem;
-  }
-
-  .project-sheet__body {
-    padding-bottom: 1rem;
   }
 
   /* The 5rem floor keeps a gutter wide enough for the pager rails even when
