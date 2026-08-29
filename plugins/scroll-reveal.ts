@@ -2,6 +2,19 @@ import type { Directive } from "vue";
 
 const observers = new WeakMap<HTMLElement, IntersectionObserver>();
 
+/* The rise-and-fade is an arrival gesture for the first paint. Once the app
+   has settled, a route change already carries its own page transition, so
+   anything mounting inside the viewport would rise a second time on top of
+   it — that double motion is what reads as jitter when tabbing between
+   pages. After the initial render, on-screen items snap straight to rest and
+   only off-screen ones keep their scroll reveal. */
+let isFirstRender = true;
+
+function isInViewport(el: HTMLElement) {
+  const rect = el.getBoundingClientRect();
+  return rect.top < window.innerHeight && rect.bottom > 0;
+}
+
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -20,9 +33,28 @@ function markShown(el: HTMLElement) {
   el.setAttribute("data-reveal", "shown");
 }
 
+/* Jump straight to rest with no travel. The transition has to be suppressed
+   by hand: measuring the element (the viewport test) flushes style, so the
+   pending state counts as a before-change style and the flip would otherwise
+   animate. */
+function snapShown(el: HTMLElement) {
+  const previous = el.style.transition;
+  el.style.transition = "none";
+  markShown(el);
+  void el.offsetHeight;
+  requestAnimationFrame(() => {
+    el.style.transition = previous;
+  });
+}
+
 function observe(el: HTMLElement) {
   if (prefersReducedMotion()) {
     markShown(el);
+    return;
+  }
+
+  if (!isFirstRender && isInViewport(el)) {
+    snapShown(el);
     return;
   }
 
@@ -87,4 +119,7 @@ const reveal: Directive<HTMLElement, number | false | undefined> = {
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.directive("reveal", reveal);
+  nuxtApp.hook("app:suspense:resolve", () => {
+    isFirstRender = false;
+  });
 });

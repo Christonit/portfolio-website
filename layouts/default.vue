@@ -236,7 +236,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             <NuxtLink
               :to="item.path"
               :class="[
-                'relative inline-flex h-14 items-center px-4 font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-150',
+                'relative inline-flex h-14 items-center px-4 text-xs font-semibold tracking-[0.2em] uppercase transition-colors duration-150',
                 'after:absolute after:bottom-0 after:left-4 after:right-[calc(1rem+0.2em)] after:h-px',
                 isActive(item.path)
                   ? 'text-white after:bg-white'
@@ -297,16 +297,16 @@ watch(() => route.path, scrollMainToTopOnMobile);
         -->
         <a
           :href="EMAIL_URL"
-          class="inline-flex h-8 w-8 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
           aria-label="Email Christopher Santana"
         >
-          <!-- Icons share an h-5 w-5 box; each viewBox is padded so the glyphs
+          <!-- Icons share an h-6 w-6 box; each viewBox is padded so the glyphs
                inside it land on the same optical size (see X / LinkedIn below). -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0.15 0.15 23.7 23.7"
             fill="currentColor"
-            class="h-5 w-5 shrink-0"
+            class="h-6 w-6 shrink-0"
             aria-hidden="true"
           >
             <path
@@ -318,14 +318,14 @@ watch(() => route.path, scrollMainToTopOnMobile);
           :href="X_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex h-8 w-8 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
           aria-label="X profile"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="-0.31 -0.19 24.375 24.375"
             fill="currentColor"
-            class="h-5 w-5 shrink-0"
+            class="h-6 w-6 shrink-0"
             aria-hidden="true"
           >
             <path
@@ -337,14 +337,14 @@ watch(() => route.path, scrollMainToTopOnMobile);
           :href="LINKEDIN_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex h-8 w-8 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
           aria-label="LinkedIn profile"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="-4 -4 32 32"
             fill="currentColor"
-            class="h-5 w-5 shrink-0"
+            class="h-6 w-6 shrink-0"
             aria-hidden="true"
           >
             <path
@@ -395,7 +395,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
         <span v-else class="material-symbols-outlined icon-md leading-none">{{
           item.icon
         }}</span>
-        <span class="font-mono text-xs uppercase tracking-widest font-semibold">{{
+        <span class="text-xs uppercase tracking-widest font-semibold">{{
           item.label
         }}</span>
       </NuxtLink>
