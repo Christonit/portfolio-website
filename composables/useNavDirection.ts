@@ -1,10 +1,11 @@
-export type NavDir = "forward" | "back" | "modal-in" | "modal-out";
+export type NavDir = "forward" | "back" | "modal-in" | "modal-out" | "none";
 
 const NAV_DIRECTIONS: readonly NavDir[] = [
   "forward",
   "back",
   "modal-in",
   "modal-out",
+  "none",
 ];
 
 const TAB_PATHS = ["/", "/projects", "/bio"];
@@ -31,11 +32,11 @@ function isProjectDetail(path: string) {
 export function navDirectionForPath(toPath: string, fromPath: string): NavDir {
   if (toPath === fromPath) return "forward";
 
-  // A project dossier opens as a sheet stacked on top of the page that
-  // launched it, so it gets modal motion instead of the sideways page slide.
-  // Project-to-project (the pager) stays a slide — you're still inside it.
-  if (isProjectDetail(toPath) !== isProjectDetail(fromPath)) {
-    return isProjectDetail(toPath) ? "modal-in" : "modal-out";
+  // The dossier is a modal sheet layered over the projects board, and the
+  // board renders underneath it either way — so the page itself must not
+  // move. ProjectSheet owns the open/dismiss motion instead.
+  if (isProjectDetail(toPath) || isProjectDetail(fromPath)) {
+    return "none";
   }
 
   const toDepth = routeDepth(toPath);

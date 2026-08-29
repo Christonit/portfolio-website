@@ -53,6 +53,7 @@ const timeline: ExperienceOrg[] = [
         tags: "NUXT // AWS // NODE.JS // AI // WORDPRESS",
         note: "Architecture, Systems Development and SEO for the Timothy Sykes and StocksToTrade websites — high-traffic financial educational and news platform and trading tools.",
         current: true,
+        projects: ["timothy-sykes", "stockstotrade", "content-automation-ai"],
       },
       {
         period: "NOV 2020 — OCT 2023",
@@ -61,6 +62,7 @@ const timeline: ExperienceOrg[] = [
         tags: "VUE.JS // GRIDSOME // TAILWIND // GRAPHQL // WORDPRESS",
         note: "Microsites and web marketing campaigns development. Decoupled monolithic wordpress websites  to headless architecture.",
         current: false,
+        projects: ["website-performance"],
       },
     ],
   },
@@ -127,9 +129,7 @@ const timeline: ExperienceOrg[] = [
       >
         ABOUT ME
       </h1>
-      <p
-        class="max-w-xl font-mono text-xs leading-relaxed text-[#919191] xl:text-sm"
-      >
+      <p class="max-w-xl text-xs leading-relaxed text-[#919191] xl:text-sm">
         Manhattan-based Senior Full Stack Engineer with over a decade of
         experience building interfaces and lately systems for high-traffic web
         products.

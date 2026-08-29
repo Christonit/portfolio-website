@@ -80,15 +80,17 @@
     --scroll-reveal-ease: var(--ease-smooth-out);
 
     /* Page side-by-side / view transitions */
-    --page-slide-dur: 420ms;
-    --page-fade-dur: 360ms;
+    --page-slide-dur: 340ms;
+    --page-fade-dur: 190ms;
     --page-slide-distance: 8px;
     --page-blur: 1px;
     --page-stagger: 0ms;
     --page-exit-enabled: 1;
-    --page-slide-ease: cubic-bezier(0.65, 0, 0.35, 1);
+    --page-slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
     --page-fade-ease: cubic-bezier(0.4, 0, 0.2, 1);
-    --vt-slide-distance: 72%;
+    /* Just a hint of travel — the fade carries the transition, the slide
+       only points the direction. */
+    --vt-slide-distance: 5%;
 
     /* Project dossier opens as a modal sheet over the launching page */
     --page-modal-dur: 420ms;
@@ -370,56 +372,79 @@
   z-index: 1;
 }
 
-/* Link click: incoming page enters from the right, travels left */
+/* Link click: incoming page enters from the right, travels left.
+   The slide is a short directional hint; the fade runs on its own shorter
+   clock so neither page hangs around waiting to finish its travel. */
 html[data-nav-dir="forward"]::view-transition-old(hud-page) {
-  animation: vt-slide-out-left var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-out-left var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-out var(--page-fade-dur) var(--page-fade-ease) both;
 }
 
 html[data-nav-dir="forward"]::view-transition-new(hud-page) {
-  animation: vt-slide-in-from-right var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-in-from-right var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-in var(--page-fade-dur) var(--page-fade-ease) both;
   animation-delay: var(--page-stagger);
 }
 
 /* Back / breadcrumb: incoming page enters from the left, travels right */
 html[data-nav-dir="back"]::view-transition-old(hud-page) {
-  animation: vt-slide-out-right var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-out-right var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-out var(--page-fade-dur) var(--page-fade-ease) both;
 }
 
 html[data-nav-dir="back"]::view-transition-new(hud-page) {
-  animation: vt-slide-in-from-left var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-in-from-left var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-in var(--page-fade-dur) var(--page-fade-ease) both;
   animation-delay: var(--page-stagger);
 }
 
 @keyframes vt-slide-out-right {
   to {
     transform: translateX(var(--vt-slide-distance));
-    opacity: 0;
-    filter: blur(var(--page-blur));
   }
 }
 
 @keyframes vt-slide-in-from-left {
   from {
     transform: translateX(calc(var(--vt-slide-distance) * -1));
-    opacity: 0;
-    filter: blur(var(--page-blur));
   }
 }
 
 @keyframes vt-slide-out-left {
   to {
     transform: translateX(calc(var(--vt-slide-distance) * -1));
-    opacity: 0;
-    filter: blur(var(--page-blur));
   }
 }
 
 @keyframes vt-slide-in-from-right {
   from {
     transform: translateX(var(--vt-slide-distance));
+  }
+}
+
+@keyframes vt-page-fade-out {
+  to {
     opacity: 0;
     filter: blur(var(--page-blur));
   }
+}
+
+@keyframes vt-page-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+/* Sheet routes: the projects board is the backdrop for the dossier sheet, so
+   the page swap has to be a hard cut — ProjectSheet plays the motion. */
+html[data-nav-dir="none"]::view-transition-old(hud-page),
+html[data-nav-dir="none"]::view-transition-new(hud-page) {
+  animation: none;
 }
 
 /* Modal: the project dossier rises over the page that launched it while
@@ -498,7 +523,7 @@ html[data-nav-dir="modal-out"]::view-transition-new(hud-page) {
   transition:
     transform var(--page-slide-dur) var(--page-slide-ease),
     opacity var(--page-fade-dur) var(--page-fade-ease),
-    filter var(--page-slide-dur) var(--page-slide-ease);
+    filter var(--page-fade-dur) var(--page-fade-ease);
   width: 100%;
 }
 

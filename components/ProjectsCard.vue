@@ -175,7 +175,7 @@ const ariaLabel = computed(() => {
             {{ project.name }}
           </h2>
           <p
-            class="line-clamp-2 font-mono text-sm leading-relaxed text-[#919191]"
+            class="line-clamp-2 text-sm leading-relaxed text-[#a8a8a8]"
           >
             {{ project.description || project.tasks[0] }}
           </p>
@@ -233,7 +233,6 @@ const ariaLabel = computed(() => {
   justify-content: center;
   background-color: #111;
   border-bottom: 1px solid #1f1f1f;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .projects-card__thumb::before {

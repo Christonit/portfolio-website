@@ -49,16 +49,24 @@ function observe(el: HTMLElement) {
   io.observe(el);
 }
 
-const reveal: Directive<HTMLElement, number | undefined> = {
+/* `false` opts an element out entirely — used where the same markup renders
+   both as a live page and as a static backdrop behind a modal sheet. */
+const reveal: Directive<HTMLElement, number | false | undefined> = {
   created(el, binding) {
+    if (binding.value === false) return;
     markPending(el);
     applyDelay(el, binding.value);
   },
   mounted(el, binding) {
+    if (binding.value === false) {
+      markShown(el);
+      return;
+    }
     applyDelay(el, binding.value);
     observe(el);
   },
   updated(el, binding) {
+    if (binding.value === false) return;
     applyDelay(el, binding.value);
   },
   unmounted(el) {
@@ -66,6 +74,7 @@ const reveal: Directive<HTMLElement, number | undefined> = {
     observers.delete(el);
   },
   getSSRProps(binding) {
+    if (binding.value === false) return {};
     return {
       "data-reveal": "",
       style:

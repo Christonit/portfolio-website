@@ -4,7 +4,7 @@ const props = withDefaults(
     src?: string;
     alt?: string;
     hovered?: boolean;
-    /** Approx size (in CSS px) of one pixel block at the default state. */
+    /** Approx size (in CSS px) of one pixel block. */
     pixelSize?: number;
   }>(),
   {
@@ -41,13 +41,12 @@ onUnmounted(() => ro?.disconnect());
 
 // The stage renders at a tiny box size then scales back up — the browser
 // samples the image down to that few-pixel grid, giving a real blocky
-// pixelation (not just a filter trick). On hover it snaps to full size.
+// pixelation (not just a filter trick). This geometry is static: hover is a
+// cross-fade to the sharp layer, so the pixel grid never animates its size.
 const stageStyle = computed(() => {
-  const { w: fw, h: fh } = frameSize.value;
-  if (props.hovered || !tinySize.value.w) {
-    return { width: `${fw}px`, height: `${fh}px`, transform: "scale(1)" };
-  }
+  const { w: fw } = frameSize.value;
   const { w: tw, h: th } = tinySize.value;
+  if (!fw || !tw) return undefined;
   return {
     width: `${tw}px`,
     height: `${th}px`,
@@ -61,6 +60,9 @@ const stageStyle = computed(() => {
     <div class="portrait-pixelate__stage" :style="stageStyle">
       <img :src="src" :alt="alt" />
     </div>
+    <!-- Sharp, full-colour layer: fades over the pixel grid on hover with a
+         light push-in. Decorative — the stage image carries the alt text. -->
+    <img class="portrait-pixelate__sharp" :src="src" alt="" aria-hidden="true" />
   </div>
 </template>
 
@@ -77,10 +79,6 @@ const stageStyle = computed(() => {
   top: 0;
   left: 0;
   transform-origin: top left;
-  transition:
-    width 380ms cubic-bezier(0.22, 1, 0.36, 1),
-    height 380ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .portrait-pixelate__stage img {
@@ -91,23 +89,42 @@ const stageStyle = computed(() => {
   object-position: 50% center;
   image-rendering: pixelated;
   filter: grayscale(1) contrast(1.08) brightness(0.94);
-  transition: filter 320ms ease;
 }
 
-.portrait-pixelate.is-hovered .portrait-pixelate__stage img {
-  image-rendering: auto;
-  filter: none;
+.portrait-pixelate__sharp {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% center;
+  opacity: 0;
+  transform: scale(1);
+  transition:
+    opacity 320ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.portrait-pixelate.is-hovered .portrait-pixelate__sharp {
+  opacity: 1;
+  transform: scale(1.04);
 }
 
 @media (max-width: 639px) {
-  .portrait-pixelate__stage img {
+  .portrait-pixelate__stage img,
+  .portrait-pixelate__sharp {
     object-position: 50% 28%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portrait-pixelate__stage {
-    transition: none;
+  .portrait-pixelate__sharp {
+    transition: opacity 320ms ease;
+  }
+
+  .portrait-pixelate.is-hovered .portrait-pixelate__sharp {
+    transform: none;
   }
 }
 </style>

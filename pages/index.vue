@@ -200,12 +200,24 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
               </div>
 
               <div class="dossier-card__body">
-                <h3>{{ project.name }}</h3>
-
-                <div class="dossier-card__footer">
-                  <span>{{ projectCounter(index) }}</span>
+                <div class="dossier-card__title-row">
+                  <h3>{{ project.name }}</h3>
+                  <span class="dossier-card__index">{{
+                    projectCounter(index)
+                  }}</span>
                 </div>
+
+                <p class="dossier-card__summary">
+                  {{ project.description || project.tasks[0] }}
+                </p>
               </div>
+
+              <span class="dossier-card__cta">
+                {{ isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT" }}
+                <span class="dossier-card__cta-arrow" aria-hidden="true"
+                  >&rarr;</span
+                >
+              </span>
             </NuxtLink>
           </li>
         </ul>
@@ -493,11 +505,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .dossier-card__image img {
-  width: 100%;
-  /* Sources carry a 1px white edge top and bottom — bleed the image past the
-     frame so the overflow clip eats it. */
-  height: calc(100% + 2px);
-  margin-block: -1px;
+  /* Sources carry a 1px white edge on all four sides — bleed the image past
+     the frame on every axis so the overflow clip eats it. */
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  margin-block: -2px;
+  margin-inline: -2px;
   object-fit: cover;
   object-position: top center;
   /* No hover scale: the crop is already tight, so zooming clipped the artwork
@@ -515,11 +528,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px 12px;
+  gap: 7px;
+  padding: 14px 16px 16px;
 }
 
 .dossier-card__body h3 {
+  min-width: 0;
   overflow: hidden;
   color: #fff;
   font-size: var(--text-sm);
@@ -531,14 +545,91 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   white-space: nowrap;
 }
 
-.dossier-card__footer {
+/* Slot number rides the title baseline on the opposite end of the row, so the
+   card reads as one line instead of a stranded number under the name. */
+.dossier-card__title-row {
   display: flex;
-  align-items: end;
-  justify-content: flex-end;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dossier-card__index {
+  flex-shrink: 0;
   color: #3f3f3f;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.11em;
+}
+
+/* Two lines of context under the name — same summary the projects index
+   shows, clamped so every card in the row keeps the same body height. */
+.dossier-card__summary {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Reads as the card's button: full-width strip on the bottom edge, lit by the
+   card's own hover state since the whole card is the link. */
+.dossier-card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  border-top: 1px solid #262626;
+  background: rgba(255, 255, 255, 0.025);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.dossier-card:hover .dossier-card__cta,
+.dossier-card:focus-visible .dossier-card__cta,
+.dossier-card.is-focused .dossier-card__cta {
+  border-color: rgba(103, 245, 122, 0.34);
+  background: rgba(103, 245, 122, 0.1);
+  color: var(--color-signal);
+}
+
+.dossier-card__cta-arrow {
+  transition: transform 150ms ease;
+}
+
+.dossier-card:hover .dossier-card__cta-arrow,
+.dossier-card:focus-visible .dossier-card__cta-arrow,
+.dossier-card.is-focused .dossier-card__cta-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dossier-card,
+  .dossier-card__cta,
+  .dossier-card__cta-arrow {
+    transition: none;
+  }
+
+  .dossier-card:hover,
+  .dossier-card:focus-visible,
+  .dossier-card.is-focused,
+  .dossier-card:hover .dossier-card__cta-arrow,
+  .dossier-card:focus-visible .dossier-card__cta-arrow,
+  .dossier-card.is-focused .dossier-card__cta-arrow {
+    transform: none;
+  }
 }
 
 .index-module {
