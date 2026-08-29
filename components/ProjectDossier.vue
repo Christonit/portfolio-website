@@ -15,9 +15,13 @@ const videoFailed = ref(false);
 const activeIndex = ref(0);
 const demoVideo = ref<HTMLVideoElement | null>(null);
 
-const hasVideo = computed(() => Boolean(props.project.video) && !videoFailed.value);
+const hasVideo = computed(
+  () => Boolean(props.project.video) && !videoFailed.value,
+);
 const galleryCount = computed(() => frames.value.length);
-const counter = computed(() => `${activeIndex.value + 1}/${galleryCount.value}`);
+const counter = computed(
+  () => `${activeIndex.value + 1}/${galleryCount.value}`,
+);
 
 const dossierCopy = computed(() => {
   if (props.project.dossier?.length) return props.project.dossier;
@@ -211,7 +215,9 @@ onBeforeUnmount(pauseDemo);
         >
           &gt;
         </button>
-        <div class="flex min-w-0 flex-1 items-center justify-between gap-3 px-3">
+        <div
+          class="flex min-w-0 flex-1 items-center justify-between gap-3 px-3"
+        >
           <span
             class="font-mono text-2xs uppercase tracking-[0.28em] text-[#919191]"
           >
@@ -241,7 +247,7 @@ onBeforeUnmount(pauseDemo);
         <span class="text-[#67F57A]">{{ project.role }}</span>
       </header>
 
-      <div class="project-dossier px-4 py-5 xl:px-6 xl:py-6">
+      <div class="project-dossier px-4 pt-5 pb-32 xl:px-6 xl:py-6">
         <div class="project-dossier-inner">
           <div class="project-dossier-main">
             <article
@@ -270,7 +276,9 @@ onBeforeUnmount(pauseDemo);
                   :key="task"
                   class="flex items-start gap-2 font-mono text-sm uppercase leading-relaxed tracking-wide text-[#e2e2e2]"
                 >
-                  <span class="mt-px text-[#67F57A]" aria-hidden="true">&gt;</span>
+                  <span class="mt-px text-[#67F57A]" aria-hidden="true"
+                    >&gt;</span
+                  >
                   <span>{{ task }}</span>
                 </li>
               </ul>

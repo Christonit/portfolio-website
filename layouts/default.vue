@@ -18,7 +18,8 @@ const pages = ["/", "/projects", "/bio"];
 const normalizedPath = computed(() => route.path.replace(/\/+$/, "") || "/");
 
 const currentIndex = computed(() => {
-  if (normalizedPath.value.startsWith("/project/")) return pages.indexOf("/projects");
+  if (normalizedPath.value.startsWith("/project/"))
+    return pages.indexOf("/projects");
   const i = pages.indexOf(normalizedPath.value);
   return i === -1 ? 0 : i;
 });
@@ -362,14 +363,14 @@ watch(() => route.path, scrollMainToTopOnMobile);
     <!-- Desktop: uses the full viewport below the top navigation -->
     <main
       ref="mainRef"
-      class="hud-page absolute inset-x-0 top-14 z-10 bottom-16 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
+      class="hud-page absolute inset-x-0 top-14 z-10 pb-8 bottom-16 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden z-[99]"
     >
       <slot />
     </main>
 
     <!-- ── MOBILE BOTTOM NAVIGATION ───────────────────────── -->
     <nav
-      class="xl:hidden fixed bottom-0 inset-x-0 z-50 flex h-16 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.6)]"
+      class="xl:hidden fixed bottom-0 inset-x-0 z-[100] flex h-16 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.6)]"
     >
       <NuxtLink
         v-for="item in mobileNavItems"

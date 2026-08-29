@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { openProjectSheet } from "~/composables/useProjectSheet";
+import {
+  openProjectSheet,
+  type SheetStep,
+} from "~/composables/useProjectSheet";
 
 /**
  * Modal shell for the project dossier: a near-fullscreen panel over the
@@ -14,8 +17,10 @@ const props = withDefaults(
   defineProps<{
     label: string;
     closing?: boolean;
+    /** Direction the pager travelled to get here, if it was the pager. */
+    step?: SheetStep | null;
   }>(),
-  { closing: false },
+  { closing: false, step: null },
 );
 
 const emit = defineEmits<{ close: [] }>();
@@ -23,6 +28,10 @@ const emit = defineEmits<{ close: [] }>();
 // Read before first paint, not in onMounted: stepping through the pager
 // remounts this component, and the panel must not zoom in again.
 const enter = openProjectSheet() ? "instant" : "animate";
+
+// A direction only reads as a pager step if a sheet was already on screen —
+// the first dossier of a session opens, it doesn't travel.
+const step = computed(() => (enter === "instant" ? props.step : null));
 
 const panelRef = ref<HTMLElement | null>(null);
 const bodyRef = ref<HTMLElement | null>(null);
@@ -39,7 +48,9 @@ function onKeydown(event: KeyboardEvent) {
 
 onMounted(() => {
   previouslyFocused =
-    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
   panelRef.value?.focus({ preventScroll: true });
   window.addEventListener("keydown", onKeydown, true);
 });
@@ -68,9 +79,14 @@ watch(hudKey, (key) => {
   <div
     class="project-sheet"
     :data-enter="enter"
+    :data-step="step"
     :data-state="closing ? 'closing' : 'open'"
   >
-    <div class="project-sheet__scrim" aria-hidden="true" @click="emit('close')" />
+    <div
+      class="project-sheet__scrim"
+      aria-hidden="true"
+      @click="emit('close')"
+    />
 
     <div
       ref="panelRef"
@@ -108,7 +124,12 @@ watch(hudKey, (key) => {
       </header>
 
       <div ref="bodyRef" class="project-sheet__body">
-        <slot />
+        <!-- The payload moves on a pager step while the body stays put, so the
+             travel is clipped by the scroll container rather than spilling
+             over the panel border. -->
+        <div class="project-sheet__payload">
+          <slot />
+        </div>
       </div>
     </div>
 
@@ -130,6 +151,15 @@ watch(hudKey, (key) => {
   animation: sheet-scrim-in var(--sheet-in-dur) var(--sheet-ease) both;
 }
 
+/* Phones and small tablets: the scrim (and panel, below) rise above the site
+   chrome entirely, so the dossier reads as a full-screen layer rather than
+   one that's still boxed in by the header. */
+@media (max-width: 1279.98px) {
+  .project-sheet__scrim {
+    inset: 0;
+  }
+}
+
 .project-sheet {
   --sheet-in-dur: 420ms;
   --sheet-out-dur: 240ms;
@@ -146,13 +176,18 @@ watch(hudKey, (key) => {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   outline: none;
 
-  /* Phones and small tablets: the panel rises from the bottom and stops short
-     of the board so the strip of cards above it reads as "tap to get out". */
-  inset: 6.25rem 0 4rem 0;
+  /* Phones and small tablets: the panel rises all the way to the top edge,
+     covering the site header, so the dossier reads as a full-height layer
+     rather than one still boxed in by the top nav. It stops short of the
+     mobile bottom nav (also fixed, z-50) so that stays reachable, which is
+     why the panel needs to sit above the top nav in the stacking order. */
+  inset: 0 0 4rem 0;
+  z-index: 55;
   animation: sheet-rise-in var(--sheet-in-dur) var(--sheet-ease) both;
 }
 
-.project-sheet__panel :is(.corner-tl-w, .corner-tr-w, .corner-bl-w, .corner-br-w) {
+.project-sheet__panel
+  :is(.corner-tl-w, .corner-tr-w, .corner-bl-w, .corner-br-w) {
   z-index: 3;
   width: 14px;
   height: 14px;
@@ -202,7 +237,6 @@ watch(hudKey, (key) => {
   overscroll-behavior: contain;
   /* Clears the pager rails, which float over the bottom corners until the
      desktop breakpoint moves them out into the gutters. */
-  padding-bottom: 5.5rem;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -258,14 +292,44 @@ watch(hudKey, (key) => {
   animation: none;
 }
 
-.project-sheet[data-enter="instant"] .project-sheet__body {
+.project-sheet[data-enter="instant"]:not([data-step]) .project-sheet__body {
   animation: sheet-body-in 220ms var(--sheet-ease) both;
+}
+
+/* Stepping through the pager is a page change in miniature, so it borrows the
+   site's page-navigation motion: the dossier arrives from the side it was
+   headed, on the same slide and fade clocks. */
+.project-sheet[data-step] .project-sheet__payload {
+  animation:
+    sheet-step-slide var(--page-slide-dur) var(--page-slide-ease) both,
+    sheet-step-fade var(--page-fade-dur) var(--page-fade-ease) both;
+}
+
+.project-sheet[data-step="forward"] {
+  --sheet-step-from: var(--vt-slide-distance);
+}
+
+.project-sheet[data-step="back"] {
+  --sheet-step-from: calc(var(--vt-slide-distance) * -1);
 }
 
 @keyframes sheet-body-in {
   from {
     opacity: 0;
     transform: translateY(8px);
+  }
+}
+
+@keyframes sheet-step-slide {
+  from {
+    transform: translateX(var(--sheet-step-from));
+  }
+}
+
+@keyframes sheet-step-fade {
+  from {
+    opacity: 0;
+    filter: blur(var(--page-blur));
   }
 }
 
@@ -312,7 +376,8 @@ watch(hudKey, (key) => {
   .project-sheet__panel,
   .project-sheet[data-state="closing"] .project-sheet__scrim,
   .project-sheet[data-state="closing"] .project-sheet__panel,
-  .project-sheet[data-enter="instant"] .project-sheet__body {
+  .project-sheet[data-enter="instant"] .project-sheet__body,
+  .project-sheet[data-step] .project-sheet__payload {
     animation: none !important;
   }
 
