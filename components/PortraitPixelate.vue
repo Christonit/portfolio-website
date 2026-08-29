@@ -6,63 +6,88 @@ const props = withDefaults(
     hovered?: boolean;
     /** Approx size (in CSS px) of one pixel block. */
     pixelSize?: number;
+    /** Vertical crop bias (0 = top, 0.5 = center, 1 = bottom). */
+    focusY?: number;
   }>(),
   {
     src: "/images/profile-portrait.webp",
     alt: "",
     hovered: false,
-    pixelSize: 9,
+    pixelSize: 1,
+    focusY: 0.4,
   },
 );
 
 const frame = ref<HTMLElement | null>(null);
-const frameSize = ref({ w: 0, h: 0 });
-const tinySize = ref({ w: 24, h: 24 });
+const canvas = ref<HTMLCanvasElement | null>(null);
+let img: HTMLImageElement | null = null;
+let ro: ResizeObserver | undefined;
 
-function measure() {
+function draw() {
   const el = frame.value;
-  if (!el) return;
-  const w = el.clientWidth || 1;
-  const h = el.clientHeight || 1;
-  frameSize.value = { w, h };
-  tinySize.value = {
-    w: Math.max(4, Math.round(w / props.pixelSize)),
-    h: Math.max(4, Math.round(h / props.pixelSize)),
-  };
+  const cv = canvas.value;
+  if (!el || !cv || !img || !img.complete || img.naturalWidth === 0) return;
+
+  const fw = el.clientWidth || 1;
+  const fh = el.clientHeight || 1;
+  const tw = Math.max(4, Math.round(fw / props.pixelSize));
+  const th = Math.max(4, Math.round(fh / props.pixelSize));
+
+  // Internal resolution stays tiny; CSS size is the full frame — the
+  // browser's own upscale (with image-rendering: pixelated) produces
+  // crisp, real pixel blocks instead of a blurred fake.
+  cv.width = tw;
+  cv.height = th;
+  cv.style.width = `${fw}px`;
+  cv.style.height = `${fh}px`;
+
+  const ctx = cv.getContext("2d");
+  if (!ctx) return;
+  ctx.imageSmoothingEnabled = false;
+
+  // object-fit: cover crop, biased slightly toward the top (face). Must
+  // match the base <img>'s object-position exactly, or the two layers
+  // visibly jump against each other during the hover crossfade.
+  const focusY = props.focusY;
+  const srcAspect = img.naturalWidth / img.naturalHeight;
+  const dstAspect = tw / th;
+  let sx = 0;
+  let sy = 0;
+  let sw = img.naturalWidth;
+  let sh = img.naturalHeight;
+  if (srcAspect > dstAspect) {
+    sw = img.naturalHeight * dstAspect;
+    sx = (img.naturalWidth - sw) / 2;
+  } else {
+    sh = img.naturalWidth / dstAspect;
+    sy = (img.naturalHeight - sh) * focusY;
+  }
+
+  ctx.clearRect(0, 0, tw, th);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, tw, th);
 }
 
-let ro: ResizeObserver | undefined;
 onMounted(() => {
-  measure();
-  ro = new ResizeObserver(measure);
+  img = new Image();
+  img.onload = draw;
+  img.src = props.src;
+
+  ro = new ResizeObserver(draw);
   if (frame.value) ro.observe(frame.value);
 });
-onUnmounted(() => ro?.disconnect());
 
-// The stage renders at a tiny box size then scales back up — the browser
-// samples the image down to that few-pixel grid, giving a real blocky
-// pixelation (not just a filter trick). This geometry is static: hover is a
-// cross-fade to the sharp layer, so the pixel grid never animates its size.
-const stageStyle = computed(() => {
-  const { w: fw } = frameSize.value;
-  const { w: tw, h: th } = tinySize.value;
-  if (!fw || !tw) return undefined;
-  return {
-    width: `${tw}px`,
-    height: `${th}px`,
-    transform: `scale(${fw / tw})`,
-  };
-});
+onUnmounted(() => ro?.disconnect());
 </script>
 
 <template>
   <div ref="frame" class="portrait-pixelate" :class="{ 'is-hovered': hovered }">
-    <div class="portrait-pixelate__stage" :style="stageStyle">
-      <img :src="src" :alt="alt" />
-    </div>
-    <!-- Sharp, full-colour layer: fades over the pixel grid on hover with a
-         light push-in. Decorative — the stage image carries the alt text. -->
-    <img class="portrait-pixelate__sharp" :src="src" alt="" aria-hidden="true" />
+    <img
+      :src="src"
+      :alt="alt"
+      class="portrait-pixelate__base"
+      :style="{ objectPosition: `50% ${focusY * 100}%` }"
+    />
+    <canvas ref="canvas" class="portrait-pixelate__pixel" aria-hidden="true" />
   </div>
 </template>
 
@@ -74,57 +99,31 @@ const stageStyle = computed(() => {
   overflow: hidden;
 }
 
-.portrait-pixelate__stage {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: top left;
-}
-
-.portrait-pixelate__stage img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% center;
-  image-rendering: pixelated;
-  filter: grayscale(1) contrast(1.08) brightness(0.94);
-}
-
-.portrait-pixelate__sharp {
+.portrait-pixelate__base,
+.portrait-pixelate__pixel {
   position: absolute;
   inset: 0;
-  display: block;
   width: 100%;
   height: 100%;
+}
+
+.portrait-pixelate__base {
   object-fit: cover;
-  object-position: 50% center;
+}
+
+.portrait-pixelate__pixel {
+  image-rendering: pixelated;
+  filter: grayscale(1) contrast(1.08) brightness(0.94);
+  transition: opacity 320ms ease;
+}
+
+.portrait-pixelate.is-hovered .portrait-pixelate__pixel {
   opacity: 0;
-  transform: scale(1);
-  transition:
-    opacity 320ms ease,
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.portrait-pixelate.is-hovered .portrait-pixelate__sharp {
-  opacity: 1;
-  transform: scale(1.04);
-}
-
-@media (max-width: 639px) {
-  .portrait-pixelate__stage img,
-  .portrait-pixelate__sharp {
-    object-position: 50% 28%;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portrait-pixelate__sharp {
-    transition: opacity 320ms ease;
-  }
-
-  .portrait-pixelate.is-hovered .portrait-pixelate__sharp {
-    transform: none;
+  .portrait-pixelate__pixel {
+    transition: none;
   }
 }
 </style>
