@@ -72,3 +72,16 @@ export function applyNavDirection(dir: NavDir) {
     document.documentElement.dataset.navDir = dir;
   }
 }
+
+/**
+ * Whether two paths address the same page and differ only in trailing slashes.
+ *
+ * Netlify serves every prerendered route from its trailing-slash URL, so a cold
+ * load of `/projects` lands on `/projects/` while the payload it hydrates was
+ * rendered at `/projects`. Nuxt reconciles that with a pair of router replaces —
+ * neither of which is a page change.
+ */
+export function isSamePathIgnoringTrailingSlash(a: string, b: string) {
+  const strip = (path: string) => path.replace(/\/+$/, "") || "/";
+  return strip(a) === strip(b);
+}
