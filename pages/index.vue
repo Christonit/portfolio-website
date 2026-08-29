@@ -129,9 +129,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           <div class="identity-facts">
             <div>
               <p class="identity-role text-title-ui">
-                FULL_STACK_ENGINEER<span
-                  class="identity-role__location"
-                >// NYC</span>
+                FULL_STACK_ENGINEER<span class="identity-role__location"
+                  >// NYC</span
+                >
               </p>
             </div>
             <div>
@@ -243,7 +243,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         aria-labelledby="articles-index-title"
       >
         <header class="index-module__header">
-          <h2 id="articles-index-title" class="text-heading-section">ARTICLES</h2>
+          <h2 id="articles-index-title" class="text-heading-section">
+            ARTICLES
+          </h2>
         </header>
 
         <ArticlesIndex :articles="articles" />
@@ -262,6 +264,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   overscroll-behavior: contain;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding-bottom: 64px;
 }
 
 .home-console::-webkit-scrollbar {
@@ -284,8 +287,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
      one continuous surface instead of copy-panel-plus-photo. */
   background:
     var(--identity-grain),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
-    #101010;
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%), #101010;
   background-size:
     180px 180px,
     auto,

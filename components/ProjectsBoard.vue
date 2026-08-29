@@ -106,7 +106,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="projects-rail flex flex-col gap-8 py-5 pb-8 xl:h-full xl:overflow-y-auto"
+    class="projects-rail flex flex-col gap-8 py-5 pb-24 xl:h-full xl:overflow-y-auto"
   >
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// PROJECTS</span>
@@ -129,7 +129,9 @@ onUnmounted(() => {
             :project="project"
             :index="i"
             :total="totalWork"
-            :focused="interactive ? focusedIndex === i : activeSlug === project.slug"
+            :focused="
+              interactive ? focusedIndex === i : activeSlug === project.slug
+            "
           />
         </li>
       </ul>

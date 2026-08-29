@@ -126,7 +126,7 @@ const timeline: ExperienceOrg[] = [
 
 <template>
   <div
-    class="bio-rail flex flex-col gap-10 py-5 pb-16 xl:h-full xl:gap-12 xl:overflow-y-auto xl:pb-10"
+    class="bio-rail flex flex-col gap-10 py-5 pb-24 xl:h-full xl:gap-12 xl:overflow-y-auto xl:pb-10"
   >
     <header class="flex flex-col gap-4 pt-2">
       <span class="hud-label">// BIO</span>
