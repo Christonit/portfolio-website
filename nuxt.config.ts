@@ -12,7 +12,7 @@ import {
 
 const projectPaths = (projects as { slug: string; category: string }[])
   .filter((project) => project.category.toLowerCase() !== "article")
-  .map((project) => `/project/${project.slug}`);
+  .map((project) => `/project/${project.slug}/`);
 
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
@@ -20,6 +20,13 @@ export default defineNuxtConfig({
 
   experimental: {
     viewTransition: true,
+    defaults: {
+      nuxtLink: {
+        // Netlify Pretty URLs 301 /bio → /bio/. Links must declare the slash
+        // Google actually lands on, or canonicals and the sitemap disagree.
+        trailingSlash: "append",
+      },
+    },
   },
 
   modules: [
@@ -36,7 +43,7 @@ export default defineNuxtConfig({
     name: SITE_NAME,
     description: SITE_DESCRIPTION,
     defaultLocale: "en",
-    trailingSlash: false,
+    trailingSlash: true,
   },
 
   schemaOrg: {
@@ -50,11 +57,15 @@ export default defineNuxtConfig({
   },
 
   robots: {
-    disallow: ["/og-export"],
+    disallow: ["/og-export", "/design-system"],
+    // Default runtime handler is a Netlify function. Googlebot times that
+    // out and Search Console reports "robots.txt not fetched", which blocks
+    // indexing of the whole site.
+    cacheControl: "public, max-age=86400, must-revalidate",
   },
 
   sitemap: {
-    exclude: ["/og-export"],
+    exclude: ["/og-export", "/design-system"],
     urls: projectPaths,
     discoverImages: false,
     discoverVideos: false,
@@ -62,19 +73,24 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    "/robots.txt": { prerender: true },
+    "/sitemap.xml": { prerender: true },
     "/og-export": { robots: false },
+    "/design-system": { robots: false },
   },
 
   runtimeConfig: {
     public: {
       gaMeasurementId: process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID,
+      googleSiteVerification:
+        process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
     },
   },
 
   nitro: {
     prerender: {
       crawlLinks: true,
-      routes: ["/", ...projectPaths],
+      routes: ["/", "/sitemap.xml", "/robots.txt", ...projectPaths],
     },
   },
 
@@ -110,6 +126,14 @@ export default defineNuxtConfig({
           content: SITE_DESCRIPTION,
         },
         { name: "theme-color", content: "#131313" },
+        ...(process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+          ? [
+              {
+                name: "google-site-verification",
+                content: process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+              },
+            ]
+          : []),
         { property: "og:type", content: "website" },
         { property: "og:title", content: SITE_TITLE },
         {

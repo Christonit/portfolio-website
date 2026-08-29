@@ -22,7 +22,7 @@ export function projectHref(project: ProjectLink): string {
   if (isArticle(project) && project.link?.trim()) {
     return project.link.trim();
   }
-  return `/project/${project.slug}`;
+  return `/project/${project.slug}/`;
 }
 
 export function isExternalProjectHref(project: ProjectLink): boolean {

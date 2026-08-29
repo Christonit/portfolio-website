@@ -1,6 +1,6 @@
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import { isArticle } from "~/utils/projects";
-import { formatProjectName, IDENTITY_ID, SITE_URL } from "~/utils/site";
+import { formatProjectName, IDENTITY_ID, pageUrl, SITE_URL } from "~/utils/site";
 
 function absoluteUrl(pathOrUrl: string) {
   if (/^https?:\/\//.test(pathOrUrl)) return pathOrUrl;
@@ -11,11 +11,11 @@ export function projectCanonicalUrl(project: ProjectPreview) {
   if (isArticle(project) && project.link?.trim()) {
     return project.link.trim();
   }
-  return `${SITE_URL}/project/${project.slug}`;
+  return pageUrl(`/project/${project.slug}`);
 }
 
-export function projectWorkNode(project: ProjectPreview, pageUrl?: string) {
-  const url = pageUrl || projectCanonicalUrl(project);
+export function projectWorkNode(project: ProjectPreview, canonical?: string) {
+  const url = canonical || projectCanonicalUrl(project);
   const liveUrl = project.link?.trim();
 
   return {

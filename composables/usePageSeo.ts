@@ -1,3 +1,4 @@
+import { joinURL, withTrailingSlash, withoutTrailingSlash } from "ufo";
 import { IDENTITY_ID, SITE_NAME, SITE_URL } from "~/utils/site";
 
 export type PageSchemaType =
@@ -38,9 +39,11 @@ export function usePageSeo(options: {
   });
 
   const canonical = computed(() => {
-    const origin = String(site.url || SITE_URL).replace(/\/$/, "");
-    const path = route.path === "/" ? "/" : route.path.replace(/\/$/, "");
-    return `${origin}${path}`;
+    const origin = withoutTrailingSlash(String(site.url || SITE_URL));
+    const path = withoutTrailingSlash(route.path || "/") || "/";
+    if (path === "/") return `${origin}/`;
+    const url = joinURL(origin, path);
+    return site.trailingSlash ? withTrailingSlash(url) : url;
   });
 
   const image = computed(() => {

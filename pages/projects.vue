@@ -2,9 +2,9 @@
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
 import { projectListItems } from "~/utils/projectSchema";
-import { SITE_URL, pageTitle } from "~/utils/site";
+import { pageTitle, pageUrl } from "~/utils/site";
 
-const PROJECTS_LIST_ID = `${SITE_URL}/projects#itemlist`;
+const PROJECTS_LIST_ID = `${pageUrl("/projects")}#itemlist`;
 const projects = projectsJson as ProjectPreview[];
 
 usePageSeo({

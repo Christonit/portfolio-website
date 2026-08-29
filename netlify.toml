@@ -1,0 +1,7 @@
+# Pretty URLs are already on in the Netlify UI (they 301 /bio → /bio/).
+# Canonicals and the sitemap now match that slash form.
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000"
