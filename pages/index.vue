@@ -128,7 +128,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
           <div class="identity-facts">
             <div>
-              <p class="identity-role text-title-ui">FULL_STACK_ENGINEER</p>
+              <p class="identity-role text-title-ui">
+                FULL_STACK_ENGINEER<span
+                  class="identity-role__location"
+                >// NYC</span>
+              </p>
             </div>
             <div>
               <p class="identity-mission text-body-compact">
@@ -333,6 +337,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   color: #fff;
   font-size: var(--text-display);
   font-weight: 600;
+  /* `.text-display` ships a fixed 40px leading sized for its own fixed 44px.
+     This heading overrides the size with the fluid token, so the leading has
+     to be proportional too — otherwise the two lines collide at desktop and
+     drift apart at phone widths. */
+  line-height: 0.92;
   letter-spacing: -0.025em;
   text-transform: uppercase;
   text-wrap: balance;
@@ -350,6 +359,16 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.13em;
+}
+
+.identity-role__location {
+  margin-left: 8px;
+  color: #c6c6c6;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
 .identity-mission {
@@ -663,6 +682,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   .identity-role {
     font-size: var(--text-xs);
     letter-spacing: 0.08em;
+  }
+
+  .identity-role__location {
+    margin-left: 6px;
+    font-size: var(--text-2xs);
   }
 
   .identity-mission {

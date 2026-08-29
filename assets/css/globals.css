@@ -59,7 +59,10 @@
     --text-sm: 14px;       /* compact body, list rows     */
     --text-base: 16px;     /* long-form reading copy      */
     --text-lg: 20px;       /* card and section titles     */
-    --text-display: clamp(2.4rem, 6vw, 3.4rem); /* page hero */
+    /* Home hero only (.identity-name). Note the Tomorrow-based Display
+       token in typography.ts also emits a `.text-display` utility, and it
+       wins over this var's utility — page titles use `.hud-title`. */
+    --text-display: clamp(2.4rem, 6vw, 3.4rem); /* home hero */
 
     /* transitions-dev motion tokens */
     --duration-stagger: 40ms;
@@ -194,6 +197,14 @@
   .font-mono,
   .text-label-data {
     font-synthesis: none;
+  }
+
+  /* The one page-hero title. /projects and /bio share it so the two
+     headers read at exactly the same size and weight. Sizing comes from
+     the documented Display token (typography.ts), not the --text-display
+     clamp — see the note on that var above. */
+  .hud-title {
+    @apply text-display uppercase tracking-tighter text-white;
   }
 
   .hud-label {

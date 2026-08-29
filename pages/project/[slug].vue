@@ -3,7 +3,7 @@ import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
 import { isArticle } from "~/utils/projects";
 import { projectCanonicalUrl, projectWorkNode } from "~/utils/projectSchema";
-import { closeProjectSheet } from "~/composables/useProjectSheetMode";
+import { closeProjectSheet } from "~/composables/useProjectSheet";
 import { formatProjectName, pageTitle } from "~/utils/site";
 
 definePageMeta({
@@ -71,11 +71,6 @@ function siblingAt(offset: number) {
 
 const prevProject = computed(() => siblingAt(-1));
 const nextProject = computed(() => siblingAt(1));
-const projectCounter = computed(() =>
-  siblingIndex.value < 0
-    ? ""
-    : `${siblingIndex.value + 1}/${siblings.value.length}`,
-);
 
 // ── Dismissal ─────────────────────────────────────────────────────
 // The sheet has to finish sliding away before the route swaps the board
@@ -110,9 +105,8 @@ onBeforeRouteLeave(async (to) => {
 
 <template>
   <div class="project-route">
-    <!-- The board is the backdrop, not a second copy of the page: inert so
-         focus and clicks stay inside the sheet, and un-revealed so it does
-         not re-animate every time a dossier opens. -->
+    <!-- The board is the backdrop, not a second copy of the page: inert, so
+         focus and clicks stay inside the sheet. -->
     <ProjectsBoard :interactive="false" :active-slug="current.slug" inert />
 
     <ProjectSheet
@@ -121,22 +115,11 @@ onBeforeRouteLeave(async (to) => {
       @close="close"
     >
       <template #title>
-        <nav class="min-w-0" aria-label="Breadcrumb">
-          <ol
-            class="flex min-w-0 items-center gap-2 font-mono text-2xs uppercase tracking-[0.18em] text-[#919191]"
-          >
-            <li>
-              <NuxtLink
-                to="/projects"
-                class="transition-colors hover:text-white focus-visible:text-white focus-visible:outline-none"
-              >
-                PROJECTS
-              </NuxtLink>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li class="truncate text-white">{{ current.name }}</li>
-          </ol>
-        </nav>
+        <h1
+          class="truncate font-mono text-xs uppercase tracking-[0.14em] text-white"
+        >
+          // {{ current.name }}
+        </h1>
       </template>
 
       <template #actions>
@@ -153,38 +136,25 @@ onBeforeRouteLeave(async (to) => {
 
       <ProjectDossier :project="current" />
 
-      <template v-if="prevProject && nextProject" #footer>
-        <nav class="project-pager" aria-label="Project navigation">
-          <NuxtLink
-            :to="`/project/${prevProject.slug}`"
-            class="project-pager__arrow border-r border-white/20"
-            :aria-label="`Previous project: ${prevProject.name}`"
-          >
-            &lt;
-          </NuxtLink>
-          <div
-            class="flex min-w-0 flex-1 items-center justify-between gap-3 px-3"
-          >
-            <span
-              class="truncate font-mono text-2xs uppercase tracking-[0.18em] text-[#919191]"
-            >
-              <span class="hidden sm:inline">NEXT:&nbsp;</span>
-              <span class="text-white">{{ nextProject.name }}</span>
-            </span>
-            <span
-              class="shrink-0 font-mono text-xs tabular-nums tracking-[0.18em] text-[#919191]"
-            >
-              {{ projectCounter }}
-            </span>
-          </div>
-          <NuxtLink
-            :to="`/project/${nextProject.slug}`"
-            class="project-pager__arrow border-l border-white/20"
-            :aria-label="`Next project: ${nextProject.name}`"
-          >
-            &gt;
-          </NuxtLink>
-        </nav>
+      <!-- Project navigation lives in the gutters either side of the panel,
+           so stepping through the work never costs a scroll to the bottom. -->
+      <template v-if="prevProject && nextProject" #nav>
+        <NuxtLink
+          :to="`/project/${prevProject.slug}`"
+          class="project-nav project-nav--prev"
+          :class="{ 'is-closing': closing }"
+          :aria-label="`Previous project: ${prevProject.name}`"
+        >
+          &lt;
+        </NuxtLink>
+        <NuxtLink
+          :to="`/project/${nextProject.slug}`"
+          class="project-nav project-nav--next"
+          :class="{ 'is-closing': closing }"
+          :aria-label="`Next project: ${nextProject.name}`"
+        >
+          &gt;
+        </NuxtLink>
       </template>
     </ProjectSheet>
   </div>
@@ -197,35 +167,79 @@ onBeforeRouteLeave(async (to) => {
   display: contents;
 }
 
-.project-pager {
+.project-nav {
+  position: fixed;
+  z-index: 46;
   display: flex;
-  align-items: stretch;
-}
-
-.project-pager__arrow {
-  display: flex;
-  min-height: 44px;
-  min-width: 44px;
+  height: 2.75rem;
+  width: 2.75rem;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(11, 11, 11, 0.82);
   color: #fff;
   font-size: var(--text-lg);
   line-height: 1;
   transition:
     background-color 150ms ease,
-    color 150ms ease;
+    border-color 150ms ease,
+    color 150ms ease,
+    opacity var(--duration-quick, 150ms) ease;
+  animation: project-nav-in 260ms var(--page-fade-ease, ease) both;
 }
 
-.project-pager__arrow:hover,
-.project-pager__arrow:focus-visible {
+/* Below the desktop breakpoint the panel is full-bleed, so the rails drop to
+   the bottom corners rather than sitting on top of the reading column. */
+.project-nav--prev {
+  bottom: 5rem;
+  left: 0.75rem;
+}
+
+.project-nav--next {
+  right: 0.75rem;
+  bottom: 5rem;
+}
+
+@media (min-width: 1280px) {
+  .project-nav {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+
+  .project-nav--prev {
+    left: max(1.25rem, calc((100vw - 1160px) / 4 - 1.375rem));
+  }
+
+  .project-nav--next {
+    right: max(1.25rem, calc((100vw - 1160px) / 4 - 1.375rem));
+  }
+}
+
+.project-nav:hover,
+.project-nav:focus-visible {
+  border-color: #fff;
   background: #fff;
   color: #000;
   outline: none;
 }
 
+/* The rails belong to the sheet, so they leave with it. */
+.project-nav.is-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes project-nav-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .project-pager__arrow {
+  .project-nav {
     transition: none;
+    animation: none;
   }
 }
 </style>

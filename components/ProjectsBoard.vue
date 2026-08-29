@@ -107,16 +107,10 @@ onUnmounted(() => {
 <template>
   <div
     class="projects-rail flex flex-col gap-8 py-5 pb-8 xl:h-full xl:overflow-y-auto"
-    :class="{ 'projects-rail--backdrop': !interactive }"
   >
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// PROJECTS</span>
-      <h1
-        class="font-semibold uppercase tracking-tighter text-white"
-        style="font-size: var(--text-display); line-height: 0.92"
-      >
-        SELECTED WORK
-      </h1>
+      <h1 class="hud-title">SELECTED WORK</h1>
       <p class="max-w-xl text-sm leading-relaxed text-[#a8a8a8]">
         A collection of web apps and projects I've collaborated on over the
         years, along with technical articles I'm proud of.

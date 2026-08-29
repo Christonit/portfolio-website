@@ -32,3 +32,28 @@ test('text-label-data applies the Departure Mono family contract', async () => {
     await rm(fixtureRoot, { recursive: true, force: true })
   }
 })
+
+test('text-label-ui keeps navigation labels in Tomorrow', async () => {
+  const fixtureRoot = await mkdtemp(path.join(os.tmpdir(), 'typography-tailwind-'))
+  const inputPath = path.join(fixtureRoot, 'input.css')
+  const contentPath = path.join(fixtureRoot, 'fixture.vue')
+  const outputPath = path.join(fixtureRoot, 'output.css')
+  const configPath = path.join(process.cwd(), 'tailwind.config.ts')
+  const cliPath = path.join(process.cwd(), 'node_modules', 'tailwindcss', 'lib', 'cli.js')
+
+  try {
+    await writeFile(inputPath, '@tailwind utilities;\n')
+    await writeFile(contentPath, '<template><span class="text-label-ui">About</span></template>\n')
+    await execFile(process.execPath, [cliPath, '-c', configPath, '-i', inputPath, '-o', outputPath, '--content', contentPath])
+
+    const css = await readFile(outputPath, 'utf8')
+    const rules = css.match(/\.text-label-ui\s*\{[^}]*\}/g) ?? []
+
+    assert.ok(
+      rules.some((rule) => /font-family:\s*Tomorrow,\s*sans-serif/.test(rule)),
+      'text-label-ui must stay on the Tomorrow family, not the mono HUD face',
+    )
+  } finally {
+    await rm(fixtureRoot, { recursive: true, force: true })
+  }
+})

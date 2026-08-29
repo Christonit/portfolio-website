@@ -27,6 +27,7 @@ const typographyUtilities = {
   "title-ui": "text-title-ui",
   "body-compact": "text-body-compact",
   "body-prose": "text-body-prose",
+  "label-ui": "text-label-ui",
   "label-data": "text-label-data",
 } satisfies Record<TypographyStyleKey, string>;
 

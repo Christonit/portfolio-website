@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import {
-  PROJECT_SHEET_MODES,
-  openProjectSheet,
-} from "~/composables/useProjectSheetMode";
+import { openProjectSheet } from "~/composables/useProjectSheet";
 
 /**
- * Modal shell for the project dossier. Two presentations share one skeleton:
+ * Modal shell for the project dossier: a near-fullscreen panel over the
+ * projects board. It never runs edge to edge — the dim frame of board around
+ * it, and the scrim you can click, are what say the page is still back there.
  *
- *   side — right-hand drawer, board still readable in the left gutter
- *   full — near-fullscreen dialog, board reduced to a dim frame
- *
- * Both deliberately leave the page underneath visible: the exposed board is
- * the dismiss affordance, and clicking it closes the sheet.
+ * `role="dialog"` without `aria-modal`: the board is inert, but the site nav
+ * and the project pager either side of the panel are meant to stay reachable,
+ * and `aria-modal` would hide them from assistive tech.
  */
 const props = withDefaults(
   defineProps<{
@@ -23,13 +20,12 @@ const props = withDefaults(
 
 const emit = defineEmits<{ close: [] }>();
 
-const { mode, setMode } = useProjectSheetMode();
-
 // Read before first paint, not in onMounted: stepping through the pager
-// remounts this component, and the panel must not slide in again.
+// remounts this component, and the panel must not zoom in again.
 const enter = openProjectSheet() ? "instant" : "animate";
 
 const panelRef = ref<HTMLElement | null>(null);
+const bodyRef = ref<HTMLElement | null>(null);
 let previouslyFocused: HTMLElement | null = null;
 
 // Capture phase, and swallowed: the layout binds Escape to "go home", which
@@ -56,7 +52,6 @@ onBeforeUnmount(() => {
 // The HUD arrow pad scrolls the dossier now that the sheet, not the page,
 // owns the scroll container.
 const hudKey = useHudNav();
-const bodyRef = ref<HTMLElement | null>(null);
 
 watch(hudKey, (key) => {
   if (key !== "ArrowUp" && key !== "ArrowDown") return;
@@ -72,21 +67,15 @@ watch(hudKey, (key) => {
 <template>
   <div
     class="project-sheet"
-    :data-mode="mode"
     :data-enter="enter"
     :data-state="closing ? 'closing' : 'open'"
   >
-    <div
-      class="project-sheet__scrim"
-      aria-hidden="true"
-      @click="emit('close')"
-    />
+    <div class="project-sheet__scrim" aria-hidden="true" @click="emit('close')" />
 
     <div
       ref="panelRef"
       class="project-sheet__panel"
       role="dialog"
-      aria-modal="true"
       :aria-label="label"
       tabindex="-1"
     >
@@ -100,26 +89,8 @@ watch(hudKey, (key) => {
           <slot name="title" />
         </div>
 
-        <div class="flex shrink-0 items-center gap-2">
+        <div class="flex shrink-0 items-center gap-3">
           <slot name="actions" />
-
-          <div
-            class="project-sheet__modes"
-            role="group"
-            aria-label="Dossier presentation"
-          >
-            <button
-              v-for="option in PROJECT_SHEET_MODES"
-              :key="option"
-              type="button"
-              class="project-sheet__mode"
-              :class="{ 'is-active': mode === option }"
-              :aria-pressed="mode === option"
-              @click="setMode(option)"
-            >
-              {{ option }}
-            </button>
-          </div>
 
           <button
             type="button"
@@ -139,11 +110,11 @@ watch(hudKey, (key) => {
       <div ref="bodyRef" class="project-sheet__body">
         <slot />
       </div>
-
-      <footer v-if="$slots.footer" class="project-sheet__footer">
-        <slot name="footer" />
-      </footer>
     </div>
+
+    <!-- Pager rails. Outside the panel so they sit in the board gutters, and
+         after it in the reading order so the dossier comes first. -->
+    <slot name="nav" />
   </div>
 </template>
 
@@ -155,8 +126,14 @@ watch(hudKey, (key) => {
   position: fixed;
   inset: 3.5rem 0 0 0;
   z-index: 40;
-  background: rgba(6, 6, 6, var(--sheet-scrim, 0.62));
+  background: rgba(6, 6, 6, 0.74);
   animation: sheet-scrim-in var(--sheet-in-dur) var(--sheet-ease) both;
+}
+
+.project-sheet {
+  --sheet-in-dur: 420ms;
+  --sheet-out-dur: 240ms;
+  --sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .project-sheet__panel {
@@ -164,33 +141,15 @@ watch(hudKey, (key) => {
   z-index: 45;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(10, 10, 10, 0.95);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(14px);
   outline: none;
 
-  /* Phones and small tablets: one presentation for both modes — a sheet that
-     rises from the bottom and stops short of the board so the strip of
-     cards above it reads as "tap here to get out". */
+  /* Phones and small tablets: the panel rises from the bottom and stops short
+     of the board so the strip of cards above it reads as "tap to get out". */
   inset: 6.25rem 0 4rem 0;
   animation: sheet-rise-in var(--sheet-in-dur) var(--sheet-ease) both;
-}
-
-.project-sheet {
-  --sheet-in-dur: 420ms;
-  --sheet-out-dur: 240ms;
-  --sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
-  --sheet-scrim: 0.62;
-}
-
-.project-sheet[data-mode="side"] {
-  --sheet-scrim: 0.45;
-}
-
-.project-sheet[data-mode="full"] {
-  --sheet-scrim: 0.74;
 }
 
 .project-sheet__panel :is(.corner-tl-w, .corner-tr-w, .corner-bl-w, .corner-br-w) {
@@ -213,46 +172,6 @@ watch(hudKey, (key) => {
   padding: 0.5rem 0.75rem;
 }
 
-@media (min-width: 1280px) {
-  .project-sheet__chrome {
-    padding: 0.5rem 1rem;
-  }
-}
-
-.project-sheet__modes {
-  display: flex;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.project-sheet__mode {
-  min-height: 28px;
-  padding: 0 0.55rem;
-  color: #919191;
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  letter-spacing: 0.18em;
-  line-height: 1;
-  text-transform: uppercase;
-  transition:
-    background-color 150ms ease,
-    color 150ms ease;
-}
-
-.project-sheet__mode + .project-sheet__mode {
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.project-sheet__mode:hover,
-.project-sheet__mode:focus-visible {
-  color: #fff;
-  outline: none;
-}
-
-.project-sheet__mode.is-active {
-  background: #67f57a;
-  color: #000;
-}
-
 .project-sheet__close {
   display: flex;
   height: 2.75rem;
@@ -273,14 +192,7 @@ watch(hudKey, (key) => {
   outline: none;
 }
 
-@media (min-width: 1280px) {
-  .project-sheet__close {
-    height: 2.25rem;
-    width: 2.25rem;
-  }
-}
-
-/* ── Body / footer ──────────────────────────────────────────────── */
+/* ── Body ───────────────────────────────────────────────────────── */
 .project-sheet__body {
   container: dossier / inline-size;
   flex: 1 1 auto;
@@ -288,7 +200,9 @@ watch(hudKey, (key) => {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 1rem 0.75rem 1.5rem;
+  /* Clears the pager rails, which float over the bottom corners until the
+     desktop breakpoint moves them out into the gutters. */
+  padding-bottom: 5.5rem;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -297,34 +211,28 @@ watch(hudKey, (key) => {
   display: none;
 }
 
+/* ── Desktop ────────────────────────────────────────────────────── */
 @media (min-width: 1280px) {
+  .project-sheet__chrome {
+    padding: 0.5rem 1rem;
+  }
+
+  .project-sheet__close {
+    height: 2.25rem;
+    width: 2.25rem;
+  }
+
   .project-sheet__body {
-    padding: 1.25rem 1.25rem 2rem;
-  }
-}
-
-.project-sheet__footer {
-  flex-shrink: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(8, 8, 8, 0.9);
-}
-
-/* ── Desktop: side drawer ───────────────────────────────────────── */
-@media (min-width: 1280px) {
-  .project-sheet[data-mode="side"] .project-sheet__panel {
-    inset: 3.5rem 0 0 auto;
-    width: clamp(520px, 54vw, 780px);
-    border-right: 0;
-    animation-name: sheet-slide-in;
+    padding-bottom: 1rem;
   }
 
-  /* Near-fullscreen, but never edge-to-edge: the sliver of board around it
-     is what says the page is still back there. */
-  .project-sheet[data-mode="full"] .project-sheet__panel {
-    top: 4.75rem;
-    right: max(1.5rem, calc((100vw - 1160px) / 2));
+  /* The 5rem floor keeps a gutter wide enough for the pager rails even when
+     the viewport is narrower than the panel's natural max width. */
+  .project-sheet__panel {
+    top: 4.5rem;
+    right: max(5rem, calc((100vw - 1160px) / 2));
     bottom: 1.5rem;
-    left: max(1.5rem, calc((100vw - 1160px) / 2));
+    left: max(5rem, calc((100vw - 1160px) / 2));
     animation-name: sheet-zoom-in;
   }
 }
@@ -339,11 +247,7 @@ watch(hudKey, (key) => {
 }
 
 @media (min-width: 1280px) {
-  .project-sheet[data-mode="side"][data-state="closing"] .project-sheet__panel {
-    animation-name: sheet-slide-out;
-  }
-
-  .project-sheet[data-mode="full"][data-state="closing"] .project-sheet__panel {
+  .project-sheet[data-state="closing"] .project-sheet__panel {
     animation-name: sheet-zoom-out;
   }
 }
@@ -389,18 +293,6 @@ watch(hudKey, (key) => {
   }
 }
 
-@keyframes sheet-slide-in {
-  from {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes sheet-slide-out {
-  to {
-    transform: translateX(100%);
-  }
-}
-
 @keyframes sheet-zoom-in {
   from {
     opacity: 0;
@@ -419,15 +311,11 @@ watch(hudKey, (key) => {
   .project-sheet__scrim,
   .project-sheet__panel,
   .project-sheet[data-state="closing"] .project-sheet__scrim,
-  .project-sheet[data-state="closing"] .project-sheet__panel {
-    animation: none !important;
-  }
-
+  .project-sheet[data-state="closing"] .project-sheet__panel,
   .project-sheet[data-enter="instant"] .project-sheet__body {
     animation: none !important;
   }
 
-  .project-sheet__mode,
   .project-sheet__close {
     transition: none;
   }

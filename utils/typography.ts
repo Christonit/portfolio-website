@@ -65,6 +65,15 @@ export const typography = {
     sample: 'Long-form project and biography prose stays comfortably readable.',
     usage: 'Long-form project and biography prose.',
   },
+  'label-ui': {
+    semanticName: 'Label/UI',
+    familyRole: 'sans',
+    size: '12px',
+    lineHeight: '16px',
+    weight: 600,
+    sample: 'ABOUT',
+    usage: 'Navigation and interface labels — the sans counterpart to Label/Data.',
+  },
   'label-data': {
     semanticName: 'Label/Data',
     familyRole: 'mono',

@@ -236,7 +236,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             <NuxtLink
               :to="item.path"
               :class="[
-                'relative inline-flex h-14 items-center px-4 text-label-data tracking-[0.2em] uppercase transition-colors duration-150',
+                'relative inline-flex h-14 items-center px-4 text-label-ui tracking-[0.2em] uppercase transition-colors duration-150',
                 'after:absolute after:bottom-0 after:left-4 after:right-[calc(1rem+0.2em)] after:h-px',
                 isActive(item.path)
                   ? 'text-white after:bg-white'
@@ -395,7 +395,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
         <span v-else class="material-symbols-outlined icon-md leading-none">{{
           item.icon
         }}</span>
-        <span class="text-label-data uppercase tracking-widest">{{
+        <span class="text-label-ui uppercase tracking-widest">{{
           item.label
         }}</span>
       </NuxtLink>

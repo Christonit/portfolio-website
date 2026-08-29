@@ -130,11 +130,7 @@ const timeline: ExperienceOrg[] = [
   >
     <header class="flex flex-col gap-4 pt-2">
       <span class="hud-label">// BIO</span>
-      <h1
-        class="text-display uppercase tracking-tighter text-white"
-      >
-        ABOUT ME
-      </h1>
+      <h1 class="hud-title">ABOUT ME</h1>
       <p class="bio-lede text-body-compact text-[#919191]">
         Manhattan-based Senior Full Stack Engineer with over a decade of
         experience building interfaces and lately systems for high-traffic web

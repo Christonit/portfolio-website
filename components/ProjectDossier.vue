@@ -125,14 +125,9 @@ onBeforeUnmount(pauseDemo);
 </script>
 
 <template>
-  <div
-    class="project-shell relative flex flex-col overflow-visible border border-white/25"
-  >
-    <div class="corner-tl-w" />
-    <div class="corner-tr-w" />
-    <div class="corner-bl-w" />
-    <div class="corner-br-w" />
-
+  <!-- No frame of its own: the sheet panel is the frame, and the media runs
+       full-bleed to its edges. -->
+  <div class="relative flex flex-col">
     <section
       class="relative flex flex-col border-b border-white/15"
       :aria-roledescription="hasVideo ? undefined : 'carousel'"
@@ -236,24 +231,17 @@ onBeforeUnmount(pauseDemo);
       class="project-dossier-panel relative flex flex-col"
       aria-label="Project dossier"
     >
+      <!-- The sheet chrome already carries the project name; this band is
+           just the role credit. -->
       <header
-        class="flex shrink-0 flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b border-white/10 px-4 py-4 xl:px-5"
+        v-if="project.role"
+        class="flex shrink-0 items-baseline gap-2 border-b border-white/10 px-4 py-3 font-mono text-2xs uppercase leading-snug tracking-[0.18em] xl:px-6"
       >
-        <h1
-          class="font-mono text-sm uppercase leading-snug tracking-[0.12em] text-white xl:text-sm"
-        >
-          // {{ project.name }}
-        </h1>
-        <p
-          v-if="project.role"
-          class="flex min-w-0 items-baseline gap-2 font-mono text-2xs uppercase leading-snug tracking-[0.18em]"
-        >
-          <span class="shrink-0 text-[#919191]">ROLE</span>
-          <span class="text-[#67F57A]">{{ project.role }}</span>
-        </p>
+        <span class="shrink-0 text-[#919191]">ROLE</span>
+        <span class="text-[#67F57A]">{{ project.role }}</span>
       </header>
 
-      <div class="project-dossier px-4 py-4 xl:px-5">
+      <div class="project-dossier px-4 py-5 xl:px-6 xl:py-6">
         <div class="project-dossier-inner">
           <div class="project-dossier-main">
             <article
