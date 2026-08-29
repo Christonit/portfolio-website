@@ -212,7 +212,7 @@ onUnmounted(() => {
   <div
     class="order-1 xl:order-3 xl:flex xl:flex-col xl:flex-1 xl:min-h-0 lg:mb-0"
   >
-    <h3 class="hud-label mb-2 xl:flex-shrink-0 font-semibold lg:font-normal">
+    <h3 class="hud-label mb-2 xl:flex-shrink-0">
       PROJECTS
     </h3>
     <div class="xl:flex-1 xl:overflow-y-auto">
@@ -250,7 +250,7 @@ onUnmounted(() => {
           />
           <div class="flex flex-col gap-1">
             <span
-              class="font-semibold text-xs leading-none block uppercase tracking-wider transition-colors"
+              class="text-title-ui block uppercase tracking-wider transition-colors"
               :class="
                 highlightedIndex === i
                   ? 'text-white'
@@ -260,7 +260,7 @@ onUnmounted(() => {
               {{ mission.name }}
             </span>
             <span
-              class="font-mono text-2xs leading-none text-[#919191] uppercase mt-0.5"
+              class="text-label-data mt-0.5 uppercase text-[#919191]"
             >
               // {{ mission.tags }}
             </span>

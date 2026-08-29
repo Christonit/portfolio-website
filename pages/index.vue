@@ -122,16 +122,16 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         @touchcancel.passive="portraitHover = false"
       >
         <div class="identity-copy">
-          <h1 id="identity-name" class="identity-name">
-            CHRISTOPHER<br />SANTANA
+          <h1 id="identity-name" class="identity-name text-display">
+            CHRISTO<wbr />PHER<br />SANTANA
           </h1>
 
           <div class="identity-facts">
             <div>
-              <p class="identity-role">FULL_STACK_ENGINEER</p>
+              <p class="identity-role text-title-ui">FULL_STACK_ENGINEER</p>
             </div>
             <div>
-              <p class="identity-mission">
+              <p class="identity-mission text-body-compact">
                 <span class="identity-mission__lead">
                   AI SYSTEMS, FRONTEND ARCHITECTURE, SEO &amp; DATA PIPELINES
                 </span>
@@ -227,7 +227,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         aria-labelledby="tech-stack-title"
       >
         <header class="index-module__header">
-          <h2 id="tech-stack-title">TECH STACK</h2>
+          <h2 id="tech-stack-title" class="text-heading-section">TECH STACK</h2>
         </header>
 
         <StackIndex :skills="featuredSkills" />
@@ -239,7 +239,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         aria-labelledby="articles-index-title"
       >
         <header class="index-module__header">
-          <h2 id="articles-index-title">ARTICLES</h2>
+          <h2 id="articles-index-title" class="text-heading-section">ARTICLES</h2>
         </header>
 
         <ArticlesIndex :articles="articles" />
@@ -334,7 +334,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   font-size: var(--text-display);
   font-weight: 600;
   letter-spacing: -0.025em;
-  line-height: 0.86;
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -378,6 +377,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .identity-portrait {
+  --portrait-hover-scale: 1.2;
+  --portrait-scale: 1.18;
+
   position: relative;
   min-width: 262px;
   overflow: hidden;
@@ -424,10 +426,10 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   text-decoration: none;
   transition:
     border-color 150ms ease,
-    transform 150ms ease,
     background-color 150ms ease;
   --hud-corner-size: 16px;
   --hud-corner-inset: 0px;
+  --distance-micro: 0px;
 }
 
 .dossier-card:hover,
@@ -436,7 +438,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   border-color: rgba(103, 245, 122, 0.72);
   background: #0a0a0a;
   outline: none;
-  transform: translateY(-2px);
 }
 
 .dossier-card__image {
@@ -494,7 +495,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: -0.015em;
-  line-height: 1.1;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -636,6 +636,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-portrait {
+    --portrait-hover-scale: 1.24;
+    --portrait-scale: 1.22;
+
     order: -1;
     height: 324px;
   }
@@ -708,10 +711,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     transition: none;
   }
 
-  .dossier-card:hover,
-  .dossier-card:focus-visible,
-  .dossier-card.is-focused {
-    transform: none;
+  .identity-panel:hover .identity-portrait img,
+  .identity-panel:focus-within .identity-portrait img {
+    transform: scale(var(--portrait-scale));
   }
 }
 </style>

@@ -131,38 +131,39 @@ const timeline: ExperienceOrg[] = [
     <header class="flex flex-col gap-4 pt-2">
       <span class="hud-label">// BIO</span>
       <h1
-        class="font-semibold uppercase tracking-tighter text-white"
-        style="font-size: var(--text-display); line-height: 0.92"
+        class="text-display uppercase tracking-tighter text-white"
       >
         ABOUT ME
       </h1>
-      <p class="bio-lede text-base text-[#919191]">
+      <p class="bio-lede text-body-compact text-[#919191]">
         Manhattan-based Senior Full Stack Engineer with over a decade of
         experience building interfaces and lately systems for high-traffic web
         products.
       </p>
     </header>
 
-    <div class="flex flex-col gap-12">
-      <div class="flex flex-col gap-8">
-        <div
-          class="flex flex-col gap-3.5 text-sm leading-relaxed text-[#c6c6c6] xl:gap-4 xl:text-base"
-        >
-          <p>
-            Originally from Punta Cana, Dominican Republic, I moved to the
-            United States to pursue a Master’s in Information Systems at
-            Baruch College and to expand my technical knowledge.
-          </p>
-          <p>
-            My recent work centers on scalable systems for fintech and financial
-            education. Products I’ve shipped handle 25K+ concurrent users and
-            serve more than 1M unique visitors each month.
-          </p>
-          <p>
-            In the near future, I want to keep moving toward different and
-            bigger problems than the ones I have faced before and collaborate
-            with new people and keep growing as an engineer.
-          </p>
+    <div class="flex flex-col gap-10">
+      <div class="flex flex-col gap-5">
+        <div class="relative border-l-[3px] border-white pl-4 lg:pr-3 lg:py-2">
+          <HudCorners :corners="['tr', 'br']" />
+          <div class="text-body-prose space-y-3 text-[#c6c6c6]">
+            <p>
+              Originally from Punta Cana, Dominican Republic, I moved to the
+              United States to pursue a Master’s in Information Systems at
+              Baruch College and to expand my technical knowledge.
+            </p>
+            <p>
+              My recent work centers on scalable systems for fintech and
+              financial education. Products I’ve shipped handle 25K+ concurrent
+              users and serve more than 1M unique visitors each month.
+            </p>
+
+            <p>
+              In the near future, I want to keep moving toward different and
+              bigger problems than the ones I have faced before and collaborate
+              with new people and keep growing as an engineer.
+            </p>
+          </div>
         </div>
 
         <section class="bio-panel">

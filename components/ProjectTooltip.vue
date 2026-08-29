@@ -68,11 +68,11 @@ const visitLabel = computed(() =>
       >
         <div class="absolute inset-0 grid-bg opacity-40" />
         <span
-          class="relative z-[1] font-mono text-2xs uppercase tracking-[0.28em] text-[#67F57A]"
+          class="text-label-data relative z-[1] uppercase tracking-[0.28em] text-[#67F57A]"
           >{{ objectId }}</span
         >
         <span
-          class="relative z-[1] font-mono text-2xs uppercase tracking-[0.18em] text-[#919191]"
+          class="text-label-data relative z-[1] uppercase tracking-[0.18em] text-[#919191]"
           >PREVIEW_OFFLINE</span
         >
       </div>
@@ -92,7 +92,7 @@ const visitLabel = computed(() =>
     <div class="flex flex-col gap-4 px-4 pb-4 pt-3.5">
       <!-- Title -->
       <h3
-        class="text-lg font-semibold uppercase leading-[1.05] tracking-tight text-white"
+        class="text-title-ui uppercase tracking-tight text-white"
       >
         {{ project.name }}
       </h3>
@@ -102,7 +102,7 @@ const visitLabel = computed(() =>
         <li
           v-for="(task, i) in tasks"
           :key="task"
-          class="project-tt-task flex items-start gap-2 font-mono text-xs uppercase leading-snug tracking-wide text-[#e8e8e8]"
+          class="project-tt-task text-label-data flex items-start gap-2 uppercase tracking-wide text-[#e8e8e8]"
           :style="{ '--task-i': i }"
         >
           <span class="mt-px shrink-0 text-[#67F57A]" aria-hidden="true"
@@ -116,7 +116,7 @@ const visitLabel = computed(() =>
       <ul v-if="project.tech.length" class="flex flex-wrap gap-1.5" role="list">
         <li v-for="(item, i) in project.tech" :key="item">
           <span
-            class="inline-flex items-center border px-1.5 py-1 font-mono text-2xs uppercase tracking-[0.14em] transition-colors duration-150"
+            class="text-label-data inline-flex items-center border px-1.5 py-1 uppercase tracking-[0.14em] transition-colors duration-150"
             :class="
               i === 0
                 ? 'border-[#67F57A] text-[#67F57A]'
@@ -133,7 +133,7 @@ const visitLabel = computed(() =>
         <NuxtLink
           v-if="!article"
           :to="`/project/${project.slug}`"
-          class="project-tt-btn"
+          class="project-tt-btn text-label-data"
         >
           LEARN MORE
         </NuxtLink>
@@ -143,7 +143,7 @@ const visitLabel = computed(() =>
           :href="visitUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="project-tt-btn"
+          class="project-tt-btn text-label-data"
         >
           {{ visitLabel }}
         </a>
@@ -163,9 +163,6 @@ const visitLabel = computed(() =>
   padding: 0 12px;
   border: 1px solid #67f57a;
   color: #67f57a;
-  font-family: inherit;
-  font-size: var(--text-2xs);
-  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;

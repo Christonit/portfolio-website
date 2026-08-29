@@ -83,7 +83,7 @@ onUnmounted(() => {
   >
     <button
       type="button"
-      class="local-time__trigger"
+      class="local-time__trigger text-label-data"
       :aria-expanded="open"
       aria-controls="local-time-card"
       aria-describedby="local-time-location"
@@ -97,7 +97,7 @@ onUnmounted(() => {
       >{{ CITY }}, {{ COUNTRY }}</span
     >
 
-    <div id="local-time-card" class="local-time__card" role="tooltip">
+    <div id="local-time-card" class="local-time__card text-label-data" role="tooltip">
       <div class="corner-tl-w" />
       <div class="corner-tr-w" />
       <div class="corner-bl-w" />
@@ -125,10 +125,10 @@ onUnmounted(() => {
           <span class="local-time__reticle-dot" />
         </span>
 
-        <span class="local-time__coords">{{ COORDS }}</span>
+        <span class="local-time__coords text-label-data">{{ COORDS }}</span>
 
         <a
-          class="local-time__attribution"
+          class="local-time__attribution text-label-data"
           href="https://www.openstreetmap.org/copyright"
           target="_blank"
           rel="noreferrer"
@@ -141,13 +141,13 @@ onUnmounted(() => {
 
       <div class="local-time__copy">
         <div class="local-time__place">
-          <span class="local-time__kicker">LOC_FIX</span>
-          <strong>{{ CITY }}</strong>
-          <span>{{ COUNTRY }}</span>
+          <span class="local-time__kicker text-label-data">LOC_FIX</span>
+          <strong class="text-title-ui">{{ CITY }}</strong>
+          <span class="text-label-data">{{ COUNTRY }}</span>
         </div>
         <div class="local-time__clock">
-          <span class="local-time__kicker">LOCAL</span>
-          <span class="local-time__card-clock">{{ timeLabel }}</span>
+          <span class="local-time__kicker text-label-data">LOCAL</span>
+          <span class="local-time__card-clock text-label-data">{{ timeLabel }}</span>
         </div>
       </div>
     </div>
@@ -173,11 +173,7 @@ onUnmounted(() => {
   border-radius: 0;
   background: transparent;
   color: #919191;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: var(--text-2xs);
-  font-weight: 600;
   letter-spacing: 0.02em;
-  line-height: 1;
   white-space: nowrap;
   cursor: default;
   transition:
@@ -215,7 +211,6 @@ onUnmounted(() => {
   box-shadow:
     0 24px 80px rgba(0, 0, 0, 0.72),
     0 0 0 1px rgba(103, 245, 122, 0.06);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   text-align: left;
   transform: translateY(-0.25rem) scale(0.98);
   transform-origin: right top;
@@ -349,10 +344,7 @@ onUnmounted(() => {
   left: 0.5rem;
   z-index: 2;
   color: #67f57a;
-  font-size: var(--text-2xs);
-  font-weight: 600;
   letter-spacing: 0.16em;
-  line-height: 1;
   text-transform: uppercase;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.85);
   pointer-events: none;
@@ -367,10 +359,7 @@ onUnmounted(() => {
   border: 1px solid rgba(103, 245, 122, 0.35);
   background: rgba(12, 12, 12, 0.82);
   color: #67f57a;
-  font-size: var(--text-2xs);
-  font-weight: 600;
   letter-spacing: 0.16em;
-  line-height: 1;
   text-decoration: none;
 }
 
@@ -404,41 +393,29 @@ onUnmounted(() => {
 
 .local-time__kicker {
   color: #67f57a;
-  font-size: var(--text-2xs);
-  font-weight: 600;
   letter-spacing: 0.22em;
-  line-height: 1;
 }
 
 .local-time__place strong {
-  font-size: var(--text-sm);
-  font-weight: 600;
   letter-spacing: 0.04em;
-  line-height: 1.15;
   text-transform: uppercase;
   color: #fff;
 }
 
 .local-time__place span:last-child {
   color: #919191;
-  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
-  line-height: 1.25;
   text-transform: uppercase;
 }
 
 .local-time__card-clock {
   color: #e2e2e2;
-  font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
   letter-spacing: 0.04em;
-  line-height: 1;
 }
 
 @media (min-width: 1280px) {
   .local-time__trigger {
-    font-size: var(--text-xs);
     padding: 0.25rem 0.65rem;
   }
 }

@@ -186,7 +186,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
       <!-- Logo: always visible -->
       <NuxtLink
         to="/"
-        class="inline-flex h-8 items-center px-1 text-white font-semibold text-sm xl:text-lg tracking-tighter uppercase select-none mr-auto"
+        class="text-title-ui mr-auto inline-flex h-8 items-center px-1 select-none uppercase tracking-tighter text-white"
       >
         CHRISTOPHER SANTANA
       </NuxtLink>
@@ -209,7 +209,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           @click="prevPage"
         >
           <kbd
-            class="flex items-center justify-center h-6 min-w-7 font-mono text-xs font-semibold text-white"
+            class="text-label-data flex h-6 min-w-7 items-center justify-center text-white"
             aria-hidden="true"
           >
             <svg
@@ -236,7 +236,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             <NuxtLink
               :to="item.path"
               :class="[
-                'relative inline-flex h-14 items-center px-4 text-xs font-semibold tracking-[0.2em] uppercase transition-colors duration-150',
+                'relative inline-flex h-14 items-center px-4 text-label-data tracking-[0.2em] uppercase transition-colors duration-150',
                 'after:absolute after:bottom-0 after:left-4 after:right-[calc(1rem+0.2em)] after:h-px',
                 isActive(item.path)
                   ? 'text-white after:bg-white'
@@ -261,7 +261,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
           @click="nextPage"
         >
           <kbd
-            class="flex items-center justify-center h-6 min-w-7 font-mono text-xs font-semibold text-white"
+            class="text-label-data flex h-6 min-w-7 items-center justify-center text-white"
             aria-hidden="true"
           >
             <svg
@@ -395,7 +395,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
         <span v-else class="material-symbols-outlined icon-md leading-none">{{
           item.icon
         }}</span>
-        <span class="text-xs uppercase tracking-widest font-semibold">{{
+        <span class="text-label-data uppercase tracking-widest">{{
           item.label
         }}</span>
       </NuxtLink>

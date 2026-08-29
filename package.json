@@ -8,6 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "check:typography": "node scripts/typography-audit.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {

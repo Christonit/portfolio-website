@@ -191,12 +191,17 @@
 }
 
 @layer components {
+  .font-mono,
+  .text-label-data {
+    font-synthesis: none;
+  }
+
   .hud-label {
-    @apply block font-mono text-xs tracking-[0.2em] uppercase text-[#919191];
+    @apply block text-label-data tracking-[0.2em] uppercase text-[#919191];
   }
 
   .hud-kbd {
-    @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] font-mono text-xs text-[#919191] leading-none;
+    @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] text-label-data text-[#919191];
   }
 
   /* Icon sizing is a separate axis from the type scale — two steps. */
