@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import { useAudio } from '~/composables/useAudio';
-import { EMAIL_URL, LINKEDIN_URL, X_URL } from "~/utils/site";
+import { EMAIL_URL, LINKEDIN_URL } from "~/utils/site";
 
 const router = useRouter();
 const route = useRoute();
@@ -314,6 +314,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             />
           </svg>
         </a>
+        <!--
         <a
           :href="X_URL"
           target="_blank"
@@ -333,6 +334,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
             />
           </svg>
         </a>
+        -->
         <a
           :href="LINKEDIN_URL"
           target="_blank"
