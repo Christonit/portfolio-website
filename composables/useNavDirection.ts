@@ -1,4 +1,12 @@
-export type NavDir = "forward" | "back";
+export type NavDir = "forward" | "back" | "modal-in" | "modal-out" | "none";
+
+const NAV_DIRECTIONS: readonly NavDir[] = [
+  "forward",
+  "back",
+  "modal-in",
+  "modal-out",
+  "none",
+];
 
 const TAB_PATHS = ["/", "/projects", "/bio"];
 
@@ -17,8 +25,19 @@ export function tabIndex(path: string) {
   return TAB_PATHS.indexOf(path);
 }
 
+function isProjectDetail(path: string) {
+  return path.startsWith("/project/");
+}
+
 export function navDirectionForPath(toPath: string, fromPath: string): NavDir {
   if (toPath === fromPath) return "forward";
+
+  // The dossier is a modal sheet layered over the projects board, and the
+  // board renders underneath it either way — so the page itself must not
+  // move. ProjectSheet owns the open/dismiss motion instead.
+  if (isProjectDetail(toPath) || isProjectDetail(fromPath)) {
+    return "none";
+  }
 
   const toDepth = routeDepth(toPath);
   const fromDepth = routeDepth(fromPath);
@@ -34,10 +53,35 @@ export function navDirectionForPath(toPath: string, fromPath: string): NavDir {
   return "forward";
 }
 
+export function navDirectionForNavigation(
+  toPath: string,
+  fromPath: string,
+  explicitDirection?: string | null,
+): NavDir {
+  if (NAV_DIRECTIONS.includes(explicitDirection as NavDir)) {
+    return explicitDirection as NavDir;
+  }
+
+  return navDirectionForPath(toPath, fromPath);
+}
+
 export function applyNavDirection(dir: NavDir) {
   const navDir = useNavDirection();
   navDir.value = dir;
   if (import.meta.client) {
     document.documentElement.dataset.navDir = dir;
   }
+}
+
+/**
+ * Whether two paths address the same page and differ only in trailing slashes.
+ *
+ * Netlify serves every prerendered route from its trailing-slash URL, so a cold
+ * load of `/projects` lands on `/projects/` while the payload it hydrates was
+ * rendered at `/projects`. Nuxt reconciles that with a pair of router replaces —
+ * neither of which is a page change.
+ */
+export function isSamePathIgnoringTrailingSlash(a: string, b: string) {
+  const strip = (path: string) => path.replace(/\/+$/, "") || "/";
+  return strip(a) === strip(b);
 }

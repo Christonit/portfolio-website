@@ -2,11 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Departure Mono 1.500 — self-hosted from departuremono.com.
+   SIL OFL 1.1; license ships at /fonts/DepartureMono-LICENSE.txt. */
 @font-face {
   font-family: 'Departure Mono';
-  src: url('/fonts/departure-mono-v1.500.woff2') format('woff2');
-  font-style: normal;
+  src: url('/fonts/DepartureMono-Regular.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -44,6 +46,24 @@
     --color-body: #e2e2e2;
     --color-ink: #ffffff;
     --color-signal: #67f57a;
+
+    /* ── Type ────────────────────────────────────────────────────
+       Two faces: Tomorrow carries everything readable (display,
+       headings, prose), Departure Mono is reserved for the HUD voice
+       — labels, metadata, tags and numeric readouts. Six sizes total;
+       anything that doesn't fit rounds to the nearest step. */
+    --font-sans: 'Tomorrow', sans-serif;
+    --font-mono: 'Departure Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --text-2xs: 10px;      /* micro labels, tags          */
+    --text-xs: 12px;       /* labels, metadata, captions  */
+    --text-sm: 14px;       /* compact body, list rows     */
+    --text-base: 16px;     /* long-form reading copy      */
+    --text-lg: 20px;       /* card and section titles     */
+    /* Home hero only (.identity-name). Note the Tomorrow-based Display
+       token in typography.ts also emits a `.text-display` utility, and it
+       wins over this var's utility — page titles use `.hud-title`. */
+    --text-display: clamp(2.4rem, 6vw, 3.4rem); /* home hero */
+
     /* transitions-dev motion tokens */
     --duration-stagger: 40ms;
     --duration-micro: 80ms;
@@ -63,15 +83,26 @@
     --scroll-reveal-ease: var(--ease-smooth-out);
 
     /* Page side-by-side / view transitions */
-    --page-slide-dur: 420ms;
-    --page-fade-dur: 360ms;
+    --page-slide-dur: 340ms;
+    --page-fade-dur: 190ms;
     --page-slide-distance: 8px;
     --page-blur: 1px;
     --page-stagger: 0ms;
     --page-exit-enabled: 1;
-    --page-slide-ease: cubic-bezier(0.65, 0, 0.35, 1);
+    --page-slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
     --page-fade-ease: cubic-bezier(0.4, 0, 0.2, 1);
-    --vt-slide-distance: 72%;
+    /* Just a hint of travel — the fade carries the transition, the slide
+       only points the direction. */
+    --vt-slide-distance: 5%;
+
+    /* Project dossier opens as a modal sheet over the launching page */
+    --page-modal-dur: 420ms;
+    --page-modal-fade-in-dur: 260ms;
+    --page-modal-fade-out-dur: 200ms;
+    --page-modal-rise: 28px;
+    --page-modal-scale: 0.955;
+    --page-modal-blur: 3px;
+    --page-modal-ease: cubic-bezier(0.32, 0.72, 0, 1);
 
     /* Tooltip open / close */
     --tt-in-dur: 150ms;
@@ -97,10 +128,16 @@
   body {
     height: 100%;
     overflow: hidden;
-    @apply text-body-compact;
     background-color: #131313;
     color: #e2e2e2;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* Body only — `html` keeps the 16px root so rem-based utilities
+     (Tailwind's spacing, breakpoints) aren't rescaled. */
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
   }
 
   /* ── Large-display scaling ──────────────────────────────────
@@ -162,6 +199,14 @@
     font-synthesis: none;
   }
 
+  /* The one page-hero title. /projects and /bio share it so the two
+     headers read at exactly the same size and weight. Sizing comes from
+     the documented Display token (typography.ts), not the --text-display
+     clamp — see the note on that var above. */
+  .hud-title {
+    @apply text-display uppercase tracking-tighter text-white;
+  }
+
   .hud-label {
     @apply block text-label-data tracking-[0.2em] uppercase text-[#919191];
   }
@@ -170,6 +215,14 @@
     @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] text-label-data text-[#919191];
   }
 
+  /* Icon sizing is a separate axis from the type scale — two steps. */
+  .icon-md {
+    font-size: 20px;
+  }
+
+  .icon-lg {
+    font-size: 40px;
+  }
 }
 
 @layer utilities {
@@ -335,55 +388,146 @@
   z-index: 1;
 }
 
-/* Link click: incoming page enters from the right, travels left */
+/* Link click: incoming page enters from the right, travels left.
+   The slide is a short directional hint; the fade runs on its own shorter
+   clock so neither page hangs around waiting to finish its travel. */
 html[data-nav-dir="forward"]::view-transition-old(hud-page) {
-  animation: vt-slide-out-left var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-out-left var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-out var(--page-fade-dur) var(--page-fade-ease) both;
 }
 
 html[data-nav-dir="forward"]::view-transition-new(hud-page) {
-  animation: vt-slide-in-from-right var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-in-from-right var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-in var(--page-fade-dur) var(--page-fade-ease) both;
   animation-delay: var(--page-stagger);
 }
 
 /* Back / breadcrumb: incoming page enters from the left, travels right */
 html[data-nav-dir="back"]::view-transition-old(hud-page) {
-  animation: vt-slide-out-right var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-out-right var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-out var(--page-fade-dur) var(--page-fade-ease) both;
 }
 
 html[data-nav-dir="back"]::view-transition-new(hud-page) {
-  animation: vt-slide-in-from-left var(--page-slide-dur) var(--page-slide-ease) both;
+  animation:
+    vt-slide-in-from-left var(--page-slide-dur) var(--page-slide-ease) both,
+    vt-page-fade-in var(--page-fade-dur) var(--page-fade-ease) both;
   animation-delay: var(--page-stagger);
 }
 
 @keyframes vt-slide-out-right {
   to {
     transform: translateX(var(--vt-slide-distance));
-    opacity: 0;
-    filter: blur(var(--page-blur));
   }
 }
 
 @keyframes vt-slide-in-from-left {
   from {
     transform: translateX(calc(var(--vt-slide-distance) * -1));
-    opacity: 0;
-    filter: blur(var(--page-blur));
   }
 }
 
 @keyframes vt-slide-out-left {
   to {
     transform: translateX(calc(var(--vt-slide-distance) * -1));
-    opacity: 0;
-    filter: blur(var(--page-blur));
   }
 }
 
 @keyframes vt-slide-in-from-right {
   from {
     transform: translateX(var(--vt-slide-distance));
+  }
+}
+
+@keyframes vt-page-fade-out {
+  to {
     opacity: 0;
     filter: blur(var(--page-blur));
+  }
+}
+
+@keyframes vt-page-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+/* Sheet routes: the projects board is the backdrop for the dossier sheet, so
+   the page swap has to be a hard cut — ProjectSheet plays the motion. */
+html[data-nav-dir="none"]::view-transition-old(hud-page),
+html[data-nav-dir="none"]::view-transition-new(hud-page) {
+  animation: none;
+}
+
+/* Modal: the project dossier rises over the page that launched it while
+   that page recedes behind it like a backdrop. Travel runs long so the
+   sheet motion reads; the crossfade runs short so the two pages don't sit
+   legibly on top of each other mid-flight. */
+html[data-nav-dir="modal-in"]::view-transition-old(hud-page) {
+  animation:
+    vt-modal-recede var(--page-modal-dur) var(--page-modal-ease) both,
+    vt-modal-fade-out var(--page-modal-fade-out-dur) var(--page-fade-ease) both;
+}
+
+html[data-nav-dir="modal-in"]::view-transition-new(hud-page) {
+  animation:
+    vt-modal-rise var(--page-modal-dur) var(--page-modal-ease) both,
+    vt-modal-fade-in var(--page-modal-fade-in-dur) var(--page-fade-ease) both;
+}
+
+/* Dismiss: the sheet drops away and the page underneath comes back forward. */
+html[data-nav-dir="modal-out"]::view-transition-old(hud-page) {
+  z-index: 2;
+  animation:
+    vt-modal-dismiss var(--page-modal-dur) var(--page-modal-ease) both,
+    vt-modal-fade-out var(--page-modal-fade-out-dur) var(--page-fade-ease) both;
+}
+
+html[data-nav-dir="modal-out"]::view-transition-new(hud-page) {
+  animation:
+    vt-modal-return var(--page-modal-dur) var(--page-modal-ease) both,
+    vt-modal-fade-in var(--page-modal-fade-in-dur) var(--page-fade-ease) both;
+}
+
+@keyframes vt-modal-rise {
+  from {
+    transform: translateY(var(--page-modal-rise)) scale(0.985);
+  }
+}
+
+@keyframes vt-modal-dismiss {
+  to {
+    transform: translateY(var(--page-modal-rise)) scale(0.985);
+  }
+}
+
+@keyframes vt-modal-recede {
+  to {
+    transform: scale(var(--page-modal-scale));
+    filter: blur(var(--page-modal-blur));
+  }
+}
+
+@keyframes vt-modal-return {
+  from {
+    transform: scale(var(--page-modal-scale));
+    filter: blur(var(--page-modal-blur));
+  }
+}
+
+@keyframes vt-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-modal-fade-out {
+  to {
+    opacity: 0;
   }
 }
 
@@ -395,7 +539,7 @@ html[data-nav-dir="back"]::view-transition-new(hud-page) {
   transition:
     transform var(--page-slide-dur) var(--page-slide-ease),
     opacity var(--page-fade-dur) var(--page-fade-ease),
-    filter var(--page-slide-dur) var(--page-slide-ease);
+    filter var(--page-fade-dur) var(--page-fade-ease);
   width: 100%;
 }
 
@@ -429,6 +573,44 @@ html[data-nav-dir="back"]::view-transition-new(hud-page) {
   filter: blur(var(--page-blur));
 }
 
+.hud-modal-in-enter-active,
+.hud-modal-out-enter-active {
+  transition:
+    transform var(--page-modal-dur) var(--page-modal-ease),
+    filter var(--page-modal-dur) var(--page-modal-ease),
+    opacity var(--page-modal-fade-in-dur) var(--page-fade-ease);
+  width: 100%;
+}
+
+.hud-modal-in-leave-active,
+.hud-modal-out-leave-active {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  transition:
+    transform var(--page-modal-dur) var(--page-modal-ease),
+    filter var(--page-modal-dur) var(--page-modal-ease),
+    opacity var(--page-modal-fade-out-dur) var(--page-fade-ease);
+}
+
+/* The dismissing sheet stays stacked above the page it uncovers. */
+.hud-modal-out-leave-active {
+  z-index: 2;
+}
+
+.hud-modal-in-enter-from,
+.hud-modal-out-leave-to {
+  transform: translateY(var(--page-modal-rise)) scale(0.985);
+  opacity: 0;
+}
+
+.hud-modal-in-leave-to,
+.hud-modal-out-enter-from {
+  transform: scale(var(--page-modal-scale));
+  opacity: 0;
+  filter: blur(var(--page-modal-blur));
+}
+
 /* Scroll reveal — starts translated down + faded; data-reveal="shown"
    flips to rest. Delay is set per-item via --reveal-delay. */
 [data-reveal] {
@@ -451,10 +633,18 @@ html[data-nav-dir="back"]::view-transition-new(hud-page) {
   html[data-nav-dir="forward"]::view-transition-new(hud-page),
   html[data-nav-dir="back"]::view-transition-old(hud-page),
   html[data-nav-dir="back"]::view-transition-new(hud-page),
+  html[data-nav-dir="modal-in"]::view-transition-old(hud-page),
+  html[data-nav-dir="modal-in"]::view-transition-new(hud-page),
+  html[data-nav-dir="modal-out"]::view-transition-old(hud-page),
+  html[data-nav-dir="modal-out"]::view-transition-new(hud-page),
   .hud-forward-enter-active,
   .hud-forward-leave-active,
   .hud-back-enter-active,
-  .hud-back-leave-active {
+  .hud-back-leave-active,
+  .hud-modal-in-enter-active,
+  .hud-modal-in-leave-active,
+  .hud-modal-out-enter-active,
+  .hud-modal-out-leave-active {
     animation: none !important;
     transition: none !important;
   }

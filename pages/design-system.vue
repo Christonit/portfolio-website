@@ -27,6 +27,7 @@ const typographyUtilities = {
   "title-ui": "text-title-ui",
   "body-compact": "text-body-compact",
   "body-prose": "text-body-prose",
+  "label-ui": "text-label-ui",
   "label-data": "text-label-data",
 } satisfies Record<TypographyStyleKey, string>;
 
@@ -47,7 +48,8 @@ const familyName = (familyRole: (typeof typography)[TypographyStyleKey]["familyR
       <h1 class="text-display">SYSTEM INDEX</h1>
       <p class="text-body-compact">
         A working inventory of the visual language used across the portfolio.
-        The minimum interface type size is 12px.
+        Two families, six sizes, two weights. Departure Mono is reserved for
+        labels, metadata and readouts; 12px is the floor for interface copy.
       </p>
     </header>
 
@@ -68,6 +70,12 @@ const familyName = (familyRole: (typeof typography)[TypographyStyleKey]["familyR
           <strong class="text-label-data uppercase tracking-[0.1em]">DEPARTURE MONO</strong>
           <p class="text-label-data tabular-nums">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</p>
         </div>
+      </div>
+
+      <div class="font-card">
+        <span class="font-card__meta">HUD FAMILY — 400</span>
+        <strong class="font-mono">DEPARTURE MONO</strong>
+        <p>ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</p>
       </div>
 
       <ul class="type-scale" role="list">

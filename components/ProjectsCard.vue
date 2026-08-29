@@ -103,7 +103,9 @@ const ariaLabel = computed(() => {
     :class="[
       'projects-card group relative flex h-full min-h-[320px] flex-col border bg-[#0c0c0c] text-left no-underline outline-none',
       'transition-[border-color,background-color] duration-150',
-      focused ? 'is-focused border-[#67F57A]' : 'border-[#2a2a2a] hover:border-[#67F57A]/55 focus-visible:border-[#67F57A]',
+      focused
+        ? 'is-focused border-[#67F57A]'
+        : 'border-[#2a2a2a] hover:border-[#67F57A]/55 focus-visible:border-[#67F57A]',
       isMission ? 'justify-center' : '',
     ]"
   >
@@ -120,7 +122,7 @@ const ariaLabel = computed(() => {
         style="border-radius: 9999px"
         aria-hidden="true"
       >
-        <span class="material-symbols-outlined text-[22px] leading-none"
+        <span class="material-symbols-outlined icon-md leading-none"
           >add</span
         >
       </div>
@@ -156,7 +158,7 @@ const ariaLabel = computed(() => {
         />
         <span
           v-else
-          class="relative z-[1] material-symbols-outlined text-[40px] text-white/90"
+          class="relative z-[1] material-symbols-outlined icon-lg text-white/90"
           aria-hidden="true"
         >
           {{ project.icon || "deployed_code" }}
@@ -193,7 +195,6 @@ const ariaLabel = computed(() => {
               class="text-label-data inline-flex items-center gap-1.5 uppercase tracking-[0.16em] text-white"
             >
               {{ ctaLabel }}
-              <span class="projects-card__arrow" aria-hidden="true">-></span>
             </span>
             <span
               class="text-label-data tabular-nums tracking-widest text-[#474747]"
@@ -230,7 +231,6 @@ const ariaLabel = computed(() => {
   justify-content: center;
   background-color: #111;
   border-bottom: 1px solid #1f1f1f;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .projects-card__thumb::before {

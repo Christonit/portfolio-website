@@ -28,11 +28,29 @@ export default {
     './app.vue',
   ],
   theme: {
+    // Six sizes site-wide. `fontSize` replaces (rather than extends)
+    // Tailwind's default scale so `text-md`/`text-xl`/`text-2xl` etc.
+    // simply don't exist — the scale can't drift back open.
+    fontSize: {
+      '2xs': ['var(--text-2xs)', { lineHeight: '1.2' }], //  10px — micro labels
+      xs: ['var(--text-xs)', { lineHeight: '1.35' }], //     12px — labels, meta
+      sm: ['var(--text-sm)', { lineHeight: '1.5' }], //      14px — compact body
+      base: ['var(--text-base)', { lineHeight: '1.6' }], //  16px — reading copy
+      lg: ['var(--text-lg)', { lineHeight: '1.15' }], //     20px — titles
+      display: ['var(--text-display)', { lineHeight: '0.92' }], // page hero
+    },
+    // Two cuts only — the pair actually loaded from Google Fonts.
+    fontWeight: {
+      normal: '400',
+      semibold: '600',
+    },
     extend: {
       fontFamily: {
+        // Tomorrow is the reading face; Departure Mono is the HUD voice
+        // and is opted into with `font-mono`, never inherited.
         sans: ['Tomorrow', 'sans-serif'],
-        mono: ['Departure Mono', 'monospace'],
         display: ['Tomorrow', 'sans-serif'],
+        mono: ['Departure Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
         border: 'hsl(var(--border))',

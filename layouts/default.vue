@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import { useAudio } from '~/composables/useAudio';
-import { LINKEDIN_URL } from "~/utils/site";
+import { EMAIL_URL, LINKEDIN_URL, X_URL } from "~/utils/site";
 
 const router = useRouter();
 const route = useRoute();
@@ -15,17 +15,26 @@ const playHaptic = () => {
 
 const pages = ["/", "/projects", "/bio"];
 
+const normalizedPath = computed(() => route.path.replace(/\/+$/, "") || "/");
+
 const currentIndex = computed(() => {
-  if (route.path.startsWith("/project/")) return pages.indexOf("/projects");
-  const i = pages.indexOf(route.path);
+  if (normalizedPath.value.startsWith("/project/")) return pages.indexOf("/projects");
+  const i = pages.indexOf(normalizedPath.value);
   return i === -1 ? 0 : i;
+});
+
+const usesInPageArrows = computed(() => {
+  const path = normalizedPath.value;
+  return path === "/" || path === "/projects" || path.startsWith("/project/");
 });
 
 // ── Tab / page navigation ────────────────────────────────────────
 function prevPage() {
+  flash("ArrowLeft");
   router.push(pages[(currentIndex.value - 1 + pages.length) % pages.length]);
 }
 function nextPage() {
+  flash("ArrowRight");
   router.push(pages[(currentIndex.value + 1) % pages.length]);
 }
 
@@ -39,34 +48,33 @@ function flash(key: string) {
 }
 const isPressed = (key: string) => pressed.value === key;
 
+function emitHudKey(key: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight") {
+  flash(key);
+  hudKey.value = key;
+  nextTick(() => {
+    hudKey.value = null;
+  });
+}
+
 // ── Global keyboard handler ──────────────────────────────────────
 function onKeydown(e: KeyboardEvent) {
   const tag = (e.target as HTMLElement)?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA") return;
 
   switch (e.key) {
-    case "a":
-    case "A":
+    case "ArrowLeft":
       e.preventDefault();
-      flash("A");
       prevPage();
       break;
-    case "d":
-    case "D":
+    case "ArrowRight":
       e.preventDefault();
-      flash("D");
       nextPage();
       break;
     case "ArrowUp":
     case "ArrowDown":
-    case "ArrowLeft":
-    case "ArrowRight":
+      if (!usesInPageArrows.value) break;
       e.preventDefault();
-      flash(e.key);
-      hudKey.value = e.key as typeof hudKey.value;
-      nextTick(() => {
-        hudKey.value = null;
-      });
+      emitHudKey(e.key);
       break;
     case "Escape":
       flash("Escape");
@@ -190,14 +198,14 @@ watch(() => route.path, scrollMainToTopOnMobile);
         style="width: fit-content"
       >
         <button
-          class="site-nav-key mr-6 hidden items-center justify-center transition-all duration-100 xl:inline-flex"
+          class="site-nav-key mr-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
-            isPressed('A')
+            isPressed('ArrowLeft')
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Previous page (A)"
-          aria-keyshortcuts="A"
+          aria-label="Previous page (Left arrow)"
+          aria-keyshortcuts="ArrowLeft"
           @click="prevPage"
         >
           <kbd
@@ -223,40 +231,33 @@ watch(() => route.path, scrollMainToTopOnMobile);
         </button>
 
         <!-- Page links (desktop only — mobile uses bottom nav) -->
-        <ul class="hidden xl:flex items-center gap-10">
-          <li v-for="item in navItems" :key="item.path">
+        <ul class="hidden xl:flex items-stretch">
+          <li v-for="item in navItems" :key="item.path" class="flex">
             <NuxtLink
               :to="item.path"
               :class="[
-                'text-label-data inline-flex h-8 items-center px-1 tracking-[0.2em] uppercase transition-colors duration-150',
+                'relative inline-flex h-14 items-center px-4 text-label-ui tracking-[0.2em] uppercase transition-colors duration-150',
+                'after:absolute after:bottom-0 after:left-4 after:right-[calc(1rem+0.2em)] after:h-px',
                 isActive(item.path)
-                  ? 'text-white'
-                  : 'text-[#919191] hover:text-white',
+                  ? 'text-white after:bg-white'
+                  : 'text-[#919191] hover:text-white hover:bg-[#1f1f1f] after:bg-transparent',
               ]"
             >
-              <span
-                :class="
-                  isActive(item.path)
-                    ? 'relative pb-1 after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[calc(100%-0.2em)] after:-translate-x-1/2 after:bg-white'
-                    : ''
-                "
-              >
-                {{ item.label }}
-              </span>
+              {{ item.label }}
             </NuxtLink>
           </li>
         </ul>
 
         <!-- Next-page keyboard control (desktop only) -->
         <button
-          class="site-nav-key ml-6 hidden items-center justify-center transition-all duration-100 xl:inline-flex"
+          class="site-nav-key ml-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
-            isPressed('D')
+            isPressed('ArrowRight')
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Next page (D)"
-          aria-keyshortcuts="D"
+          aria-label="Next page (Right arrow)"
+          aria-keyshortcuts="ArrowRight"
           @click="nextPage"
         >
           <kbd
@@ -289,25 +290,61 @@ watch(() => route.path, scrollMainToTopOnMobile);
           :aria-label="isMuted ? 'Unmute Audio' : 'Mute Audio'"
           @click.stop="toggleMute"
         >
-          <span class="material-symbols-outlined text-xl">
+          <span class="material-symbols-outlined icon-md">
             {{ isMuted ? 'volume_off' : 'volume_up' }}
           </span>
         </button>
         -->
         <a
+          :href="EMAIL_URL"
+          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          aria-label="Email Christopher Santana"
+        >
+          <!-- Icons share an h-6 w-6 box; each viewBox is padded so the glyphs
+               inside it land on the same optical size (see X / LinkedIn below). -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0.15 0.15 23.7 23.7"
+            fill="currentColor"
+            class="h-6 w-6 shrink-0"
+            aria-hidden="true"
+          >
+            <path
+              d="M2 4h20a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm18.238 2H3.762L12 12.29 20.238 6zM21 8.443l-8.386 6.4a1 1 0 0 1-1.228 0L3 8.443V18h18V8.443z"
+            />
+          </svg>
+        </a>
+        <a
+          :href="X_URL"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          aria-label="X profile"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="-0.31 -0.19 24.375 24.375"
+            fill="currentColor"
+            class="h-6 w-6 shrink-0"
+            aria-hidden="true"
+          >
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z"
+            />
+          </svg>
+        </a>
+        <a
           :href="LINKEDIN_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex h-8 items-center justify-center px-1 text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
           aria-label="LinkedIn profile"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="20"
-            height="20"
+            viewBox="-4 -4 32 32"
             fill="currentColor"
-            class="h-[20px] w-[20px] shrink-0"
+            class="h-6 w-6 shrink-0"
             aria-hidden="true"
           >
             <path
@@ -355,10 +392,10 @@ watch(() => route.path, scrollMainToTopOnMobile);
           "
           draggable="false"
         />
-        <span v-else class="material-symbols-outlined text-xl leading-none">{{
+        <span v-else class="material-symbols-outlined icon-md leading-none">{{
           item.icon
         }}</span>
-        <span class="text-label-data uppercase tracking-widest">{{
+        <span class="text-label-ui uppercase tracking-widest">{{
           item.label
         }}</span>
       </NuxtLink>

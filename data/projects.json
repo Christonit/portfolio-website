@@ -4,6 +4,7 @@
     "slug": "canopy-super-app",
     "tags": "Frontend architecture // Web3 // Next.JS",
     "category": "Web3",
+    "role": "Founding Frontend Engineer",
     "link": "https://testnet.app.canopynetwork.org/",
     "image": "/images/canopy-image.webp",
     "imageAlt": "Canopy Super App: Web3 super app with launchpad, DEX, and chain explorer that scaled to 25K concurrent users at testnet.",
@@ -12,14 +13,14 @@
     "icon": "hexagon",
     "description": "Founding Frontend Engineer for Canopy Network — zero-to-one architecture for a Web3 super app that held 25K+ concurrent users at testnet launch.",
     "dossier": [
-      "I joined Canopy Network as Founding Frontend Engineer and owned the end-to-end frontend for a decentralized L1 that lets teams launch nested chains with their own business logic and tokenomics. I designed and shipped the super app — launchpad, DEX, and chain explorer — as one product rather than three surfaces. The testnet launched with more than 25,000 concurrent users in the first week, and that architecture is still the foundation of the app.",
-      "There was no frontend codebase and no senior precedent. Every foundational decision had to be made from scratch against a fixed launch date. I set the stack — React, Next.js, and Node.js — and sequenced delivery around product need: launchpad first so teams could discover and create chains, then the DEX, then the explorer.",
-      "I treated blockchain integration, reliability, and SEO as launch constraints, not later work. The frontend stayed stable through testnet traffic at that scale and did not require a rewrite afterward. Most of that original architecture is still in production."
+      "I joined Canopy Network as Founding Frontend Engineer and owned the end-to-end frontend for a decentralized L1 that lets teams launch nested chains with their own business logic and tokenomics. I designed and shipped the launchpad's user flow, DEX, and chain explorer. The testnet launched with more than 25,000 concurrent users in the first week, and that architecture is still the foundation of the app.",
+      "Every foundational decision had to be made from scratch against just a product specification and always fluid PRDs against a fixed launch date. I set the stack — React, Next.js, and Node.js — and sequenced delivery around the products need: launchpad first so teams could discover and create chains, then the DEX, then the explorer for transactions and other  chain and token related data.",
+      "I treated blockchain integration, reliability, and SEO as launch constraints, not later work. The frontend stayed stable through testnet traffic at that scale and did not require a rewrite afterward. Most of that original frontend groundwork is still in production."
     ],
     "tasks": [
       "Zero-to-launch frontend architecture",
       "Created the frontend for launchpad, DEX, and explorer experience",
-      "UI scaled for 25K+ concurrent users"
+      "SEO groundwork"
     ],
     "tech": ["React", "Next.js", "Node.js", "Web3", "UI/UX", "SEO"],
     "metric": {
@@ -33,23 +34,24 @@
     "slug": "timothy-sykes",
     "tags": "Nuxt // WordPress // AWS // AI // SEO",
     "category": "Web",
+    "role": "Lead Full-Stack Engineer",
     "link": "https://www.timothysykes.com/",
     "image": "/images/timothysykes-image.webp",
     "imageAlt": "Timothy Sykes: trading-education website with news, quotes, webinars, and a headless Nuxt and WordPress architecture.",
     "video": "/videos/timothy-sykes-demo.webm",
     "icon": "auto_awesome",
-    "description": "Lead Full-Stack Engineer for TimothySykes.com — new features, WordPress/CMS, request-time data, frontend rendering, and SEO as infrastructure.",
+    "description": "Lead Full-Stack Engineer for TimothySykes.com — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
     "dossier": [
-      "I owned frontend and web services for TimothySykes.com as Lead Full-Stack Engineer of a four-person team. The site is Tim Sykes' trading-education and publishing platform — news, quote pages, blog, webinars, and lead-capture funnels — on a Nuxt 3 frontend. I also built the shared web services that carry traffic and common jobs across sister sites in the company.",
-      "I designed the systems behind news and quote pages: a shared cache, real-time publishing from the WordPress CMS, and live quotes on the public site. That moved us off a monolithic WordPress surface onto a headless Nuxt architecture with a request-time rendering pipeline.",
-      "I used AI to replace manual SEO checks with agentic workflows, and built the ad-serving stack that replaced AdButler so campaigns and attribution stayed under our control."
+      "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
+      "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
+      "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
     ],
     "tasks": [
-      "Monolithic WordPress to headless Nuxt architecture",
-      "Stock data ingestion and news publishing pipeline",
-      "AI automation for SEO and ops"
+      "Headless Wordpress Nuxt architecture",
+      "Live stock data ingestion, quotes, and news pipeline",
+      "AI automation for QA, SEO, and ops"
     ],
-    "tech": ["Nuxt 3", "TypeScript", "Cloudflare Workers", "AWS", "WordPress", "SEO", "AI"],
+    "tech": ["Nuxt 3", "TypeScript", "AWS", "WordPress", "SEO", "AI"],
     "metric": {
       "label": "Build",
       "value": "72%",
@@ -61,31 +63,24 @@
     "slug": "stockstotrade",
     "tags": "Nuxt // WordPress // AWS // WebSockets // AI",
     "category": "Fintech",
+    "role": "Lead Full-Stack Engineer",
     "link": "https://stockstotrade.com/",
     "image": "/images/stockstotade-image.webp",
     "imageAlt": "StocksToTrade: trading platform with live market data, scanners, news, and request-time architecture for 1M+ monthly users.",
     "video": "/videos/stocks-to-trade-demo.webm",
     "icon": "candlestick_chart",
-    "description": "Lead Full-Stack Engineer for StocksToTrade — new features, WordPress/CMS, request-time data, live market feeds, and SEO as infrastructure for 1M+ monthly users.",
+    "description": "Lead Full-Stack Engineer for StocksToTrade — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
     "dossier": [
-      "I owned frontend and web services for StocksToTrade as Lead Full-Stack Engineer of a four-person team. StocksToTrade is the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news — used by more than a million unique visitors a month. Songbird, a backend I designed and still own, is the shared service layer that also powers sister sites like TimothySykes.com.",
-      "I designed the systems behind news, quotes, and scanners: a shared cache, real-time publishing from WordPress, and live market data over WebSockets. Full-site rebuilds could not keep up with markets or editorial cadence, so I moved the platform to a headless Nuxt architecture with request-time data from DynamoDB catalogs, S3 JSON, and cache fallbacks.",
-      "I used AI and LLM tooling to replace manual QA, SEO integrity checks, and comment moderation, and built the ad-serving stack that replaced AdButler. Core Web Vitals, JSON-LD, sitemaps, and cache TTLs were treated as product work — and Cloudflare plus AWS cut a large share of operating cost."
+      "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
+      "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
+      "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
     ],
     "tasks": [
-      "Monolithic rebuild cycle to request-time Nuxt architecture",
+      "Headless Wordpress Nuxt architecture",
       "Live stock data ingestion, quotes, and news pipeline",
       "AI automation for QA, SEO, and ops"
     ],
-    "tech": [
-      "Nuxt 3",
-      "TypeScript",
-      "AWS",
-      "Cloudflare",
-      "WebSockets",
-      "WordPress",
-      "LLMs"
-    ],
+    "tech": ["Nuxt 3", "TypeScript", "AWS", "WebSockets", "WordPress", "LLMs"],
     "metric": {
       "label": "Monthly uniques",
       "value": "1M+",

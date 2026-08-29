@@ -16,6 +16,7 @@ export interface ProjectPreview {
   name: string;
   slug: string;
   category: string;
+  role?: string;
   tags: string;
   link?: string;
   image?: string;

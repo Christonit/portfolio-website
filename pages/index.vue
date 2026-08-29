@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FeaturedSkill } from "~/components/StackIndex.vue";
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
 import {
@@ -15,11 +16,6 @@ usePageSeo({
   description: SITE_DESCRIPTION,
   pageType: "ProfilePage",
 });
-
-interface FeaturedSkill {
-  iconSrc: string;
-  name: string;
-}
 
 const projects = projectsJson as ProjectPreview[];
 const featuredOrder = [
@@ -62,6 +58,7 @@ const featuredSkills: FeaturedSkill[] = [
 
 const focusedCard = ref<number | null>(null);
 const cardRefs = ref<(HTMLElement | null)[]>([]);
+const portraitHover = ref(false);
 
 function bindCard(el: Element | null, index: number) {
   cardRefs.value[index] = el instanceof HTMLElement ? el : null;
@@ -114,7 +111,16 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 <template>
   <div class="home-console">
     <div class="home-rail">
-      <section class="identity-panel" aria-labelledby="identity-name">
+      <section
+        id="hero-banner"
+        class="identity-panel"
+        aria-labelledby="identity-name"
+        @mouseenter="portraitHover = true"
+        @mouseleave="portraitHover = false"
+        @touchstart.passive="portraitHover = true"
+        @touchend.passive="portraitHover = false"
+        @touchcancel.passive="portraitHover = false"
+      >
         <div class="identity-copy">
           <h1 id="identity-name" class="identity-name text-display">
             CHRISTO<wbr />PHER<br />SANTANA
@@ -122,7 +128,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
           <div class="identity-facts">
             <div>
-              <p class="identity-role text-title-ui">FULL_STACK_ENGINEER</p>
+              <p class="identity-role text-title-ui">
+                FULL_STACK_ENGINEER<span
+                  class="identity-role__location"
+                >// NYC</span>
+              </p>
             </div>
             <div>
               <p class="identity-mission text-body-compact">
@@ -138,19 +148,17 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         </div>
 
         <div class="identity-portrait" aria-hidden="true">
-          <img src="/images/og-image.webp" alt="" />
-          <img
-            class="identity-portrait__color"
-            src="/images/og-image.webp"
-            alt=""
-          />
-          <div class="identity-scanline" />
+          <PortraitPixelate :hovered="portraitHover" />
         </div>
 
-        <HudCorners :corners="['tl', 'bl']" />
+        <HudCorners />
       </section>
 
-      <section class="featured-work" aria-labelledby="featured-work-title">
+      <section
+        id="featured-work"
+        class="featured-work"
+        aria-labelledby="featured-work-title"
+      >
         <div class="section-heading sr-only">
           <h2 id="featured-work-title">Featured projects</h2>
         </div>
@@ -194,41 +202,43 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
               </div>
 
               <div class="dossier-card__body">
-                <h3 class="text-title-ui">{{ project.name }}</h3>
-
-                <div class="dossier-card__footer text-label-data">
-                  <span>{{
-                    isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT"
+                <div class="dossier-card__title-row">
+                  <h3>{{ project.name }}</h3>
+                  <span class="dossier-card__index">{{
+                    projectCounter(index)
                   }}</span>
-                  <span>{{ projectCounter(index) }}</span>
                 </div>
+
+                <p class="dossier-card__summary">
+                  {{ project.description || project.tasks[0] }}
+                </p>
               </div>
+
+              <span class="dossier-card__cta">
+                {{ isArticle(project) ? "READ_ARTICLE" : "VIEW_PROJECT" }}
+                <span class="dossier-card__cta-arrow" aria-hidden="true"
+                  >&rarr;</span
+                >
+              </span>
             </NuxtLink>
           </li>
         </ul>
       </section>
 
-      <section class="index-module" aria-labelledby="tech-stack-title">
+      <section
+        class="index-module"
+        id="tech-stack-list"
+        aria-labelledby="tech-stack-title"
+      >
         <header class="index-module__header">
           <h2 id="tech-stack-title" class="text-heading-section">TECH STACK</h2>
         </header>
 
-        <ul class="stack-index" role="list">
-          <li
-            v-for="(skill, index) in featuredSkills"
-            :key="skill.name"
-            v-reveal="Math.min(index, 8) * 40"
-          >
-            <span class="stack-index__label">
-              <img :src="skill.iconSrc" alt="" width="18" height="18" />
-              <strong class="text-body-compact">{{ skill.name }}</strong>
-            </span>
-            <span class="stack-index__rule" aria-hidden="true" />
-          </li>
-        </ul>
+        <StackIndex :skills="featuredSkills" />
       </section>
 
       <section
+        id="articles-list"
         class="index-module articles-index"
         aria-labelledby="articles-index-title"
       >
@@ -236,37 +246,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           <h2 id="articles-index-title" class="text-heading-section">ARTICLES</h2>
         </header>
 
-        <ul role="list">
-          <li
-            v-for="(article, index) in articles"
-            :key="article.slug"
-            v-reveal="index * 60"
-          >
-            <NuxtLink
-              :to="projectHref(article)"
-              :external="isExternalProjectHref(article)"
-              :target="isExternalProjectHref(article) ? '_blank' : undefined"
-              :rel="
-                isExternalProjectHref(article)
-                  ? 'noopener noreferrer'
-                  : undefined
-              "
-            >
-              <span class="articles-index__thumb" aria-hidden="true">
-                <img
-                  v-if="article.image"
-                  :src="article.image"
-                  alt=""
-                  loading="lazy"
-                />
-              </span>
-              <span class="articles-index__copy">
-                <strong class="text-title-ui">{{ article.name }}</strong>
-                <small class="text-label-data">READ ARTICLE</small>
-              </span>
-            </NuxtLink>
-          </li>
-        </ul>
+        <ArticlesIndex :articles="articles" />
       </section>
     </div>
   </div>
@@ -274,10 +254,18 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 <style scoped>
 .home-console {
+  /* Film grain lifted from the portrait plate — blended, not painted, so the
+     tone underneath stays put and only the texture comes through. */
+  --identity-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
   height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-gutter: stable;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.home-console::-webkit-scrollbar {
+  display: none;
 }
 
 .home-rail {
@@ -288,11 +276,21 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .identity-panel {
   position: relative;
-  display: grid;
+  display: flex;
   grid-template-columns: minmax(0, 1fr) 190px;
   min-height: 252px;
   overflow: hidden;
-  background: #0a0a0a;
+  /* Grain + tone are matched to the portrait plate so the whole card reads as
+     one continuous surface instead of copy-panel-plus-photo. */
+  background:
+    var(--identity-grain),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
+    #101010;
+  background-size:
+    180px 180px,
+    auto,
+    auto;
+  background-blend-mode: overlay, normal, normal;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
 }
 
@@ -302,14 +300,26 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(
+  background-image: repeating-linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.025) 0,
     rgba(255, 255, 255, 0.025) 1px,
     transparent 1px,
     transparent 4px
   );
+  background-size: 100% 4px;
   opacity: 0.65;
+  animation: scanline-scan 6s linear infinite;
+}
+
+@keyframes scanline-scan {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 120px;
+  }
 }
 
 .identity-copy {
@@ -319,11 +329,19 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   flex-direction: column;
   min-width: 0;
   padding: 22px 18px 20px;
+  width: 100%;
 }
 
 .identity-name {
   margin-top: 10px;
   color: #fff;
+  font-size: var(--text-display);
+  font-weight: 600;
+  /* `.text-display` ships a fixed 40px leading sized for its own fixed 44px.
+     This heading overrides the size with the fluid token, so the leading has
+     to be proportional too — otherwise the two lines collide at desktop and
+     drift apart at phone widths. */
+  line-height: 0.92;
   letter-spacing: -0.025em;
   text-transform: uppercase;
   text-wrap: balance;
@@ -338,7 +356,19 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .identity-role {
   margin-top: 2px;
   color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 600;
   letter-spacing: 0.13em;
+}
+
+.identity-role__location {
+  margin-left: 8px;
+  color: #c6c6c6;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
 .identity-mission {
@@ -347,6 +377,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   gap: 2px;
   margin-top: 3px;
   color: #c6c6c6;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.35;
   text-transform: uppercase;
 }
 
@@ -367,9 +400,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   --portrait-scale: 1.18;
 
   position: relative;
-  min-width: 0;
+  min-width: 262px;
   overflow: hidden;
-  background: #0a0a0a;
+  background: #101010;
 }
 
 .identity-portrait::after {
@@ -378,57 +411,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   inset: 0;
   background: linear-gradient(
     90deg,
-    #0d0d0d 0%,
-    transparent 26%,
-    transparent 76%,
-    #0d0d0d 100%
+    #101010 0%,
+    rgba(16, 16, 16, 0) 34%,
+    rgba(16, 16, 16, 0) 78%,
+    #101010 100%
   );
   pointer-events: none;
-}
-
-.identity-portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% center;
-  filter: grayscale(0.68) contrast(1.08) brightness(0.92);
-  transform: scale(var(--portrait-scale));
-  transition: transform 180ms ease-out;
-}
-
-.identity-portrait .identity-portrait__color {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  filter: saturate(1.06) contrast(1.04) brightness(0.98);
-  opacity: 0;
-  transition:
-    opacity 180ms ease-out,
-    transform 180ms ease-out;
-}
-
-.identity-panel:hover .identity-portrait img,
-.identity-panel:focus-within .identity-portrait img {
-  transform: scale(var(--portrait-hover-scale)) translate3d(-1.5%, 0, 0);
-}
-
-.identity-panel:hover .identity-portrait__color,
-.identity-panel:focus-within .identity-portrait__color {
-  opacity: 1;
-}
-
-.identity-scanline {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.055) 0,
-    rgba(255, 255, 255, 0.055) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  opacity: 0.35;
 }
 
 .featured-work {
@@ -449,7 +437,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   position: relative;
   display: flex;
   height: 100%;
-  min-height: 250px;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid #292929;
@@ -475,7 +462,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .dossier-card__image {
   position: relative;
   display: flex;
-  aspect-ratio: 16 / 8.5;
+  aspect-ratio: 16 / 8;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -493,50 +480,145 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .dossier-card__image img {
-  width: 100%;
-  height: 100%;
+  /* Sources carry a 1px white edge on all four sides — bleed the image past
+     the frame on every axis so the overflow clip eats it. */
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  margin-block: -2px;
+  margin-inline: -2px;
   object-fit: cover;
   object-position: top center;
+  /* No hover scale: the crop is already tight, so zooming clipped the artwork
+     against the card edge. Tone-only response instead. */
+  transition: filter 180ms ease;
+}
+
+.dossier-card:hover .dossier-card__image img,
+.dossier-card:focus-visible .dossier-card__image img,
+.dossier-card.is-focused .dossier-card__image img {
+  filter: saturate(1.08) contrast(1.04);
 }
 
 .dossier-card__body {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 12px;
-  min-height: 92px;
-  padding: 16px 16px 14px;
+  gap: 7px;
+  padding: 14px 16px 16px;
 }
 
 .dossier-card__body h3 {
+  min-width: 0;
   overflow: hidden;
   color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 600;
   letter-spacing: -0.015em;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.dossier-card__footer {
+/* Slot number rides the title baseline on the opposite end of the row, so the
+   card reads as one line instead of a stranded number under the name. */
+.dossier-card__title-row {
   display: flex;
-  align-items: end;
+  min-width: 0;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 3px;
-  color: #fff;
+  gap: 12px;
+}
+
+.dossier-card__index {
+  flex-shrink: 0;
+  color: #3f3f3f;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   letter-spacing: 0.11em;
 }
 
-.dossier-card__footer span:last-child {
-  color: #3f3f3f;
+/* Two lines of context under the name — same summary the projects index
+   shows, clamped so every card in the row keeps the same body height. */
+.dossier-card__summary {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Reads as the card's button: full-width strip on the bottom edge, lit by the
+   card's own hover state since the whole card is the link. */
+.dossier-card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  border-top: 1px solid #262626;
+  background: rgba(255, 255, 255, 0.025);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.dossier-card:hover .dossier-card__cta,
+.dossier-card:focus-visible .dossier-card__cta,
+.dossier-card.is-focused .dossier-card__cta {
+  border-color: rgba(103, 245, 122, 0.34);
+  background: rgba(103, 245, 122, 0.1);
+  color: var(--color-signal);
+}
+
+.dossier-card__cta-arrow {
+  transition: transform 150ms ease;
+}
+
+.dossier-card:hover .dossier-card__cta-arrow,
+.dossier-card:focus-visible .dossier-card__cta-arrow,
+.dossier-card.is-focused .dossier-card__cta-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dossier-card,
+  .dossier-card__cta,
+  .dossier-card__cta-arrow {
+    transition: none;
+  }
+
+  .dossier-card:hover,
+  .dossier-card:focus-visible,
+  .dossier-card.is-focused,
+  .dossier-card:hover .dossier-card__cta-arrow,
+  .dossier-card:focus-visible .dossier-card__cta-arrow,
+  .dossier-card.is-focused .dossier-card__cta-arrow {
+    transform: none;
+  }
 }
 
 .index-module {
   position: relative;
   margin-top: 40px;
-  overflow-x: hidden;
+  overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   background: rgba(16, 16, 16, 0.5);
+}
+
+.index-module::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .index-module__header {
@@ -548,110 +630,18 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   min-height: 48px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: #777;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
   letter-spacing: 0.14em;
 }
 
-.stack-index,
-.articles-index > ul {
-  position: relative;
-  z-index: 1;
-}
-
-.stack-index {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.stack-index li {
-  display: flex;
-  min-height: 42px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 0 12px;
-}
-
-.stack-index li:nth-child(odd) {
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.stack-index__label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #d6d6d6;
-  letter-spacing: 0.02em;
-}
-
-.stack-index__label img {
-  filter: brightness(0) invert(1);
-  opacity: 0.42;
-}
-
-.stack-index__rule {
-  width: 44px;
-  height: 1px;
-  background: #343434;
+.index-module__header h2 {
+  font: inherit;
 }
 
 .articles-index {
   margin-top: 48px;
-}
-
-.articles-index li {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
-}
-
-.articles-index a {
-  display: grid;
-  grid-template-columns: 144px minmax(0, 1fr);
-  align-items: center;
-  gap: 20px;
-  min-height: 104px;
-  padding: 12px 0;
-  color: #d6d6d6;
-  text-decoration: none;
-  transition:
-    background-color 120ms ease,
-    color 120ms ease;
-}
-
-.articles-index a:hover,
-.articles-index a:focus-visible {
-  background: rgba(255, 255, 255, 0.035);
-  color: #fff;
-  outline: none;
-}
-
-.articles-index__thumb {
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border: 1px solid #292929;
-  background: #0b0b0b;
-}
-
-.articles-index__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.articles-index__copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.articles-index strong {
-  letter-spacing: 0.015em;
-  text-transform: uppercase;
-}
-
-.articles-index small {
-  color: #919191;
-  letter-spacing: 0.12em;
 }
 
 @media (max-width: 639px) {
@@ -661,8 +651,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-panel {
-    grid-template-columns: minmax(0, 1fr);
-    min-height: 0;
+    flex-direction: column;
   }
 
   .identity-portrait {
@@ -670,18 +659,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     --portrait-scale: 1.22;
 
     order: -1;
-    height: 168px;
-    border-left: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    height: 324px;
   }
 
   .identity-portrait::after {
-    background: linear-gradient(180deg, transparent 42%, #0d0d0d 100%);
-  }
-
-  .identity-portrait img {
-    object-position: 50% 28%;
-    transform: scale(var(--portrait-scale));
+    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 42%, #101010 100%);
   }
 
   .identity-copy {
@@ -698,7 +680,23 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-role {
+    font-size: var(--text-xs);
     letter-spacing: 0.08em;
+  }
+
+  .identity-role__location {
+    margin-left: 6px;
+    font-size: var(--text-2xs);
+  }
+
+  .identity-mission {
+    font-size: var(--text-2xs);
+  }
+
+  /* Departure Mono runs wider than the body face, so the mission line no
+     longer fits on one row at phone widths — let it wrap instead of clip. */
+  .identity-mission__lead {
+    text-wrap: balance;
   }
 
   .featured-work,
@@ -711,44 +709,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
     gap: 24px;
   }
 
-  .stack-index {
-    grid-template-columns: 1fr;
-  }
-
-  .stack-index li:nth-child(odd) {
-    border-right: none;
-  }
-
   .dossier-card {
     min-height: 0;
   }
 
   .articles-index {
     margin-top: 36px;
-  }
-
-  .articles-index a {
-    grid-template-columns: 96px minmax(0, 1fr);
-    gap: 12px;
-    min-height: 84px;
-  }
-
-}
-
-@media (max-width: 539px) {
-  .identity-panel {
-    grid-template-columns: minmax(0, 1fr);
-    min-height: 0;
-  }
-
-  .identity-copy {
-    min-height: 278px;
-  }
-
-  .identity-portrait {
-    min-height: 156px;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
-    border-left: 0;
   }
 }
 
@@ -759,9 +725,13 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .identity-panel::after,
+  .index-module::after {
+    animation: none;
+  }
+
   .dossier-card,
-  .identity-portrait img,
-  .articles-index a {
+  .dossier-card__image img {
     transition: none;
   }
 
