@@ -18,6 +18,12 @@ const demoVideo = ref<HTMLVideoElement | null>(null);
 const hasVideo = computed(
   () => Boolean(props.project.video) && !videoFailed.value,
 );
+// iOS/Safari has never supported the WebM container, so every reel also
+// ships an H.264 MP4 sibling (same basename) for those browsers to fall
+// back to; the <video> element itself picks whichever <source> it can play.
+const videoMp4Src = computed(() =>
+  props.project.video?.replace(/\.webm$/i, ".mp4"),
+);
 const galleryCount = computed(() => frames.value.length);
 const counter = computed(
   () => `${activeIndex.value + 1}/${galleryCount.value}`,
@@ -157,7 +163,12 @@ onBeforeUnmount(pauseDemo);
           :aria-label="`${project.name} product demo`"
           @error="onVideoError"
         >
+          <!-- Order matters: the browser plays the first <source> it can
+               decode. WebM first keeps the smaller file for browsers that
+               support it; Safari/iOS, which can't decode WebM at all, skips
+               straight to the MP4. -->
           <source :src="project.video" type="video/webm" />
+          <source :src="videoMp4Src" type="video/mp4" />
         </video>
         <button
           v-if="hasVideo"
