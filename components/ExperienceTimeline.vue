@@ -13,8 +13,9 @@ export interface ExperienceRole {
   role: string;
   /** Only worth printing when it isn't the default — e.g. CONTRACTOR. */
   type?: string;
-  tags: string;
-  note: string;
+  /** Omitted on a stepping-stone role that only needs to show the title. */
+  tags?: string;
+  note?: string;
   current: boolean;
   /** Project slugs from data/projects.json shipped during this role. */
   projects?: string[];
@@ -63,7 +64,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 <template>
   <ol class="flex flex-col gap-12">
     <li v-for="org in orgs" :key="org.company">
-      <div class="exp-row">
+      <div class="exp-head">
         <div class="exp-logo" :class="{ 'exp-logo--active': org.active }">
           <img
             v-if="org.logo"
@@ -116,8 +117,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 
             <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
               <div
-                class="text-sm font-medium uppercase leading-snug tracking-wider"
-                :class="item.current ? 'text-[#c6c6c6]' : 'text-[#919191]'"
+                class="text-sm font-medium uppercase leading-snug tracking-wider text-white"
               >
                 {{ item.role }}
               </div>
@@ -129,10 +129,14 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
               </div>
             </div>
 
-            <p class="exp-measure mt-3 text-sm leading-relaxed text-[#c6c6c6]">
+            <p
+              v-if="item.note"
+              class="exp-measure mt-3 text-sm leading-relaxed text-[#c6c6c6]"
+            >
               {{ item.note }}
             </p>
             <div
+              v-if="item.tags"
               class="exp-measure mt-2 font-mono text-xs leading-relaxed tracking-wide text-[#474747]"
             >
               // {{ item.tags }}
@@ -204,6 +208,15 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
   gap: 14px;
 }
 
+/* The org mark leads the block from the top rather than from a side column,
+   so the company name starts at the same left edge as everything under it. */
+.exp-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 .exp-body {
   flex: 1;
   min-width: 0;
@@ -244,12 +257,11 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
   color: #ffffff;
 }
 
-/* Roles hang off the company name, not the logo, so the logo square stays
-   the org's own column. Under 768px there is no width to give up. */
-@media (min-width: 768px) {
-  .exp-roles {
-    padding-left: 54px;
-  }
+/* With the logo stacked on top there is no column to align against, so the
+   roles get a rail instead — it carries the nesting the indent used to. */
+.exp-roles {
+  padding-left: 18px;
+  border-left: 1px solid rgba(71, 71, 71, 0.4);
 }
 
 /* One column width for everything a role owns — notes, tags and project

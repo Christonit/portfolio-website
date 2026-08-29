@@ -63,14 +63,13 @@ const timeline: ExperienceOrg[] = [
         current: true,
         projects: ["timothy-sykes", "stockstotrade", "content-automation-ai"],
       },
+      /* Kept as a bare line: the point it makes is the step up from
+         contractor frontend to senior full stack, not the work itself. */
       {
         period: "NOV 2020 — OCT 2023",
         role: "Frontend Engineer",
         type: "CONTRACTOR",
-        tags: "VUE.JS // GRIDSOME // TAILWIND // GRAPHQL // WORDPRESS",
-        note: "Microsites and web marketing campaigns development. Decoupled monolithic WordPress websites to headless architecture.",
         current: false,
-        projects: ["website-performance"],
       },
     ],
   },
@@ -147,7 +146,7 @@ const timeline: ExperienceOrg[] = [
     <div class="flex flex-col gap-12">
       <div class="flex flex-col gap-8">
         <div
-          class="flex flex-col gap-5 text-sm leading-relaxed text-[#c6c6c6] xl:gap-6 xl:text-base"
+          class="flex flex-col gap-3.5 text-sm leading-relaxed text-[#c6c6c6] xl:gap-4 xl:text-base"
         >
           <p>
             Originally from Punta Cana, Dominican Republic, I moved to the
