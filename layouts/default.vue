@@ -15,17 +15,26 @@ const playHaptic = () => {
 
 const pages = ["/", "/projects", "/bio"];
 
+const normalizedPath = computed(() => route.path.replace(/\/+$/, "") || "/");
+
 const currentIndex = computed(() => {
-  if (route.path.startsWith("/project/")) return pages.indexOf("/projects");
-  const i = pages.indexOf(route.path);
+  if (normalizedPath.value.startsWith("/project/")) return pages.indexOf("/projects");
+  const i = pages.indexOf(normalizedPath.value);
   return i === -1 ? 0 : i;
+});
+
+const usesInPageArrows = computed(() => {
+  const path = normalizedPath.value;
+  return path === "/" || path === "/projects" || path.startsWith("/project/");
 });
 
 // ── Tab / page navigation ────────────────────────────────────────
 function prevPage() {
+  flash("A");
   router.push(pages[(currentIndex.value - 1 + pages.length) % pages.length]);
 }
 function nextPage() {
+  flash("D");
   router.push(pages[(currentIndex.value + 1) % pages.length]);
 }
 
@@ -39,23 +48,37 @@ function flash(key: string) {
 }
 const isPressed = (key: string) => pressed.value === key;
 
+function emitHudKey(key: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight") {
+  flash(key);
+  hudKey.value = key;
+  nextTick(() => {
+    hudKey.value = null;
+  });
+}
+
 // ── Global keyboard handler ──────────────────────────────────────
 function onKeydown(e: KeyboardEvent) {
   const tag = (e.target as HTMLElement)?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA") return;
 
   switch (e.key) {
-    // A/D page navigation temporarily disabled
-    case "ArrowUp":
-    case "ArrowDown":
+    case "a":
+    case "A":
     case "ArrowLeft":
+      e.preventDefault();
+      prevPage();
+      break;
+    case "d":
+    case "D":
     case "ArrowRight":
       e.preventDefault();
-      flash(e.key);
-      hudKey.value = e.key as typeof hudKey.value;
-      nextTick(() => {
-        hudKey.value = null;
-      });
+      nextPage();
+      break;
+    case "ArrowUp":
+    case "ArrowDown":
+      if (!usesInPageArrows.value) break;
+      e.preventDefault();
+      emitHudKey(e.key);
       break;
     case "Escape":
       flash("Escape");
@@ -185,7 +208,8 @@ watch(() => route.path, scrollMainToTopOnMobile);
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Previous page"
+          aria-label="Previous page (A or Left arrow)"
+          aria-keyshortcuts="A ArrowLeft"
           @click="prevPage"
         >
           <kbd
@@ -236,7 +260,8 @@ watch(() => route.path, scrollMainToTopOnMobile);
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Next page"
+          aria-label="Next page (D or Right arrow)"
+          aria-keyshortcuts="D ArrowRight"
           @click="nextPage"
         >
           <kbd
