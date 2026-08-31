@@ -142,8 +142,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
                 <NuxtLink to="https://stockstotrade.com/">
                   @STOCKSTOTRADE
                 </NuxtLink>
-
-                <template>dummy</template>
               </p>
             </div>
           </div>
