@@ -140,7 +140,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
                   AI SYSTEMS, FRONTEND ARCHITECTURE, SEO &amp; DATA PIPELINES
                 </span>
                 <NuxtLink to="https://stockstotrade.com/">
-                  // STOCKSTOTRADE
+                  @STOCKSTOTRADE
                 </NuxtLink>
               </p>
             </div>
