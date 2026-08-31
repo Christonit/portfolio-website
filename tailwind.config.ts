@@ -26,6 +26,7 @@ export default {
     './layouts/**/*.{ts,tsx,vue}',
     './pages/**/*.{ts,tsx,vue}',
     './app.vue',
+    './error.vue',
   ],
   theme: {
     // Six sizes site-wide. `fontSize` replaces (rather than extends)
