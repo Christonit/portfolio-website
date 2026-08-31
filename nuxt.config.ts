@@ -14,6 +14,28 @@ const projectPaths = (projects as { slug: string; category: string }[])
   .filter((project) => project.category.toLowerCase() !== "article")
   .map((project) => `/project/${project.slug}/`);
 
+const gaMeasurementId =
+  process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID;
+
+// Official gtag snippet in the prerendered <head> so Google's tag checker
+// (and any crawler that does not wait for Nuxt hydration) can see it.
+const gaHeadScripts =
+  process.env.NODE_ENV === "production" && gaMeasurementId
+    ? [
+        {
+          key: "gtag-js",
+          src: `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`,
+          async: true,
+          tagPriority: "high" as const,
+        },
+        {
+          key: "gtag-init",
+          innerHTML: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${gaMeasurementId}');`,
+          tagPriority: "high" as const,
+        },
+      ]
+    : [];
+
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
@@ -85,8 +107,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      gaMeasurementId:
-        process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID,
+      gaMeasurementId,
       googleSiteVerification:
         process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
     },
@@ -152,6 +173,7 @@ export default defineNuxtConfig({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:image", content: `${SITE_URL}/images/og-image.webp` },
       ],
+      script: gaHeadScripts,
       link: [
         { rel: "icon", type: "image/x-icon", href: "/images/favicon.ico" },
         {
