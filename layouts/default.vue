@@ -157,11 +157,18 @@ const mobileNavItems = [
   },
 ];
 
+// Routes resolve with a trailing slash (`nuxtLink.trailingSlash: "append"` in
+// nuxt.config.ts), so comparing against the raw `route.path` never matches
+// "/projects" or "/bio" — only "/" survives untouched. Compare against the
+// already-normalized path instead.
 const isActive = (path: string) => {
   if (path === "/projects") {
-    return route.path === "/projects" || route.path.startsWith("/project/");
+    return (
+      normalizedPath.value === "/projects" ||
+      normalizedPath.value.startsWith("/project/")
+    );
   }
-  return route.path === path;
+  return normalizedPath.value === path;
 };
 
 const mainRef = ref<HTMLElement | null>(null);

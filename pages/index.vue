@@ -147,9 +147,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           </div>
         </div>
 
-        <div class="identity-portrait" aria-hidden="true">
+        <!-- <div class="identity-portrait" aria-hidden="true">
           <PortraitPixelate :hovered="portraitHover" />
-        </div>
+        </div> -->
 
         <HudCorners />
       </section>
