@@ -177,7 +177,13 @@ watch(() => route.path, scrollMainToTopOnMobile);
 </script>
 
 <template>
-  <div class="relative h-screen overflow-hidden bg-[#131313] text-[#e2e2e2]">
+  <!-- h-dvh, not h-screen: on mobile `100vh` is the *large* viewport (browser
+       chrome hidden), so the shell measured taller than the screen and pushed
+       `.hud-page`'s bottom edge under the fixed bottom nav and off-screen. That
+       overlap is invisible normally (the nav is z-[1000]) but a view transition
+       composites by group z-index instead, painting the page snapshot over the
+       nav. Sizing to the dynamic viewport removes the overlap at the source. -->
+  <div class="relative h-dvh overflow-hidden bg-[#131313] text-[#e2e2e2]">
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
 
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
@@ -358,16 +364,7 @@ watch(() => route.path, scrollMainToTopOnMobile);
       </div>
     </nav>
 
-    <!-- ── MAIN CONTENT ────────────────────────────────────── -->
-    <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
-    <!-- Desktop: uses the full viewport below the top navigation -->
-    <main
-      ref="mainRef"
-      class="hud-page absolute inset-x-0 top-14 z-10 bottom-16 lg:pb-0 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
-    >
-      <slot />
-    </main>
-
+    <!-- <ClientOnly> -->
     <!-- ── MOBILE BOTTOM NAVIGATION ───────────────────────── -->
     <nav
       class="xl:hidden fixed bottom-0 inset-x-0 z-[1000] flex h-16 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.6)]"
@@ -403,5 +400,15 @@ watch(() => route.path, scrollMainToTopOnMobile);
         }}</span>
       </NuxtLink>
     </nav>
+    <!-- </ClientOnly> -->
+    <!-- ── MAIN CONTENT ────────────────────────────────────── -->
+    <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
+    <!-- Desktop: uses the full viewport below the top navigation -->
+    <main
+      ref="mainRef"
+      class="hud-page absolute inset-x-0 top-14 z-10 bottom-16 lg:pb-0 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
+    >
+      <slot />
+    </main>
   </div>
 </template>

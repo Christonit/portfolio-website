@@ -13,6 +13,17 @@ export default defineNuxtRouteMiddleware((to, from) => {
     to.meta.layoutTransition = false;
   }
 
+  // A tap that lands before the initial page has hydrated is routed on the
+  // client by `plugins/nav-direction.client.ts` (NuxtLink isn't interactive
+  // yet). Running a View Transition for that hop stalls, because its DOM-update
+  // callback waits on a page whose Suspense boundary is still resolving — the
+  // stall-guard then has to force-skip it ~1.2s later, swallowing taps in the
+  // meantime. While hydrating, take the instant hard swap instead.
+  if (useNuxtApp().isHydrating) {
+    to.meta.viewTransition = false;
+    return;
+  }
+
   // On a cold load of a prerendered route, Nuxt replaces the route twice to
   // line the URL up with the path its payload was rendered at (see
   // `isSamePathIgnoringTrailingSlash`). The second replace re-renders nothing —
