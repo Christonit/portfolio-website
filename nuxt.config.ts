@@ -77,16 +77,21 @@ export default defineNuxtConfig({
     "/sitemap.xml": { prerender: true },
     "/og-export": { robots: false },
     "/design-system": { robots: false },
+    // Heal a bad www→apex rule that captured the hostname as a path:
+    // www.chsantana.com → https://chsantana.com/chsantana.com/
+    "/chsantana.com": { redirect: { to: "/", statusCode: 301 } },
+    "/chsantana.com/**": { redirect: { to: "/**", statusCode: 301 } },
   },
 
   runtimeConfig: {
     public: {
-      gaMeasurementId: process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID,
+      gaMeasurementId:
+        process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID,
       googleSiteVerification:
         process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
     },
   },
-
+  
   nitro: {
     prerender: {
       crawlLinks: true,
