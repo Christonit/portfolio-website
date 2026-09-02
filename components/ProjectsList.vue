@@ -68,11 +68,6 @@ function bindRow(el: Element | null, i: number) {
   props.setItemRef(node, props.refOffset + i);
 }
 
-function readRootZoom() {
-  const z = parseFloat(getComputedStyle(document.documentElement).zoom);
-  return Number.isFinite(z) && z > 0 ? z : 1;
-}
-
 function clearTimers() {
   if (showTimer) {
     clearTimeout(showTimer);
@@ -90,24 +85,18 @@ function positionTooltip() {
   const card = tooltipRef.value;
   if (i === null || !row || !card) return;
 
-  const zoom = readRootZoom();
   const rowRect = row.getBoundingClientRect();
   const cardRect = card.getBoundingClientRect();
-  const cardW = (cardRect.width || CARD_WIDTH) / zoom;
-  const cardH = (cardRect.height || 480) / zoom;
-  const vw = window.innerWidth / zoom;
-  const vh = window.innerHeight / zoom;
+  const cardW = cardRect.width || CARD_WIDTH;
+  const cardH = cardRect.height || 480;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
-  const rowLeft = rowRect.left / zoom;
-  const rowRight = rowRect.right / zoom;
-  const rowTop = rowRect.top / zoom;
-  const rowH = rowRect.height / zoom;
-
-  let left = rowLeft - GAP - cardW;
+  let left = rowRect.left - GAP - cardW;
   let origin = "100% 50%";
 
   if (left < VIEW_MARGIN) {
-    left = rowRight + GAP;
+    left = rowRect.right + GAP;
     origin = "0% 50%";
     if (left + cardW > vw - VIEW_MARGIN) {
       left = Math.max(VIEW_MARGIN, vw - cardW - VIEW_MARGIN);
@@ -116,7 +105,7 @@ function positionTooltip() {
 
   const maxTop = Math.max(VIEW_MARGIN, vh - cardH - VIEW_MARGIN);
   const top = Math.min(
-    Math.max(VIEW_MARGIN, rowTop + rowH / 2 - cardH / 2),
+    Math.max(VIEW_MARGIN, rowRect.top + rowRect.height / 2 - cardH / 2),
     maxTop,
   );
 

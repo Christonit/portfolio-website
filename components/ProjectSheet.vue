@@ -261,13 +261,24 @@ watch(hudKey, (key) => {
     width: 2.25rem;
   }
 
-  /* The 5rem floor keeps a gutter wide enough for the pager rails even when
-     the viewport is narrower than the panel's natural max width. */
+  /* Width + auto margins rather than symmetric `vw` insets. Percentages
+     resolve against this fixed element's own containing block, so the panel
+     stays centred under anything that resizes that block out of step with
+     `vw` — a root scale, a classic scrollbar — where `calc((100vw - …) / 2)`
+     would push it off centre or collapse it to a column.
+
+     The gutter subtraction keeps room for the pager rails even when the
+     viewport is narrower than the panel's natural max width. */
   .project-sheet__panel {
     top: 4.5rem;
-    right: max(5rem, calc((100vw - 1160px) / 2));
+    right: 0;
     bottom: 1.5rem;
-    left: max(5rem, calc((100vw - 1160px) / 2));
+    left: 0;
+    width: min(
+      var(--dossier-max-w),
+      calc(100% - var(--dossier-gutter) * 2)
+    );
+    margin-inline: auto;
     animation-name: sheet-zoom-in;
   }
 }

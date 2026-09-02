@@ -220,12 +220,22 @@ onBeforeRouteLeave(async (to) => {
     transform: translateY(-50%);
   }
 
+  /* Centred in the gutter beside the panel, off the same token the panel
+     sizes from. Percentages rather than `vw` for the reason given in
+     ProjectSheet: these are fixed-position, so `100%` tracks the same
+     containing block the panel is centred in. */
   .project-nav--prev {
-    left: max(1.25rem, calc((100vw - 1160px) / 4 - 1.375rem));
+    left: max(
+      calc(var(--dossier-gutter) / 2 - 1.375rem),
+      calc((100% - var(--dossier-max-w)) / 4 - 1.375rem)
+    );
   }
 
   .project-nav--next {
-    right: max(1.25rem, calc((100vw - 1160px) / 4 - 1.375rem));
+    right: max(
+      calc(var(--dossier-gutter) / 2 - 1.375rem),
+      calc((100% - var(--dossier-max-w)) / 4 - 1.375rem)
+    );
   }
 }
 
