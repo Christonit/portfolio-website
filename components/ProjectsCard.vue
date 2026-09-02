@@ -47,15 +47,28 @@ const isExternal = computed(() => {
 });
 
 const imageFailed = ref(false);
-const previewRatio = ref<string | null>(null);
+const measuredRatio = ref<string | null>(null);
 const showPreview = computed(
   () => Boolean(props.project?.image) && !imageFailed.value,
 );
 
+// The thumb sizes itself from the image's intrinsic ratio. Reading that off the
+// loaded <img> only works once the bytes have landed, so the slot has to be
+// reserved from data instead — otherwise the first (uncached) visit paints a
+// squat placeholder and every card jumps taller as its image decodes, while a
+// reload serves from cache and looks correct. Measuring stays as a fallback for
+// projects whose dimensions aren't recorded.
+const previewRatio = computed(() => {
+  const w = props.project?.imageWidth;
+  const h = props.project?.imageHeight;
+  if (w && h) return `${w} / ${h}`;
+  return measuredRatio.value;
+});
+
 function applyPreviewSize(el: EventTarget | null) {
   if (!(el instanceof HTMLImageElement)) return;
   if (el.naturalWidth > 0 && el.naturalHeight > 0) {
-    previewRatio.value = `${el.naturalWidth} / ${el.naturalHeight}`;
+    measuredRatio.value = `${el.naturalWidth} / ${el.naturalHeight}`;
   }
 }
 
@@ -72,7 +85,7 @@ watch(
   () => props.project?.image,
   () => {
     imageFailed.value = false;
-    previewRatio.value = null;
+    measuredRatio.value = null;
   },
 );
 

@@ -20,6 +20,8 @@ export interface ProjectPreview {
   tags: string;
   link?: string;
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   imageAlt?: string;
   imageTone?: "dark" | "light";
   video?: string;
