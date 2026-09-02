@@ -1,3 +1,5 @@
+import type { InjectionKey, Ref } from "vue";
+
 /**
  * Whether a dossier sheet is already on screen. The pager remounts the page
  * component, so without this the sheet would replay its entrance animation
@@ -67,4 +69,21 @@ export function takeBoardScroll(): number | null {
   const top = boardScroll;
   boardScroll = null;
   return top;
+}
+
+/**
+ * Whether the sheet has finished its entrance. Injected by ProjectSheet so the
+ * payload can hold back expensive work — video decode, above all — until the
+ * panel has stopped moving. Defaults to "already in" for any use outside a
+ * sheet.
+ */
+export const SHEET_ENTERED = Symbol("project-sheet-entered") as InjectionKey<
+  Readonly<Ref<boolean>>
+>;
+
+export function useSheetEntered(): Readonly<Ref<boolean>> {
+  return inject(
+    SHEET_ENTERED,
+    computed(() => true),
+  );
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   openProjectSheet,
+  SHEET_ENTERED,
   type SheetStep,
 } from "~/composables/useProjectSheet";
 
@@ -27,7 +28,8 @@ const props = withDefaults(
   { closing: false, step: null },
 );
 
-const emit = defineEmits<{ close: [] }>();
+/** `closed` fires when the dismissal animation has actually finished. */
+const emit = defineEmits<{ close: []; closed: [] }>();
 
 // Read before first paint, not in onMounted: stepping through the pager
 // remounts this component, and the panel must not zoom in again.
@@ -40,6 +42,45 @@ const step = computed(() => (enter === "instant" ? props.step : null));
 const panelRef = ref<HTMLElement | null>(null);
 const bodyRef = ref<HTMLElement | null>(null);
 let previouslyFocused: HTMLElement | null = null;
+
+/**
+ * Entrance/dismissal bookkeeping, driven off the panel's own animationend
+ * rather than a timer: a duplicated duration is always a frame or two out of
+ * step with the CSS, and on the way out that difference is the route swapping
+ * while the panel is still mid-flight — the cut at the end of the dismissal.
+ *
+ * animationend bubbles, so every handler filters on the panel itself; the
+ * payload runs animations of its own on a pager step.
+ */
+const ENTRANCE_TIMEOUT_MS = 1000;
+const entered = ref(enter === "instant");
+let enteredFallback: number | undefined;
+provide(
+  SHEET_ENTERED,
+  computed(() => entered.value),
+);
+
+// The panel runs its travel and its fade on separate clocks, and only the
+// travel says the motion is over. Scoped styles suffix keyframe names with the
+// component's scope id, so match on a fragment rather than the whole name.
+const TRAVEL_ANIMATION = /sheet-(rise|zoom)-(in|out)/;
+
+function isPanelTravel(event: AnimationEvent) {
+  return (
+    event.target === panelRef.value &&
+    TRAVEL_ANIMATION.test(event.animationName)
+  );
+}
+
+function onPanelAnimationEnd(event: AnimationEvent) {
+  if (!isPanelTravel(event)) return;
+  if (props.closing) {
+    emit("closed");
+    return;
+  }
+  clearTimeout(enteredFallback);
+  entered.value = true;
+}
 
 // Capture phase, and swallowed: the layout binds Escape to "go home", which
 // would blow past the board the sheet is stacked on.
@@ -57,9 +98,23 @@ onMounted(() => {
       : null;
   panelRef.value?.focus({ preventScroll: true });
   window.addEventListener("keydown", onKeydown, true);
+
+  // Nothing to wait for when the panel isn't animating — a pager step, or
+  // reduced motion, where the CSS zeroes the animation out entirely.
+  if (!panelRef.value?.getAnimations?.().length) {
+    entered.value = true;
+    return;
+  }
+
+  // The payload holds back its heaviest work on this flag, so it can't be
+  // allowed to hang on an animationend that never arrives.
+  enteredFallback = window.setTimeout(() => {
+    entered.value = true;
+  }, ENTRANCE_TIMEOUT_MS);
 });
 
 onBeforeUnmount(() => {
+  clearTimeout(enteredFallback);
   window.removeEventListener("keydown", onKeydown, true);
   previouslyFocused?.focus?.({ preventScroll: true });
 });
@@ -86,6 +141,7 @@ watch(hudKey, (key) => {
       :data-enter="enter"
       :data-step="step"
       :data-state="closing ? 'closing' : 'open'"
+      :data-entered="entered || null"
     >
       <div
         class="project-sheet__scrim"
@@ -99,6 +155,7 @@ watch(hudKey, (key) => {
         role="dialog"
         :aria-label="label"
         tabindex="-1"
+        @animationend="onPanelAnimationEnd"
       >
         <div class="corner-tl-w" />
         <div class="corner-tr-w" />
@@ -139,8 +196,10 @@ watch(hudKey, (key) => {
       </div>
 
       <!-- Pager rails. Outside the panel so they sit in the board gutters, and
-         after it in the reading order so the dossier comes first. -->
-      <slot name="nav" />
+         after it in the reading order so the dossier comes first. The rails
+         remount on every pager step, so they only fade in when the sheet
+         itself is arriving — otherwise they blink on each step. -->
+      <slot name="nav" :entering="enter === 'animate'" />
     </div>
   </Teleport>
 </template>
@@ -154,7 +213,8 @@ watch(hudKey, (key) => {
   inset: 3.5rem 0 0 0;
   z-index: 40;
   background: rgba(6, 6, 6, 0.74);
-  animation: sheet-scrim-in var(--sheet-in-dur) var(--sheet-ease) both;
+  animation: sheet-scrim-in var(--sheet-scrim-in-dur) var(--sheet-fade-ease)
+    both;
 }
 
 /* Phones and small tablets: the scrim (and panel, below) rise above the site
@@ -167,9 +227,27 @@ watch(hudKey, (key) => {
 }
 
 .project-sheet {
-  --sheet-in-dur: 420ms;
-  --sheet-out-dur: 240ms;
+  /* Travel and fade run on separate clocks, the same split the site's page
+     transitions use: the travel is the gesture and wants room to decelerate,
+     the fade only has to get the panel out of the way. Fading over the full
+     travel is what leaves the panel legible but half-there for a third of a
+     second, which reads as a stall followed by a jump. */
+  --sheet-in-dur: 380ms;
+  --sheet-in-fade-dur: 200ms;
+  --sheet-scrim-in-dur: 240ms;
+
+  --sheet-out-dur: 220ms;
+  --sheet-out-fade-dur: 160ms;
+
   --sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --sheet-fade-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* The dismissal accelerates away instead of borrowing the entrance curve,
+     which decelerates to a near standstill — on the way out that reads as the
+     panel hanging around and then being cut off. */
+  --sheet-out-ease: cubic-bezier(0.4, 0, 1, 1);
+
+  --sheet-rise: 18px;
+  --sheet-scale: 0.988;
 }
 
 .project-sheet__panel {
@@ -188,7 +266,20 @@ watch(hudKey, (key) => {
      mobile bottom nav (fixed, z-100) so that stays reachable. */
   inset: 0 0 4rem 0;
   z-index: 55;
+  /* A full-bleed sheet rising from the bottom edge doesn't fade — it would
+     only muddy the travel. The scrim carries the change in depth. */
   animation: sheet-rise-in var(--sheet-in-dur) var(--sheet-ease) both;
+}
+
+/* Promotion for the frames that need it, dropped as soon as the panel is at
+   rest: a permanently promoted layer this large (full-bleed, with an 80px
+   shadow, wrapping a scroll container and a playing video) costs memory for
+   the entire life of the sheet and buys nothing once it stops moving. */
+.project-sheet:not([data-entered])
+  :is(.project-sheet__panel, .project-sheet__scrim),
+.project-sheet[data-state="closing"]
+  :is(.project-sheet__panel, .project-sheet__scrim) {
+  will-change: transform, opacity;
 }
 
 .project-sheet__panel
@@ -268,28 +359,38 @@ watch(hudKey, (key) => {
     right: max(5rem, calc((100vw - 1160px) / 2));
     bottom: 1.5rem;
     left: max(5rem, calc((100vw - 1160px) / 2));
-    animation-name: sheet-zoom-in;
+    animation:
+      sheet-zoom-in var(--sheet-in-dur) var(--sheet-ease) both,
+      sheet-fade-in var(--sheet-in-fade-dur) var(--sheet-fade-ease) both;
   }
 }
 
 /* ── Dismissal ──────────────────────────────────────────────────── */
+/* The scrim outlasts the panel by a hair so the board never brightens back up
+   underneath a panel that is still on its way out. */
 .project-sheet[data-state="closing"] .project-sheet__scrim {
-  animation: sheet-scrim-out var(--sheet-out-dur) var(--sheet-ease) both;
+  animation: sheet-scrim-out var(--sheet-out-dur) var(--sheet-fade-ease) both;
 }
 
 .project-sheet[data-state="closing"] .project-sheet__panel {
-  animation: sheet-rise-out var(--sheet-out-dur) var(--sheet-ease) both;
+  animation: sheet-rise-out var(--sheet-out-dur) var(--sheet-out-ease) both;
 }
 
 @media (min-width: 1280px) {
   .project-sheet[data-state="closing"] .project-sheet__panel {
-    animation-name: sheet-zoom-out;
+    animation:
+      sheet-zoom-out var(--sheet-out-dur) var(--sheet-out-ease) both,
+      sheet-fade-out var(--sheet-out-fade-dur) var(--sheet-fade-ease) both;
   }
 }
 
-/* Pager step: the shell is already in place, so only the payload changes. */
-.project-sheet[data-enter="instant"] .project-sheet__scrim,
-.project-sheet[data-enter="instant"] .project-sheet__panel {
+/* Pager step: the shell is already in place, so only the payload changes.
+   Pinned to the open state — this rule and the dismissal above have the same
+   specificity, so an unqualified version wins on source order and silently
+   takes the exit animation away from every sheet you reached through the
+   pager, leaving the dismissal a dead pause followed by a cut. */
+.project-sheet[data-enter="instant"][data-state="open"] .project-sheet__scrim,
+.project-sheet[data-enter="instant"][data-state="open"] .project-sheet__panel {
   animation: none;
 }
 
@@ -360,15 +461,25 @@ watch(hudKey, (key) => {
 
 @keyframes sheet-zoom-in {
   from {
-    opacity: 0;
-    transform: translateY(22px) scale(0.985);
+    transform: translateY(var(--sheet-rise)) scale(var(--sheet-scale));
   }
 }
 
 @keyframes sheet-zoom-out {
   to {
+    transform: translateY(var(--sheet-rise)) scale(var(--sheet-scale));
+  }
+}
+
+@keyframes sheet-fade-in {
+  from {
     opacity: 0;
-    transform: translateY(22px) scale(0.985);
+  }
+}
+
+@keyframes sheet-fade-out {
+  to {
+    opacity: 0;
   }
 }
 

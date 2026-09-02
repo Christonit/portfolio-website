@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import { buildProjectGallery, type GalleryFrame } from "~/utils/projectGallery";
+import { useSheetEntered } from "~/composables/useProjectSheet";
 
 /**
  * The dossier payload — demo reel or image gallery, then the written record.
@@ -9,6 +10,15 @@ import { buildProjectGallery, type GalleryFrame } from "~/utils/projectGallery";
 const props = defineProps<{ project: ProjectPreview }>();
 
 const hudKey = useHudNav();
+
+/**
+ * Fetching, decoding and starting a demo reel is the most expensive thing this
+ * component does, and on open it lands squarely in the middle of the sheet's
+ * entrance — the single biggest source of dropped frames there. The poster
+ * still paints immediately; only playback waits for the panel to settle.
+ * Outside a sheet this reads true from the first tick and nothing is deferred.
+ */
+const sheetEntered = useSheetEntered();
 
 const frames = ref<GalleryFrame[]>([]);
 const videoFailed = ref(false);
@@ -137,9 +147,14 @@ function onCanPlay() {
 async function startDemoIfReady() {
   await nextTick();
   const el = demoVideo.value;
-  if (!el || !hasVideo.value) return;
+  if (!el || !hasVideo.value || !sheetEntered.value) return;
   armVideo(el);
-  if (prefersReducedMotion()) return;
+  // Playback is script-driven now, so reduced motion has to offer a way in
+  // rather than just declining to start: otherwise the reel is a dead poster.
+  if (prefersReducedMotion()) {
+    needsGesture.value = true;
+    return;
+  }
   if (el.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) el.load();
   void playDemo();
 }
@@ -150,6 +165,7 @@ watch(hudKey, (key) => {
 });
 
 watch(() => props.project.slug, startDemoIfReady);
+watch(sheetEntered, startDemoIfReady);
 
 onMounted(startDemoIfReady);
 
@@ -173,17 +189,19 @@ onBeforeUnmount(pauseDemo);
             : 'project-gallery-stage--images overflow-hidden'
         "
       >
+        <!-- No `autoplay`: playback is started from script once the sheet has
+             finished its entrance, and the attribute would pull the fetch and
+             the first decode back into the middle of it. -->
         <video
           v-if="hasVideo"
           ref="demoVideo"
           class="project-demo-video"
           :src="demoSrc"
           :poster="project.image"
-          autoplay
           muted
           loop
           playsinline
-          preload="auto"
+          :preload="sheetEntered ? 'auto' : 'none'"
           :aria-label="`${project.name} product demo`"
           @canplay="onCanPlay"
           @playing="needsGesture = false"

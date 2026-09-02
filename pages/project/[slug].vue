@@ -84,12 +84,24 @@ const pagerStep = projectSheetStepFor(current.value.slug);
 // The sheet has to finish sliding away before the route swaps the board
 // back in, so every exit — button, scrim, Escape, breadcrumb, browser
 // back — is funnelled through the same leave guard.
-const SHEET_EXIT_MS = 240;
+//
+// The guard waits on the sheet's own `closed` event rather than a duration
+// copied from the CSS: the animation only starts once Vue has flushed the
+// `closing` flag to the DOM, so a matching timer always fires a frame or two
+// early and cuts the tail off the dismissal. The timeout is a backstop for
+// the case where the animation never runs at all.
+const SHEET_EXIT_TIMEOUT_MS = 600;
 const closing = ref(false);
+let resolveExit: (() => void) | null = null;
 
 function close() {
   if (closing.value) return;
   router.push("/projects");
+}
+
+function onSheetClosed() {
+  resolveExit?.();
+  resolveExit = null;
 }
 
 onBeforeRouteLeave(async (to) => {
@@ -104,7 +116,11 @@ onBeforeRouteLeave(async (to) => {
 
   if (import.meta.client && !reduced && !closing.value) {
     closing.value = true;
-    await new Promise((resolve) => setTimeout(resolve, SHEET_EXIT_MS));
+    await new Promise<void>((resolve) => {
+      resolveExit = resolve;
+      setTimeout(resolve, SHEET_EXIT_TIMEOUT_MS);
+    });
+    resolveExit = null;
   }
 
   return true;
@@ -124,6 +140,7 @@ onBeforeRouteLeave(async (to) => {
       :closing="closing"
       :step="pagerStep"
       @close="close"
+      @closed="onSheetClosed"
     >
       <template #title>
         <h1
@@ -149,11 +166,11 @@ onBeforeRouteLeave(async (to) => {
 
       <!-- Project navigation lives in the gutters either side of the panel,
            so stepping through the work never costs a scroll to the bottom. -->
-      <template v-if="prevProject && nextProject" #nav>
+      <template v-if="prevProject && nextProject" #nav="{ entering }">
         <NuxtLink
           :to="`/project/${prevProject.slug}`"
           class="project-nav project-nav--prev"
-          :class="{ 'is-closing': closing }"
+          :class="{ 'is-closing': closing, 'is-entering': entering }"
           :aria-label="`Previous project: ${prevProject.name}`"
           @click.exact="markProjectSheetStep('back', prevProject.slug)"
         >
@@ -162,7 +179,7 @@ onBeforeRouteLeave(async (to) => {
         <NuxtLink
           :to="`/project/${nextProject.slug}`"
           class="project-nav project-nav--next"
-          :class="{ 'is-closing': closing }"
+          :class="{ 'is-closing': closing, 'is-entering': entering }"
           :aria-label="`Next project: ${nextProject.name}`"
           @click.exact="markProjectSheetStep('forward', nextProject.slug)"
         >
@@ -199,8 +216,16 @@ onBeforeRouteLeave(async (to) => {
     background-color 150ms ease,
     border-color 150ms ease,
     color 150ms ease,
-    opacity var(--duration-quick, 150ms) ease;
-  animation: project-nav-in 260ms var(--page-fade-ease, ease) both;
+    opacity var(--sheet-out-fade-dur, 160ms) var(--sheet-fade-ease, ease);
+}
+
+/* The rails belong to the sheet's entrance, so they run on its clock and land
+   after the panel has settled. Only when the sheet is actually arriving: the
+   pager remounts this page on every step, and without the guard the arrows
+   would blink each time the dossier under them changed. */
+.project-nav.is-entering {
+  animation: project-nav-in var(--sheet-in-fade-dur, 200ms)
+    var(--sheet-fade-ease, ease) var(--sheet-in-fade-dur, 200ms) both;
 }
 
 /* Below the desktop breakpoint the panel is full-bleed, so the rails drop to
@@ -252,7 +277,8 @@ onBeforeRouteLeave(async (to) => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-nav {
+  .project-nav,
+  .project-nav.is-entering {
     transition: none;
     animation: none;
   }
