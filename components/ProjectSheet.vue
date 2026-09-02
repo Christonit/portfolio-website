@@ -252,8 +252,10 @@ watch(hudKey, (key) => {
 
 /* ── Desktop ────────────────────────────────────────────────────── */
 @media (min-width: 1280px) {
+  /* Even inset all round, so the close button's gap to the panel edge matches
+     its gap to the top and bottom of the chrome. */
   .project-sheet__chrome {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem;
   }
 
   .project-sheet__close {
