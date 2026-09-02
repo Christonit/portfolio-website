@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  holdProjectPagerStep,
   openProjectSheet,
   settleProjectPagerStep,
   SHEET_ENTERED,
@@ -41,6 +42,11 @@ const enter = openProjectSheet() ? "instant" : "animate";
 // the first dossier of a session opens, it doesn't travel.
 const step = computed(() => (enter === "instant" ? props.step : null));
 
+// Claimed here rather than in onMounted: the rails render with this component,
+// so a press can land before the mount hook runs, and the whole point is that
+// no press gets to interrupt the entrance.
+if (import.meta.client && enter === "animate") holdProjectPagerStep();
+
 const panelRef = ref<HTMLElement | null>(null);
 const bodyRef = ref<HTMLElement | null>(null);
 const payloadRef = ref<HTMLElement | null>(null);
@@ -67,10 +73,6 @@ provide(
 // component's scope id, so match on a fragment rather than the whole name.
 const TRAVEL_ANIMATION = /sheet-(rise|zoom)-(in|out)/;
 
-// The payload's own travel, on the same principle: the slide is the step, the
-// fade only tidies up after it.
-const STEP_ANIMATION = /sheet-step-slide/;
-
 function isPanelTravel(event: AnimationEvent) {
   return (
     event.target === panelRef.value &&
@@ -79,17 +81,6 @@ function isPanelTravel(event: AnimationEvent) {
 }
 
 function onPanelAnimationEnd(event: AnimationEvent) {
-  // The pager holds the next step until this one has stopped moving, so the
-  // arrival has to say when that is. Nothing else can: the sheet the press
-  // started in has already unmounted by the time the slide lands.
-  if (
-    event.target === payloadRef.value &&
-    STEP_ANIMATION.test(event.animationName)
-  ) {
-    settleProjectPagerStep();
-    return;
-  }
-
   if (!isPanelTravel(event)) return;
   if (props.closing) {
     emit("closed");
@@ -108,14 +99,47 @@ function onKeydown(event: KeyboardEvent) {
   emit("close");
 }
 
+// The gate this arrival is holding is module state shared with every other
+// sheet, so a sheet that has been replaced must never open it: by then it
+// belongs to the step that replaced it.
+let alive = true;
+
+/**
+ * Releases the pager gate once this arrival has stopped moving.
+ *
+ * Driven off the animations themselves rather than a bubbled `animationend`:
+ * a slide that gets cancelled — this sheet replaced before its travel
+ * finishes, which is exactly what a spammed rail does — fires no
+ * `animationend` at all, and the gate would then sit shut until the backstop,
+ * dropping every press in that window down to the single queued one.
+ */
+function releaseWhenSettled(el: HTMLElement | null) {
+  const animations = el?.getAnimations?.() ?? [];
+  if (!animations.length) {
+    settleProjectPagerStep();
+    return;
+  }
+  void Promise.allSettled(animations.map((a) => a.finished)).then(() => {
+    if (alive) settleProjectPagerStep();
+  });
+}
+
+// An entrance holds the gate from setup, so it is the entrance — not the
+// payload — that says when the sheet is ready to be stepped off.
+watch(entered, (value) => {
+  if (value) settleProjectPagerStep();
+});
+
 onMounted(() => {
   panelRef.value?.focus({ preventScroll: true });
   window.addEventListener("keydown", onKeydown, true);
 
-  // An arrival that doesn't animate — reduced motion, or a hop the pager
-  // didn't ask for — has no animationend to release the gate, so it releases
-  // it here instead of leaving the pager stuck until the backstop fires.
-  if (!payloadRef.value?.getAnimations?.().length) {
+  if (step.value) {
+    // A pager arrival: the gate opens when the dossier's travel lands.
+    releaseWhenSettled(payloadRef.value);
+  } else if (enter === "instant") {
+    // A hop into a dossier the pager didn't ask for, with no travel to wait
+    // on — release rather than leave a stale gate shut until the backstop.
     settleProjectPagerStep();
   }
 
@@ -134,6 +158,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  alive = false;
   clearTimeout(enteredFallback);
   window.removeEventListener("keydown", onKeydown, true);
 });
@@ -386,10 +411,7 @@ watch(hudKey, (key) => {
     right: 0;
     bottom: 1.5rem;
     left: 0;
-    width: min(
-      var(--dossier-max-w),
-      calc(100% - var(--dossier-gutter) * 2)
-    );
+    width: min(var(--dossier-max-w), calc(100% - var(--dossier-gutter) * 2));
     margin-inline: auto;
     animation:
       sheet-zoom-in var(--sheet-in-dur) var(--sheet-ease) both,
