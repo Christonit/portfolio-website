@@ -114,8 +114,10 @@ onBeforeRouteLeave(async (to) => {
 <template>
   <div class="project-route">
     <!-- The board is the backdrop, not a second copy of the page: inert, so
-         focus and clicks stay inside the sheet. -->
-    <ProjectsBoard :interactive="false" :active-slug="current.slug" inert />
+         focus and clicks stay inside the sheet. It marks nothing — the card
+         behind the panel used to light up green, which the dismissal then
+         uncovered for a moment before the route swap wiped it. -->
+    <ProjectsBoard :interactive="false" inert />
 
     <ProjectSheet
       :label="`${current.name} — project dossier`"

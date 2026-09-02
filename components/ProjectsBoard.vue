@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
+import {
+  rememberBoardScroll,
+  takeBoardScroll,
+} from "~/composables/useProjectSheet";
 
 /**
  * The selected-work grid. Owns the arrow-key focus ring when it is the page
- * you are on, and renders inert when it is only sitting behind an open
- * dossier sheet. Cards never reveal on their own — the page transition
+ * you are on, and renders inert and unmarked when it is only sitting behind an
+ * open dossier sheet. Cards never reveal on their own — the page transition
  * already carries them in.
  */
 const props = withDefaults(
   defineProps<{
     interactive?: boolean;
-    activeSlug?: string | null;
   }>(),
   {
     interactive: true,
-    activeSlug: null,
   },
 );
 
@@ -84,7 +86,33 @@ function onKeydown(e: KeyboardEvent) {
 
 let cleanupListeners: (() => void) | undefined;
 
+// ── Scroll continuity across the dossier sheet ────────────────────
+// Opening a project swaps /projects for /project/[slug], and both render this
+// component — as two different instances. Left alone the rail remounts at the
+// top, so the backdrop jerks up to the first card while the scrim is still
+// fading in, and dismissing the sheet lands you at the top of the list instead
+// of on the card you opened. Only the board ↔ dossier hop is carried over;
+// arriving from anywhere else still starts at the top.
+const railRef = ref<HTMLElement | null>(null);
+const router = useRouter();
+
+function isProjectsFamily(path: string) {
+  const normalized = path.replace(/\/+$/, "") || "/";
+  return normalized === "/projects" || normalized.startsWith("/project/");
+}
+
 onMounted(() => {
+  const saved = takeBoardScroll();
+  if (saved) {
+    railRef.value?.scrollTo({ top: saved, behavior: "auto" });
+    // Card previews size themselves from their image's natural ratio, so the
+    // rail can grow taller a frame or two after mount. Re-apply once that has
+    // settled or a restore near the bottom of the list falls short.
+    requestAnimationFrame(() => {
+      railRef.value?.scrollTo({ top: saved, behavior: "auto" });
+    });
+  }
+
   if (!props.interactive) return;
 
   columns.value = readColumns();
@@ -99,6 +127,15 @@ onMounted(() => {
   };
 });
 
+// Before unmount, not after: the element is still in the document and the
+// router has already resolved where we are headed.
+onBeforeUnmount(() => {
+  const top = railRef.value?.scrollTop ?? 0;
+  if (top > 0 && isProjectsFamily(router.currentRoute.value.path)) {
+    rememberBoardScroll(top);
+  }
+});
+
 onUnmounted(() => {
   cleanupListeners?.();
 });
@@ -106,6 +143,7 @@ onUnmounted(() => {
 
 <template>
   <div
+    ref="railRef"
     class="projects-rail flex flex-col gap-8 py-5 pb-24 xl:h-full xl:overflow-y-auto"
   >
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
@@ -129,9 +167,7 @@ onUnmounted(() => {
             :project="project"
             :index="i"
             :total="totalWork"
-            :focused="
-              interactive ? focusedIndex === i : activeSlug === project.slug
-            "
+            :focused="interactive && focusedIndex === i"
           />
         </li>
       </ul>

@@ -229,7 +229,22 @@ function scrollMainToTopOnMobile() {
   });
 }
 
-watch(() => route.path, scrollMainToTopOnMobile);
+// Below xl this element is the scroller for the projects board, and it outlives
+// the route swap that opens a dossier over it. Resetting it there would jerk
+// the backdrop up to the first card on the way in and drop you at the top of
+// the list on the way out — the board and its dossiers are one place.
+const isProjectsFamily = (path: string) => {
+  const normalized = path.replace(/\/+$/, "") || "/";
+  return normalized === "/projects" || normalized.startsWith("/project/");
+};
+
+watch(
+  () => route.path,
+  (to, from) => {
+    if (isProjectsFamily(to) && isProjectsFamily(from)) return;
+    scrollMainToTopOnMobile();
+  },
+);
 </script>
 
 <template>

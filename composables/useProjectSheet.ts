@@ -44,3 +44,27 @@ export function markProjectSheetStep(step: SheetStep, slug: string) {
 export function projectSheetStepFor(slug: string): SheetStep | null {
   return pendingStep?.slug === slug ? pendingStep.step : null;
 }
+
+/**
+ * Scroll offset of the projects board, carried across the board → dossier →
+ * board round trip.
+ *
+ * The board is a fresh component instance on each of those routes, so without
+ * this it remounts at the top: the backdrop jerks up to the first card as the
+ * scrim fades in, and dismissing the sheet drops you back at the top of the
+ * list instead of on the card you opened.
+ *
+ * Spent on read, and only ever written for a hop between the board and a
+ * dossier, so an arrival from anywhere else still starts at the top.
+ */
+let boardScroll: number | null = null;
+
+export function rememberBoardScroll(top: number) {
+  boardScroll = top;
+}
+
+export function takeBoardScroll(): number | null {
+  const top = boardScroll;
+  boardScroll = null;
+  return top;
+}
