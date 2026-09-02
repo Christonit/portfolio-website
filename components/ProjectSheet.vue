@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   openProjectSheet,
+  settleProjectPagerStep,
   SHEET_ENTERED,
   type SheetStep,
 } from "~/composables/useProjectSheet";
@@ -41,6 +42,7 @@ const step = computed(() => (enter === "instant" ? props.step : null));
 
 const panelRef = ref<HTMLElement | null>(null);
 const bodyRef = ref<HTMLElement | null>(null);
+const payloadRef = ref<HTMLElement | null>(null);
 let previouslyFocused: HTMLElement | null = null;
 
 /**
@@ -65,6 +67,10 @@ provide(
 // component's scope id, so match on a fragment rather than the whole name.
 const TRAVEL_ANIMATION = /sheet-(rise|zoom)-(in|out)/;
 
+// The payload's own travel, on the same principle: the slide is the step, the
+// fade only tidies up after it.
+const STEP_ANIMATION = /sheet-step-slide/;
+
 function isPanelTravel(event: AnimationEvent) {
   return (
     event.target === panelRef.value &&
@@ -73,6 +79,17 @@ function isPanelTravel(event: AnimationEvent) {
 }
 
 function onPanelAnimationEnd(event: AnimationEvent) {
+  // The pager holds the next step until this one has stopped moving, so the
+  // arrival has to say when that is. Nothing else can: the sheet the press
+  // started in has already unmounted by the time the slide lands.
+  if (
+    event.target === payloadRef.value &&
+    STEP_ANIMATION.test(event.animationName)
+  ) {
+    settleProjectPagerStep();
+    return;
+  }
+
   if (!isPanelTravel(event)) return;
   if (props.closing) {
     emit("closed");
@@ -98,6 +115,13 @@ onMounted(() => {
       : null;
   panelRef.value?.focus({ preventScroll: true });
   window.addEventListener("keydown", onKeydown, true);
+
+  // An arrival that doesn't animate — reduced motion, or a hop the pager
+  // didn't ask for — has no animationend to release the gate, so it releases
+  // it here instead of leaving the pager stuck until the backstop fires.
+  if (!payloadRef.value?.getAnimations?.().length) {
+    settleProjectPagerStep();
+  }
 
   // Nothing to wait for when the panel isn't animating — a pager step, or
   // reduced motion, where the CSS zeroes the animation out entirely.
@@ -189,7 +213,7 @@ watch(hudKey, (key) => {
           <!-- The payload moves on a pager step while the body stays put, so the
              travel is clipped by the scroll container rather than spilling
              over the panel border. -->
-          <div class="project-sheet__payload">
+          <div ref="payloadRef" class="project-sheet__payload">
             <slot />
           </div>
         </div>

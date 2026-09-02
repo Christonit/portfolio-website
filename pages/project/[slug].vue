@@ -5,8 +5,10 @@ import { isArticle } from "~/utils/projects";
 import { projectCanonicalUrl, projectWorkNode } from "~/utils/projectSchema";
 import {
   closeProjectSheet,
-  markProjectSheetStep,
+  projectPagerNeighbour,
   projectSheetStepFor,
+  useProjectPager,
+  type PagerDirection,
 } from "~/composables/useProjectSheet";
 import { formatProjectName, pageTitle } from "~/utils/site";
 
@@ -60,25 +62,44 @@ usePageSeo({
 
 const visitUrl = computed(() => current.value.link?.trim() || "");
 
-/* Articles live off-site, so the pager only walks the case-study pages. */
-const siblings = computed(() => projects.filter((item) => !isArticle(item)));
-const siblingIndex = computed(() =>
-  siblings.value.findIndex((item) => item.slug === current.value.slug),
+/* The rails read their neighbours off the pager itself, so the href a rail
+   advertises and the destination a click actually lands on can't drift apart. */
+const prevProject = computed(() =>
+  projectPagerNeighbour(current.value.slug, -1),
 );
-
-function siblingAt(offset: number) {
-  const list = siblings.value;
-  if (list.length < 2 || siblingIndex.value < 0) return null;
-  const total = list.length;
-  return list[(siblingIndex.value + offset + total) % total];
-}
-
-const prevProject = computed(() => siblingAt(-1));
-const nextProject = computed(() => siblingAt(1));
+const nextProject = computed(() =>
+  projectPagerNeighbour(current.value.slug, 1),
+);
 
 /* Which way the pager was heading when it sent us here, so the dossier can
    arrive from that side on the site's page-navigation motion. */
 const pagerStep = projectSheetStepFor(current.value.slug);
+
+/* The rails show the press for every control that steps the pager, including
+   the header keys — so a click on the rail has to announce itself the same
+   way rather than relying on :active, which the route change cuts short. */
+const { pressed: pagerPressed, step: stepPager } = useProjectPager();
+
+/**
+ * The rails stay real links — crawlable, and still openable in a new tab — but
+ * a plain click is handed to the pager rather than followed, because the href
+ * is only ever right for the dossier currently on screen. Spam it and the
+ * later presses are still aiming at a page you have already left; the pager is
+ * the thing that knows where "next" actually is by then.
+ */
+function onRailClick(event: MouseEvent, direction: PagerDirection) {
+  if (
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  ) {
+    return;
+  }
+  event.preventDefault();
+  stepPager(direction);
+}
 
 // ── Dismissal ─────────────────────────────────────────────────────
 // The sheet has to finish sliding away before the route swaps the board
@@ -167,23 +188,35 @@ onBeforeRouteLeave(async (to) => {
       <!-- Project navigation lives in the gutters either side of the panel,
            so stepping through the work never costs a scroll to the bottom. -->
       <template v-if="prevProject && nextProject" #nav="{ entering }">
-        <NuxtLink
-          :to="`/project/${prevProject.slug}`"
-          class="project-nav project-nav--prev"
-          :class="{ 'is-closing': closing, 'is-entering': entering }"
-          :aria-label="`Previous project: ${prevProject.name}`"
-          @click.exact="markProjectSheetStep('back', prevProject.slug)"
-        >
-          &lt;
+        <NuxtLink v-slot="{ href }" :to="`/project/${prevProject.slug}`" custom>
+          <a
+            :href="href"
+            class="project-nav project-nav--prev"
+            :class="{
+              'is-closing': closing,
+              'is-entering': entering,
+              'is-pressed': pagerPressed === 'prev',
+            }"
+            :aria-label="`Previous project: ${prevProject.name}`"
+            @click="onRailClick($event, 'prev')"
+          >
+            &lt;
+          </a>
         </NuxtLink>
-        <NuxtLink
-          :to="`/project/${nextProject.slug}`"
-          class="project-nav project-nav--next"
-          :class="{ 'is-closing': closing, 'is-entering': entering }"
-          :aria-label="`Next project: ${nextProject.name}`"
-          @click.exact="markProjectSheetStep('forward', nextProject.slug)"
-        >
-          &gt;
+        <NuxtLink v-slot="{ href }" :to="`/project/${nextProject.slug}`" custom>
+          <a
+            :href="href"
+            class="project-nav project-nav--next"
+            :class="{
+              'is-closing': closing,
+              'is-entering': entering,
+              'is-pressed': pagerPressed === 'next',
+            }"
+            :aria-label="`Next project: ${nextProject.name}`"
+            @click="onRailClick($event, 'next')"
+          >
+            &gt;
+          </a>
         </NuxtLink>
       </template>
     </ProjectSheet>
@@ -212,11 +245,25 @@ onBeforeRouteLeave(async (to) => {
   color: #fff;
   font-size: var(--text-lg);
   line-height: 1;
+  /* Carried as a variable because the desktop rails also hold a centring
+     translate, and the press has to compose with it rather than replace it. */
+  --nav-press-scale: 1;
+  transform: scale(var(--nav-press-scale));
   transition:
     background-color 150ms ease,
     border-color 150ms ease,
     color 150ms ease,
+    transform 100ms ease,
     opacity var(--sheet-out-fade-dur, 160ms) var(--sheet-fade-ease, ease);
+}
+
+/* The press flash, on the same clock and the same squeeze as the header keys.
+   It fires for a click on the rail and for the header keys and arrow keys
+   alike — whatever you press, the arrows that mean "next project" are what
+   move. */
+.project-nav.is-pressed {
+  --nav-press-scale: 0.9;
+  border-color: #fff;
 }
 
 /* The rails belong to the sheet's entrance, so they run on its clock and land
@@ -244,7 +291,7 @@ onBeforeRouteLeave(async (to) => {
   .project-nav {
     top: 50%;
     bottom: auto;
-    transform: translateY(-50%);
+    transform: translateY(-50%) scale(var(--nav-press-scale));
   }
 
   .project-nav--prev {
@@ -281,6 +328,11 @@ onBeforeRouteLeave(async (to) => {
   .project-nav.is-entering {
     transition: none;
     animation: none;
+  }
+
+  /* The press keeps its border change, drops the squeeze. */
+  .project-nav.is-pressed {
+    --nav-press-scale: 1;
   }
 }
 </style>

@@ -1,5 +1,9 @@
 <script setup lang="ts">
 // import { useAudio } from '~/composables/useAudio';
+import {
+  projectPagerIsWalkable,
+  useProjectPager,
+} from "~/composables/useProjectSheet";
 import { EMAIL_URL, LINKEDIN_URL } from "~/utils/site";
 
 const router = useRouter();
@@ -29,12 +33,36 @@ const usesInPageArrows = computed(() => {
   return path === "/" || path === "/projects" || path.startsWith("/project/");
 });
 
+/**
+ * With a dossier open, left/right steps to the next project rather than the
+ * next tab: the sheet is the thing you are looking at, so the arrows either
+ * side of it — the header keys and the physical arrow keys alike — should move
+ * through the work, not walk out of it.
+ *
+ * The step itself belongs to the pager, not to this layout: the rails inside
+ * the sheet drive the same motion, and the gate that keeps a spammed press
+ * from outrunning the animation only works if every control goes through it.
+ */
+const { step: stepProject } = useProjectPager();
+
+// What the header keys actually do from here, so the labels don't promise a
+// page change while the dossier is open.
+const arrowTarget = computed(() =>
+  normalizedPath.value.startsWith("/project/") && projectPagerIsWalkable
+    ? { prev: "Previous project", next: "Next project" }
+    : { prev: "Previous page", next: "Next page" },
+);
+
 // ── Tab / page navigation ────────────────────────────────────────
+// The header key only flashes for the presses it actually owns — a step
+// through the dossier pager lights the rails instead.
 function prevPage() {
+  if (stepProject("prev")) return;
   flash("ArrowLeft");
   router.push(pages[(currentIndex.value - 1 + pages.length) % pages.length]);
 }
 function nextPage() {
+  if (stepProject("next")) return;
   flash("ArrowRight");
   router.push(pages[(currentIndex.value + 1) % pages.length]);
 }
@@ -282,7 +310,7 @@ watch(
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Previous page (Left arrow)"
+          :aria-label="`${arrowTarget.prev} (Left arrow)`"
           aria-keyshortcuts="ArrowLeft"
           @click="prevPage"
         >
@@ -333,7 +361,7 @@ watch(
               ? 'opacity-100 scale-90'
               : 'opacity-60 hover:opacity-100'
           "
-          aria-label="Next page (Right arrow)"
+          :aria-label="`${arrowTarget.next} (Right arrow)`"
           aria-keyshortcuts="ArrowRight"
           @click="nextPage"
         >
