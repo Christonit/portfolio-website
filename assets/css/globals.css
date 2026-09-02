@@ -64,6 +64,14 @@
        wins over this var's utility — page titles use `.hud-title`. */
     --text-display: clamp(2.4rem, 6vw, 3.4rem); /* home hero */
 
+    /* ── Dossier geometry ───────────────────────────────────────
+       Shared by the sheet panel (ProjectSheet) and the project pager
+       rails (ProjectDossierOverlay), which centre themselves in the
+       gutters either side of it. Keeping both off one pair of tokens is
+       what stops the rails drifting out of the gutters. */
+    --dossier-max-w: 1160px;
+    --dossier-gutter: 5rem;
+
     /* transitions-dev motion tokens */
     --duration-stagger: 40ms;
     --duration-micro: 80ms;
@@ -139,28 +147,18 @@
     font-size: var(--text-xs);
   }
 
-  /* ── Large-display scaling ──────────────────────────────────
-     The HUD is designed around a Full HD (1920×1080) canvas using
-     fixed-pixel sizing. On larger native displays this leaves big
-     empty gutters, so we uniformly zoom the whole UI to preserve the
-     same proportions. 4K (3840px) = exactly 2× Full HD. */
-  @media (min-width: 2560px) {
-    html {
-      zoom: 1.33;
-    }
-  }
+  /* ── Large displays ─────────────────────────────────────────
+     There is deliberately no scaling step above the desktop breakpoint.
+     The HUD is drawn at a fixed pixel size and the laptop layout — same
+     type scale, same max widths — simply holds all the way up, centred,
+     with the extra room spending itself on gutters.
 
-  @media (min-width: 3200px) {
-    html {
-      zoom: 1.6;
-    }
-  }
-
-  @media (min-width: 3840px) {
-    html {
-      zoom: 2;
-    }
-  }
+     This used to be a root `zoom` (1.33 / 1.6 / 2×) that scaled the whole
+     UI in step with the display. It was removed because `zoom` rescales
+     lengths and the containing block of fixed-position elements but NOT
+     `vw`, which silently broke every bit of viewport centring math built
+     on `calc(100vw - …)`. If a scale step is ever wanted back here, add it
+     as tokens (type scale, --dossier-max-w) rather than a root zoom. */
 
   ::-webkit-scrollbar {
     width: 2px;

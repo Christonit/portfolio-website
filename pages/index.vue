@@ -283,7 +283,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .home-rail {
   width: min(800px, calc(100% - 32px));
   margin-inline: auto;
-  padding: 24px 0 72px;
+  /* Top gap matches the hero's bottom gap (.featured-work margin-top). */
+  padding: 40px 0 72px;
 }
 
 .identity-panel {
@@ -431,7 +432,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .featured-work {
-  margin-top: 32px;
+  margin-top: 40px;
 }
 
 .featured-grid {
@@ -658,7 +659,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 @media (max-width: 639px) {
   .home-rail {
     width: min(100% - 24px, 800px);
-    padding-top: 10px;
+    padding-top: 28px;
   }
 
   .identity-panel {
