@@ -274,7 +274,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .home-rail {
   width: min(800px, calc(100% - 32px));
   margin-inline: auto;
-  padding: 12px 0 72px;
+  padding: 24px 0 72px;
 }
 
 .identity-panel {
@@ -422,7 +422,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .featured-work {
-  margin-top: 40px;
+  margin-top: 32px;
 }
 
 .featured-grid {
