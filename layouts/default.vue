@@ -171,6 +171,55 @@ const isActive = (path: string) => {
   return normalizedPath.value === path;
 };
 
+/**
+ * The link you just clicked goes dark for the two or three frames between the
+ * click and the incoming page resolving. Neither half of its lit state
+ * survives that window: the view transition's snapshot sits under the pointer
+ * instead of the anchor, so `:hover` stops matching, and the route hasn't
+ * changed yet, so the active styles haven't landed either. The transition then
+ * freezes that unlit frame on screen for as long as the page takes to resolve,
+ * and the label reads as blinking out and back — the `transition-colors` fade
+ * that would normally soften it runs invisibly beneath the snapshot.
+ *
+ * Light the target from the click itself. Every capture of the header — the
+ * one taken before the swap and the one taken after — then paints that link
+ * the same way, so there is no frame left to blink.
+ */
+const pendingPath = ref<string | null>(null);
+const isPending = (path: string) => pendingPath.value === path;
+
+// A modified click opens a tab and leaves this document where it is, and an
+// off-site href never comes back through the router — neither would ever clear
+// the pending state, so neither sets it.
+function markPending(event: MouseEvent, path: string) {
+  if (event.button !== 0) return;
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  if (!path.startsWith("/")) return;
+  pendingPath.value = path;
+}
+
+// afterEach also fires for navigations that fail or get redirected, so the
+// pending link can't stay lit after a hop that never lands. The route ref has
+// already moved by the time it runs, so the active styles take over in the
+// same render that drops the pending ones.
+router.afterEach(() => {
+  pendingPath.value = null;
+});
+
+// A pending link wears the hover look rather than the active one: the underline
+// still belongs to the page you are on until the new one is actually up.
+function navLinkTone(path: string) {
+  if (isActive(path)) return "text-white after:bg-white";
+  if (isPending(path)) return "text-white bg-[#1f1f1f] after:bg-transparent";
+  return "text-[#919191] hover:text-white hover:bg-[#1f1f1f] after:bg-transparent";
+}
+
+function mobileNavTone(path: string) {
+  if (isActive(path)) return "bg-white text-black";
+  if (isPending(path)) return "text-white bg-[#1f1f1f]";
+  return "text-[#919191] hover:text-white hover:bg-[#1f1f1f]";
+}
+
 const mainRef = ref<HTMLElement | null>(null);
 
 function scrollMainToTopOnMobile() {
@@ -252,10 +301,9 @@ watch(() => route.path, scrollMainToTopOnMobile);
               :class="[
                 'relative inline-flex h-14 items-center px-4 text-label-ui tracking-[0.2em] uppercase transition-colors duration-150',
                 'after:absolute after:bottom-0 after:left-4 after:right-[calc(1rem+0.2em)] after:h-px',
-                isActive(item.path)
-                  ? 'text-white after:bg-white'
-                  : 'text-[#919191] hover:text-white hover:bg-[#1f1f1f] after:bg-transparent',
+                navLinkTone(item.path),
               ]"
+              @click="markPending($event, item.path)"
             >
               {{ item.label }}
             </NuxtLink>
@@ -382,10 +430,9 @@ watch(() => route.path, scrollMainToTopOnMobile);
         :to="item.path"
         :class="[
           'group flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-150',
-          isActive(item.path)
-            ? 'bg-white text-black'
-            : 'text-[#919191] hover:text-white hover:bg-[#1f1f1f]',
+          mobileNavTone(item.path),
         ]"
+        @click="markPending($event, item.path)"
       >
         <img
           v-if="item.iconSrc"
@@ -395,7 +442,9 @@ watch(() => route.path, scrollMainToTopOnMobile);
           :class="
             isActive(item.path)
               ? 'brightness-0'
-              : 'brightness-0 invert opacity-60 group-hover:opacity-100'
+              : isPending(item.path)
+                ? 'brightness-0 invert opacity-100'
+                : 'brightness-0 invert opacity-60 group-hover:opacity-100'
           "
           draggable="false"
         />
