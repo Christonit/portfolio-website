@@ -2,6 +2,7 @@ import type { InjectionKey, Ref } from "vue";
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
 import { isArticle } from "~/utils/projects";
+import { dossierPagerNavigation } from "~/composables/useDossierBackground";
 
 /**
  * Whether a dossier sheet is already on screen. The pager remounts the page
@@ -223,7 +224,8 @@ export function useProjectPager() {
       direction === "next" ? "forward" : "back",
       destination.slug,
     );
-    router.push(`/project/${destination.slug}/`);
+    const navigation = dossierPagerNavigation(destination.slug);
+    router.replace(navigation.to);
     return true;
   }
 

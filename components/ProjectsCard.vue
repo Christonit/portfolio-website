@@ -180,11 +180,18 @@ const ariaLabel = computed(() => {
 
       <div class="flex flex-1 flex-col gap-4 px-5 pb-5 pt-5">
         <div class="flex flex-col gap-2">
-          <h2
-            class="text-title-ui line-clamp-2 uppercase tracking-tight text-white"
-          >
-            {{ project.name }}
-          </h2>
+          <div class="flex min-w-0 items-baseline justify-between gap-3">
+            <h2
+              class="text-title-ui line-clamp-2 uppercase tracking-tight text-white"
+            >
+              {{ project.name }}
+            </h2>
+            <span
+              class="text-label-data shrink-0 tabular-nums tracking-widest text-[#474747]"
+            >
+              {{ counter }}
+            </span>
+          </div>
           <p
             class="text-body-compact line-clamp-2 text-[#919191]"
           >
@@ -201,22 +208,12 @@ const ariaLabel = computed(() => {
             </span>
           </li>
         </ul>
-
-        <div class="mt-auto flex flex-col gap-3">
-          <div class="flex items-end justify-between gap-3 pt-1">
-            <span
-              class="text-label-data inline-flex items-center gap-1.5 uppercase tracking-[0.16em] text-white"
-            >
-              {{ ctaLabel }}
-            </span>
-            <span
-              class="text-label-data tabular-nums tracking-widest text-[#474747]"
-            >
-              {{ counter }}
-            </span>
-          </div>
-        </div>
       </div>
+
+      <span class="projects-card__cta text-label-data uppercase">
+        {{ ctaLabel }}
+        <span class="projects-card__arrow" aria-hidden="true">&rarr;</span>
+      </span>
     </template>
   </NuxtLink>
 </template>
@@ -268,11 +265,39 @@ const ariaLabel = computed(() => {
   color-scheme: light;
 }
 
+/* Same bottom strip the featured cards on the home page wear: full-bleed to
+   the card edge, lit by the card's own hover state since the card is the link. */
+.projects-card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  border-top: 1px solid #262626;
+  background: rgba(255, 255, 255, 0.025);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.projects-card.is-focused .projects-card__cta,
+.projects-card:hover .projects-card__cta,
+.projects-card:focus-visible .projects-card__cta {
+  border-color: rgba(103, 245, 122, 0.34);
+  background: rgba(103, 245, 122, 0.1);
+  color: var(--color-signal);
+}
+
 .projects-card__arrow {
   display: inline-block;
   transition: transform var(--tt-in-dur, 150ms) var(--tt-in-ease, ease-out);
 }
 
+.projects-card.is-focused .projects-card__arrow,
 .projects-card:hover .projects-card__arrow,
 .projects-card:focus-visible .projects-card__arrow {
   transform: translateX(4px);
@@ -280,8 +305,15 @@ const ariaLabel = computed(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .projects-card,
+  .projects-card__cta,
   .projects-card__arrow {
     transition: none !important;
+  }
+
+  .projects-card.is-focused .projects-card__arrow,
+  .projects-card:hover .projects-card__arrow,
+  .projects-card:focus-visible .projects-card__arrow {
+    transform: none;
   }
 }
 </style>

@@ -7,9 +7,10 @@ import {
 } from "~/composables/useProjectSheet";
 
 /**
- * Modal shell for the project dossier: a near-fullscreen panel over the
- * projects board. It never runs edge to edge — the dim frame of board around
- * it, and the scrim you can click, are what say the page is still back there.
+ * Modal shell for the project dossier: a near-fullscreen panel over whichever
+ * page you opened it from, which keeps rendering underneath. It never runs edge
+ * to edge — the dim frame of that page around it, and the scrim you can click,
+ * are what say it is still back there.
  *
  * Teleported to document.body so position:fixed is viewport-relative. Inside
  * hud-page, Safari treats overflow + view-transition-name as a containing
@@ -43,7 +44,6 @@ const step = computed(() => (enter === "instant" ? props.step : null));
 const panelRef = ref<HTMLElement | null>(null);
 const bodyRef = ref<HTMLElement | null>(null);
 const payloadRef = ref<HTMLElement | null>(null);
-let previouslyFocused: HTMLElement | null = null;
 
 /**
  * Entrance/dismissal bookkeeping, driven off the panel's own animationend
@@ -109,10 +109,6 @@ function onKeydown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-  previouslyFocused =
-    document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
   panelRef.value?.focus({ preventScroll: true });
   window.addEventListener("keydown", onKeydown, true);
 
@@ -140,7 +136,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearTimeout(enteredFallback);
   window.removeEventListener("keydown", onKeydown, true);
-  previouslyFocused?.focus?.({ preventScroll: true });
 });
 
 // The HUD arrow pad scrolls the dossier now that the sheet, not the page,

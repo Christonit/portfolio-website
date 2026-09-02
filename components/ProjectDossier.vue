@@ -104,6 +104,13 @@ async function expandDemo() {
   const el = demoVideo.value as WebkitVideo | null;
   if (!el) return;
   try {
+    // Enter reaches this both ways round, so it has to come back out again.
+    // The MAX button can only ever expand — it is not painted in fullscreen —
+    // but the key is pressed against a reel that is already maximised.
+    if (document.fullscreenElement) {
+      await document.exitFullscreen?.();
+      return;
+    }
     if (typeof el.webkitEnterFullscreen === "function") {
       el.webkitEnterFullscreen();
       return;
@@ -114,6 +121,24 @@ async function expandDemo() {
   } catch {
     /* Fullscreen can be blocked outside a user gesture. */
   }
+}
+
+// Enter means "open what you are looking at": on the board that is the card
+// under the focus ring, and in here it is the demo reel. Gated on the sheet
+// having settled so a held Enter — the one that opened the dossier, repeating
+// — can't carry straight through into a fullscreen nobody asked for.
+function onKeydown(event: KeyboardEvent) {
+  if (event.key !== "Enter" || !hasVideo.value || !sheetEntered.value) return;
+  const target = event.target as HTMLElement | null;
+  if (
+    target?.closest(
+      'a, button, input, textarea, select, [contenteditable="true"]',
+    )
+  ) {
+    return;
+  }
+  event.preventDefault();
+  void expandDemo();
 }
 
 function armVideo(el: HTMLVideoElement) {
@@ -167,9 +192,15 @@ watch(hudKey, (key) => {
 watch(() => props.project.slug, startDemoIfReady);
 watch(sheetEntered, startDemoIfReady);
 
-onMounted(startDemoIfReady);
+onMounted(() => {
+  window.addEventListener("keydown", onKeydown);
+  startDemoIfReady();
+});
 
-onBeforeUnmount(pauseDemo);
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", onKeydown);
+  pauseDemo();
+});
 </script>
 
 <template>

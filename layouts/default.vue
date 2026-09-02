@@ -1,6 +1,12 @@
 <script setup lang="ts">
 // import { useAudio } from '~/composables/useAudio';
 import {
+  dossierControlsAreBlocked,
+  isDossierPath,
+  useDossierBackground,
+  useDossierClosing,
+} from "~/composables/useDossierBackground";
+import {
   projectPagerIsWalkable,
   useProjectPager,
 } from "~/composables/useProjectSheet";
@@ -19,7 +25,25 @@ const playHaptic = () => {
 
 const pages = ["/", "/projects", "/bio"];
 
-const normalizedPath = computed(() => route.path.replace(/\/+$/, "") || "/");
+const background = useDossierBackground();
+const dossierClosing = useDossierClosing();
+
+/* The dossier URL when a sheet is up, so the header can tell "a modal is
+   open" from "we are on the projects board". */
+const sheetPath = computed(() =>
+  isDossierPath(route.path) ? route.path : null,
+);
+
+/**
+ * The page the header is really showing: the one under the sheet when a
+ * dossier is open over it. Opening a project from the home page must not slide
+ * the underline over to PROJECTS — you have not left home, a panel opened on
+ * top of it. A cold load of a dossier URL has no page underneath, so it falls
+ * back to the dossier's own path and lights PROJECTS as before.
+ */
+const normalizedPath = computed(
+  () => (background.value?.path ?? route.path).replace(/\/+$/, "") || "/",
+);
 
 const currentIndex = computed(() => {
   if (normalizedPath.value.startsWith("/project/"))
@@ -30,7 +54,12 @@ const currentIndex = computed(() => {
 
 const usesInPageArrows = computed(() => {
   const path = normalizedPath.value;
-  return path === "/" || path === "/projects" || path.startsWith("/project/");
+  return (
+    path === "/" ||
+    path === "/projects" ||
+    path.startsWith("/project/") ||
+    sheetPath.value !== null
+  );
 });
 
 /**
@@ -48,23 +77,82 @@ const { step: stepProject } = useProjectPager();
 // What the header keys actually do from here, so the labels don't promise a
 // page change while the dossier is open.
 const arrowTarget = computed(() =>
-  normalizedPath.value.startsWith("/project/") && projectPagerIsWalkable
+  sheetPath.value && projectPagerIsWalkable
     ? { prev: "Previous project", next: "Next project" }
     : { prev: "Previous page", next: "Next page" },
 );
 
 // ── Tab / page navigation ────────────────────────────────────────
+/**
+ * One tab hop at a time.
+ *
+ * `currentIndex` reads the route, and the route only moves once the incoming
+ * page has resolved — so a second press inside that window stepped off the
+ * same "current" as the first. Both aimed at the same tab, and the router
+ * dropped the second as a duplicate: press right twice quickly from ABOUT and
+ * you stayed on ABOUT instead of wrapping round to HOME, with only the
+ * re-push's flicker to show for it. Same failure, and the same gate, as the
+ * dossier pager in `useProjectSheet`.
+ *
+ * Presses that land mid-hop keep exactly one, latest wins, so holding an arrow
+ * walks the tabs at the speed the swap can carry and letting go stops one hop
+ * later rather than playing out a run you can no longer call back.
+ */
+const TAB_HOP_TIMEOUT_MS = 900;
+let tabHopInFlight = false;
+let tabHopTimer: ReturnType<typeof setTimeout> | undefined;
+let queuedTabHop: -1 | 1 | null = null;
+
+function commitTabHop(offset: -1 | 1) {
+  tabHopInFlight = true;
+  clearTimeout(tabHopTimer);
+  tabHopTimer = setTimeout(settleTabHop, TAB_HOP_TIMEOUT_MS);
+  router.push(
+    pages[(currentIndex.value + offset + pages.length) % pages.length],
+  );
+}
+
+/**
+ * Opens the gate once the page has rendered — the first moment `currentIndex`
+ * reports where we actually are, which is what the queued hop steps from. The
+ * timer above is the backstop for the arrivals that never fire `page:finish`.
+ */
+function settleTabHop() {
+  if (!tabHopInFlight) return;
+  clearTimeout(tabHopTimer);
+  tabHopInFlight = false;
+
+  const queued = queuedTabHop;
+  queuedTabHop = null;
+  if (queued) commitTabHop(queued);
+}
+
+function stepTab(offset: -1 | 1) {
+  if (tabHopInFlight) {
+    queuedTabHop = offset;
+    return;
+  }
+  commitTabHop(offset);
+}
+
+const stopTabHopSettle = useNuxtApp().hook("page:finish", settleTabHop);
+onUnmounted(() => stopTabHopSettle());
+
 // The header key only flashes for the presses it actually owns — a step
-// through the dossier pager lights the rails instead.
+// through the dossier pager lights the rails instead. It flashes for a press
+// the gate absorbs, though: a control that looks dead is worse than one that
+// answers a beat late.
 function prevPage() {
+  if (dossierControlsAreBlocked(dossierClosing.value)) return;
   if (stepProject("prev")) return;
   flash("ArrowLeft");
-  router.push(pages[(currentIndex.value - 1 + pages.length) % pages.length]);
+  stepTab(-1);
 }
 function nextPage() {
+  if (dossierControlsAreBlocked(dossierClosing.value)) return;
   if (stepProject("next")) return;
   flash("ArrowRight");
-  router.push(pages[(currentIndex.value + 1) % pages.length]);
+  stepTab(1);
 }
 
 // ── Pressed-key flash for visual feedback ────────────────────────
@@ -87,6 +175,11 @@ function emitHudKey(key: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight") {
 
 // ── Global keyboard handler ──────────────────────────────────────
 function onKeydown(e: KeyboardEvent) {
+  if (dossierControlsAreBlocked(dossierClosing.value)) {
+    if (e.key.startsWith("Arrow") || e.key === "Escape") e.preventDefault();
+    return;
+  }
+
   const tag = (e.target as HTMLElement)?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA") return;
 
@@ -257,22 +350,22 @@ function scrollMainToTopOnMobile() {
   });
 }
 
-// Below xl this element is the scroller for the projects board, and it outlives
-// the route swap that opens a dossier over it. Resetting it there would jerk
-// the backdrop up to the first card on the way in and drop you at the top of
-// the list on the way out — the board and its dossiers are one place.
+// Below xl this element is the scroller for the page under the sheet, and it
+// outlives a dossier opening over it. Watching the path *under* the sheet is
+// what keeps it still: opening or dismissing a dossier doesn't move it, so the
+// backdrop can't jerk to the top on the way in or drop you there on the way
+// out. A cold load of a dossier still reports the dossier's own path, so the
+// board it draws as a backdrop and the real board it dismisses to count as one
+// place.
 const isProjectsFamily = (path: string) => {
   const normalized = path.replace(/\/+$/, "") || "/";
   return normalized === "/projects" || normalized.startsWith("/project/");
 };
 
-watch(
-  () => route.path,
-  (to, from) => {
-    if (isProjectsFamily(to) && isProjectsFamily(from)) return;
-    scrollMainToTopOnMobile();
-  },
-);
+watch(normalizedPath, (to, from) => {
+  if (isProjectsFamily(to) && isProjectsFamily(from)) return;
+  scrollMainToTopOnMobile();
+});
 </script>
 
 <template>
@@ -288,6 +381,7 @@ watch(
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
     <nav
       class="site-nav sticky top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10"
+      :inert="dossierClosing || undefined"
     >
       <!-- Logo: always visible -->
       <NuxtLink
@@ -312,6 +406,7 @@ watch(
           "
           :aria-label="`${arrowTarget.prev} (Left arrow)`"
           aria-keyshortcuts="ArrowLeft"
+          :disabled="dossierClosing"
           @click="prevPage"
         >
           <kbd
@@ -363,6 +458,7 @@ watch(
           "
           :aria-label="`${arrowTarget.next} (Right arrow)`"
           aria-keyshortcuts="ArrowRight"
+          :disabled="dossierClosing"
           @click="nextPage"
         >
           <kbd
@@ -466,6 +562,7 @@ watch(
     <!-- ── MOBILE BOTTOM NAVIGATION ───────────────────────── -->
     <nav
       class="xl:hidden fixed bottom-0 inset-x-0 z-[1000] flex h-16 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.6)]"
+      :inert="dossierClosing || undefined"
     >
       <NuxtLink
         v-for="item in mobileNavItems"
