@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
+import {
+  rememberBoardScroll,
+  takeBoardScroll,
+} from "~/composables/useProjectSheet";
 
 /**
  * The selected-work grid. Owns the arrow-key focus ring when it is the page
- * you are on, and renders inert when it is only sitting behind an open
- * dossier sheet. Cards never reveal on their own — the page transition
+ * you are on, and renders inert and unmarked when it is only sitting behind an
+ * open dossier sheet. Cards never reveal on their own — the page transition
  * already carries them in.
  */
 const props = withDefaults(
   defineProps<{
     interactive?: boolean;
-    activeSlug?: string | null;
   }>(),
   {
     interactive: true,
-    activeSlug: null,
   },
 );
 
@@ -25,16 +27,9 @@ const totalWork = projects.length;
 const hudKey = useHudNav();
 const focusedIndex = ref<number | null>(null);
 const cardRefs = ref<(HTMLElement | null)[]>([]);
-const columns = ref(1);
 
 function bindCard(el: Element | null, i: number) {
   cardRefs.value[i] = el instanceof HTMLElement ? el : null;
-}
-
-function readColumns() {
-  if (typeof window === "undefined") return 1;
-  if (window.innerWidth >= 768) return 2;
-  return 1;
 }
 
 function scrollCardIntoView(i: number) {
@@ -47,34 +42,32 @@ function activateCard(i: number) {
   link?.click();
 }
 
-watch(hudKey, (key) => {
-  if (!key || !props.interactive) return;
-
-  const cols = columns.value;
-  const last = totalWork - 1;
-
+// One step per press, in reading order — down/right walk the grid left to
+// right and wrap onto the next row, matching the home page rail. Row-wise
+// jumps would skip a card every time the grid is two columns wide.
+function moveCardFocus(direction: number) {
   if (focusedIndex.value === null) {
-    focusedIndex.value = 0;
-    scrollCardIntoView(0);
-    return;
-  }
-
-  const i = focusedIndex.value;
-
-  if (key === "ArrowRight") {
-    focusedIndex.value = Math.min(i + 1, last);
-  } else if (key === "ArrowLeft") {
-    focusedIndex.value = Math.max(i - 1, 0);
-  } else if (key === "ArrowDown") {
-    focusedIndex.value = Math.min(i + cols, last);
-  } else if (key === "ArrowUp") {
-    focusedIndex.value = Math.max(i - cols, 0);
+    focusedIndex.value = direction > 0 ? 0 : totalWork - 1;
+  } else {
+    focusedIndex.value = Math.min(
+      Math.max(focusedIndex.value + direction, 0),
+      totalWork - 1,
+    );
   }
 
   scrollCardIntoView(focusedIndex.value);
+}
+
+watch(hudKey, (key) => {
+  if (!key || !props.interactive) return;
+  if (key === "ArrowRight" || key === "ArrowDown") moveCardFocus(1);
+  if (key === "ArrowLeft" || key === "ArrowUp") moveCardFocus(-1);
 });
 
 function onKeydown(e: KeyboardEvent) {
+  // Checked here rather than only at mount: the board stays mounted while a
+  // dossier sheet is open over it, and Enter belongs to the sheet then.
+  if (!props.interactive) return;
   const tag = (e.target as HTMLElement)?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA") return;
   if (e.key !== "Enter" || focusedIndex.value === null) return;
@@ -84,19 +77,49 @@ function onKeydown(e: KeyboardEvent) {
 
 let cleanupListeners: (() => void) | undefined;
 
+// ── Scroll continuity across the dossier sheet ────────────────────
+// Opening a project from the board no longer costs a remount — <NuxtPage>
+// holds the board in place under the sheet — but a cold load of a dossier URL
+// still renders its own backdrop copy of this component, and dismissing that
+// one swaps it for the real /projects board. Carry the offset across that hop
+// so the dismissal lands on the card you were looking at rather than at the
+// top of the list. Only the board ↔ dossier hop is carried over; arriving from
+// anywhere else still starts at the top.
+const railRef = ref<HTMLElement | null>(null);
+const router = useRouter();
+
+function isProjectsFamily(path: string) {
+  const normalized = path.replace(/\/+$/, "") || "/";
+  return normalized === "/projects" || normalized.startsWith("/project/");
+}
+
 onMounted(() => {
+  const saved = takeBoardScroll();
+  if (saved) {
+    railRef.value?.scrollTo({ top: saved, behavior: "auto" });
+    // Card previews size themselves from their image's natural ratio, so the
+    // rail can grow taller a frame or two after mount. Re-apply once that has
+    // settled or a restore near the bottom of the list falls short.
+    requestAnimationFrame(() => {
+      railRef.value?.scrollTo({ top: saved, behavior: "auto" });
+    });
+  }
+
   if (!props.interactive) return;
 
-  columns.value = readColumns();
-  const onResize = () => {
-    columns.value = readColumns();
-  };
-  window.addEventListener("resize", onResize);
   window.addEventListener("keydown", onKeydown);
   cleanupListeners = () => {
-    window.removeEventListener("resize", onResize);
     window.removeEventListener("keydown", onKeydown);
   };
+});
+
+// Before unmount, not after: the element is still in the document and the
+// router has already resolved where we are headed.
+onBeforeUnmount(() => {
+  const top = railRef.value?.scrollTop ?? 0;
+  if (top > 0 && isProjectsFamily(router.currentRoute.value.path)) {
+    rememberBoardScroll(top);
+  }
 });
 
 onUnmounted(() => {
@@ -106,6 +129,7 @@ onUnmounted(() => {
 
 <template>
   <div
+    ref="railRef"
     class="projects-rail flex flex-col gap-8 py-5 pb-24 xl:h-full xl:overflow-y-auto"
   >
     <header class="flex max-w-3xl flex-col gap-3 pt-2">
@@ -129,9 +153,7 @@ onUnmounted(() => {
             :project="project"
             :index="i"
             :total="totalWork"
-            :focused="
-              interactive ? focusedIndex === i : activeSlug === project.slug
-            "
+            :focused="interactive && focusedIndex === i"
           />
         </li>
       </ul>

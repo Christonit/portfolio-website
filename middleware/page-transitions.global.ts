@@ -37,18 +37,24 @@ export default defineNuxtRouteMiddleware((to, from) => {
     return;
   }
 
-  // Pager hop between two dossiers (nav-dir "none"): the sheet already
-  // plays its own slide/fade on the payload, and CSS deliberately gives
-  // ::view-transition-old/new(hud-page) `animation: none` here, so the
-  // native view transition buys nothing visually. What it does buy is a
-  // browser-owned snapshot of `hud-page` (with the mobile sheet panel
-  // painted above the header via a descendant z-index) getting composited
-  // against `site-nav`'s independently-captured snapshot — two separate
-  // layers whose relative order isn't guaranteed to preserve that z-index
-  // relationship, which is what flashes the header for a frame. Skipping
-  // the view transition for this hop sidesteps that class of bug entirely
-  // rather than chasing its stacking order.
-  if (isProjectDetail(to.path) && isProjectDetail(from.path)) {
+  // Any hop that touches a dossier — opening the sheet, dismissing it, or
+  // stepping the pager between two of them — is animated by ProjectSheet, not
+  // by the page swap (nav-dir "none" gives ::view-transition-old/new(hud-page)
+  // `animation: none`). A view transition here buys nothing and costs the two
+  // things that make the sheet look chopped:
+  //
+  //  1. The browser holds a frozen snapshot over the live DOM until the
+  //     transition's animations finish, and Nuxt only ends it on `page:finish`.
+  //     The sheet mounts and starts its 400ms entrance *underneath* that
+  //     snapshot, so the first frames are never painted — the panel pops in
+  //     mid-flight instead of rising from the bottom.
+  //  2. `hud-page` and `site-nav` are captured as independent groups, and the
+  //     mobile sheet panel (a descendant of hud-page that covers the header)
+  //     can't rely on its z-index surviving that split — which is what flashes
+  //     the header for a frame.
+  //
+  // Both disappear if the swap is a plain hard cut under the sheet.
+  if (isProjectDetail(to.path) || isProjectDetail(from.path)) {
     to.meta.viewTransition = false;
   }
 });

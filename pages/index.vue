@@ -2,6 +2,7 @@
 import type { FeaturedSkill } from "~/components/StackIndex.vue";
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
+import { useDossierOpen } from "~/composables/useDossierBackground";
 import {
   isArticle,
   isExternalProjectHref,
@@ -56,6 +57,12 @@ const featuredSkills: FeaturedSkill[] = [
   { iconSrc: "/images/css.svg", name: "CSS / TAILWIND" },
 ];
 
+/* The home page keeps rendering under an open dossier — that is what makes the
+   sheet a sheet — so while one is up it stops answering: `inert` takes the
+   pointer and focus targets, and these guards take the keys, which `inert`
+   never sees because the listeners are on `window`. */
+const sheetIsUp = useDossierOpen();
+
 const focusedCard = ref<number | null>(null);
 const cardRefs = ref<(HTMLElement | null)[]>([]);
 const portraitHover = ref(false);
@@ -85,11 +92,13 @@ function moveCardFocus(direction: number) {
 }
 
 watch(hudKey, (key) => {
+  if (sheetIsUp.value) return;
   if (key === "ArrowRight" || key === "ArrowDown") moveCardFocus(1);
   if (key === "ArrowLeft" || key === "ArrowUp") moveCardFocus(-1);
 });
 
 function onKeydown(event: KeyboardEvent) {
+  if (sheetIsUp.value) return;
   if (event.key !== "Enter" || focusedCard.value === null) return;
   const target = event.target as HTMLElement | null;
   if (
@@ -109,7 +118,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 </script>
 
 <template>
-  <div class="home-console">
+  <div class="home-console" :inert="sheetIsUp || undefined">
     <div class="home-rail">
       <section
         id="hero-banner"

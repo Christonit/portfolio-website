@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import { buildProjectGallery, type GalleryFrame } from "~/utils/projectGallery";
+import { useSheetEntered } from "~/composables/useProjectSheet";
 
 /**
  * The dossier payload — demo reel or image gallery, then the written record.
@@ -9,6 +10,15 @@ import { buildProjectGallery, type GalleryFrame } from "~/utils/projectGallery";
 const props = defineProps<{ project: ProjectPreview }>();
 
 const hudKey = useHudNav();
+
+/**
+ * Fetching, decoding and starting a demo reel is the most expensive thing this
+ * component does, and on open it lands squarely in the middle of the sheet's
+ * entrance — the single biggest source of dropped frames there. The poster
+ * still paints immediately; only playback waits for the panel to settle.
+ * Outside a sheet this reads true from the first tick and nothing is deferred.
+ */
+const sheetEntered = useSheetEntered();
 
 const frames = ref<GalleryFrame[]>([]);
 const videoFailed = ref(false);
@@ -94,6 +104,13 @@ async function expandDemo() {
   const el = demoVideo.value as WebkitVideo | null;
   if (!el) return;
   try {
+    // Enter reaches this both ways round, so it has to come back out again.
+    // The MAX button can only ever expand — it is not painted in fullscreen —
+    // but the key is pressed against a reel that is already maximised.
+    if (document.fullscreenElement) {
+      await document.exitFullscreen?.();
+      return;
+    }
     if (typeof el.webkitEnterFullscreen === "function") {
       el.webkitEnterFullscreen();
       return;
@@ -104,6 +121,24 @@ async function expandDemo() {
   } catch {
     /* Fullscreen can be blocked outside a user gesture. */
   }
+}
+
+// Enter means "open what you are looking at": on the board that is the card
+// under the focus ring, and in here it is the demo reel. Gated on the sheet
+// having settled so a held Enter — the one that opened the dossier, repeating
+// — can't carry straight through into a fullscreen nobody asked for.
+function onKeydown(event: KeyboardEvent) {
+  if (event.key !== "Enter" || !hasVideo.value || !sheetEntered.value) return;
+  const target = event.target as HTMLElement | null;
+  if (
+    target?.closest(
+      'a, button, input, textarea, select, [contenteditable="true"]',
+    )
+  ) {
+    return;
+  }
+  event.preventDefault();
+  void expandDemo();
 }
 
 function armVideo(el: HTMLVideoElement) {
@@ -137,9 +172,14 @@ function onCanPlay() {
 async function startDemoIfReady() {
   await nextTick();
   const el = demoVideo.value;
-  if (!el || !hasVideo.value) return;
+  if (!el || !hasVideo.value || !sheetEntered.value) return;
   armVideo(el);
-  if (prefersReducedMotion()) return;
+  // Playback is script-driven now, so reduced motion has to offer a way in
+  // rather than just declining to start: otherwise the reel is a dead poster.
+  if (prefersReducedMotion()) {
+    needsGesture.value = true;
+    return;
+  }
   if (el.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) el.load();
   void playDemo();
 }
@@ -150,10 +190,17 @@ watch(hudKey, (key) => {
 });
 
 watch(() => props.project.slug, startDemoIfReady);
+watch(sheetEntered, startDemoIfReady);
 
-onMounted(startDemoIfReady);
+onMounted(() => {
+  window.addEventListener("keydown", onKeydown);
+  startDemoIfReady();
+});
 
-onBeforeUnmount(pauseDemo);
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", onKeydown);
+  pauseDemo();
+});
 </script>
 
 <template>
@@ -173,17 +220,19 @@ onBeforeUnmount(pauseDemo);
             : 'project-gallery-stage--images overflow-hidden'
         "
       >
+        <!-- No `autoplay`: playback is started from script once the sheet has
+             finished its entrance, and the attribute would pull the fetch and
+             the first decode back into the middle of it. -->
         <video
           v-if="hasVideo"
           ref="demoVideo"
           class="project-demo-video"
           :src="demoSrc"
           :poster="project.image"
-          autoplay
           muted
           loop
           playsinline
-          preload="auto"
+          :preload="sheetEntered ? 'auto' : 'none'"
           :aria-label="`${project.name} product demo`"
           @canplay="onCanPlay"
           @playing="needsGesture = false"

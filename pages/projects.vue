@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
+import { useDossierOpen } from "~/composables/useDossierBackground";
 import projectsJson from "~/data/projects.json";
 import { projectListItems } from "~/utils/projectSchema";
 import { pageTitle, pageUrl } from "~/utils/site";
@@ -15,10 +16,7 @@ usePageSeo({
   mainEntity: { "@id": PROJECTS_LIST_ID },
   extraSchema: () => [
     defineBreadcrumb({
-      itemListElement: [
-        { name: "Home", item: "/" },
-        { name: "Selected Work" },
-      ],
+      itemListElement: [{ name: "Home", item: "/" }, { name: "Selected Work" }],
     }),
     defineItemList({
       "@id": PROJECTS_LIST_ID,
@@ -29,8 +27,13 @@ usePageSeo({
     }),
   ],
 });
+
+/* The board keeps rendering under an open dossier — that is what makes the
+   sheet a sheet — so while one is up it hands over the focus ring, the arrow
+   keys and every pointer target to it. */
+const sheetIsUp = useDossierOpen();
 </script>
 
 <template>
-  <ProjectsBoard />
+  <ProjectsBoard :interactive="!sheetIsUp" :inert="sheetIsUp || undefined" />
 </template>
