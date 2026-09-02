@@ -166,6 +166,30 @@ let queuedStep: PagerDirection | null = null;
 let commitStep: ((direction: PagerDirection) => boolean) | null = null;
 
 /**
+ * Closes the gate for motion the pager didn't start but that a step would cut
+ * short — the sheet's own entrance.
+ *
+ * A step landing on a sheet that is still opening is the worst-looking hop the
+ * pager can make: the arriving dossier is styled as a step, and a step's rule
+ * takes the panel's entrance animation away entirely, so the panel teleports
+ * from wherever the zoom had got to straight to its resting place while the
+ * payload slides in over the top of it. Holding the gate turns that press into
+ * a queued step, which plays in full a beat later against a panel at rest.
+ *
+ * Its backstop sits past the sheet's own entrance fallback rather than sharing
+ * the step timeout: the two would otherwise race, and the pager winning is the
+ * snap this exists to prevent.
+ */
+const PAGER_ENTRANCE_TIMEOUT_MS = 1200;
+
+export function holdProjectPagerStep() {
+  if (stepInFlight) return;
+  stepInFlight = true;
+  clearTimeout(stepTimer);
+  stepTimer = setTimeout(settleProjectPagerStep, PAGER_ENTRANCE_TIMEOUT_MS);
+}
+
+/**
  * Called by the sheet once the dossier it landed on has stopped moving — or by
  * the backstop, for the arrivals that never animate at all.
  */
