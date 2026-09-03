@@ -75,8 +75,11 @@ const pathLabel = computed(() => {
   }
 });
 
+// Narrowed rather than passed through: `emit` is three separate one-arg
+// signatures, and a union of their names matches none of them.
 function onSecondary() {
-  emit(copy.value.secondary.action);
+  if (copy.value.secondary.action === "projects") emit("projects");
+  else emit("retry");
 }
 </script>
 

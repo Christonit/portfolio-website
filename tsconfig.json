@@ -1,3 +1,8 @@
 {
-  "extends": "./.nuxt/tsconfig.json"
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    // tests/ run under `node --experimental-strip-types`, which resolves the
+    // real file and so needs the ".ts" written out in the import specifier.
+    "allowImportingTsExtensions": true
+  }
 }

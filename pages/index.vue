@@ -290,7 +290,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .identity-panel {
   position: relative;
   display: flex;
-  grid-template-columns: minmax(0, 1fr) 190px;
   min-height: 252px;
   overflow: hidden;
   /* Grain + tone are matched to the portrait plate so the whole card reads as

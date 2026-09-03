@@ -2,6 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Every face is self-hosted. Loading them from fonts.googleapis.com cost two
+   render-blocking round trips (the CSS, then the woff2 off fonts.gstatic.com)
+   before the hero — which is set in Tomorrow — could paint at all. Same bytes,
+   one origin, no third party in front of the LCP.
+
+   Tomorrow v19 — SIL OFL 1.1; license at /fonts/Tomorrow-OFL.txt.
+   Google's own subsets, byte-for-byte, so the unicode-range split still does
+   its job: latin-ext is only fetched if the page actually needs it. */
+@font-face {
+  font-family: "Tomorrow";
+  src: url("/fonts/Tomorrow-400-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Tomorrow";
+  src: url("/fonts/Tomorrow-400-latin-ext.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Tomorrow";
+  src: url("/fonts/Tomorrow-600-latin.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Tomorrow";
+  src: url("/fonts/Tomorrow-600-latin-ext.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 /* Departure Mono 1.500 — self-hosted from departuremono.com.
    SIL OFL 1.1; license ships at /fonts/DepartureMono-LICENSE.txt. */
 @font-face {
@@ -10,6 +62,22 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+/* Material Symbols, subset to the eleven icons we actually render — 2.8 KB
+   against the 3.9 MB the unsubsetted variable font ships. Regenerate with
+   `npm run fonts:icons` after adding an icon to a template, or the new one
+   renders as its literal ligature text.
+
+   `block` rather than `swap`: an icon that swaps in shows its ligature name
+   ("fingerprint") as words first, which is worse than a beat of nothing.
+   Apache 2.0; license at /fonts/MaterialSymbols-LICENSE.txt. */
+@font-face {
+  font-family: "Material Symbols Outlined";
+  src: url("/fonts/MaterialSymbolsOutlined-subset.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: block;
 }
 
 @layer base {
@@ -40,6 +108,10 @@
     --color-canvas: #131313;
     --color-panel: #0b0b0b;
     --color-surface: #1f1f1f;
+    /* Borders, rules and corner marks only — never text. At 2.0:1 on the
+       canvas it fails WCAG AA by a wide margin, and there is no darker tier
+       than --color-muted that passes, so dimmer-than-muted copy is carried by
+       the mono face and tracking instead of by luminance. */
     --color-rule: #474747;
     --color-muted: #919191;
     --color-body: #e2e2e2;
@@ -177,7 +249,17 @@
     background: #919191;
   }
 
+  /* font-family and the `liga` feature used to arrive with Google's hosted
+     stylesheet. Self-hosting the face means declaring them here — without
+     `liga` the ligature never forms and every icon renders as its name. */
   .material-symbols-outlined {
+    font-family: "Material Symbols Outlined";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    font-feature-settings: "liga";
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
     font-variation-settings:
       "FILL" 0,
       "wght" 300,
@@ -204,6 +286,18 @@
      headers read at exactly the same size and weight. Sizing comes from
      the documented Display token (typography.ts), not the --text-display
      clamp — see the note on that var above. */
+  /* Off-screen rather than display:none — a hidden link is not focusable, and
+     the point is to be reachable by the first Tab. */
+  .skip-link {
+    @apply absolute left-4 z-[1100] inline-flex h-11 items-center border border-white/30 bg-[#131313] px-4 text-label-data uppercase tracking-[0.18em] text-white;
+    top: -100px;
+    transition: top 120ms ease-out;
+  }
+
+  .skip-link:focus-visible {
+    top: 0.75rem;
+  }
+
   .hud-title {
     @apply text-display uppercase tracking-tighter text-white;
   }
@@ -688,5 +782,9 @@ html[data-nav-dir="modal-out"]::view-transition-new(hud-page) {
     transform: none;
     transition: none;
     will-change: auto;
+  }
+
+  .skip-link {
+    transition: none;
   }
 }

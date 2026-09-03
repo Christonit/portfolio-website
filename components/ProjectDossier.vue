@@ -507,7 +507,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   background: rgba(0, 0, 0, 0.45);
   color: #e2e2e2;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--text-2xs);
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -536,7 +536,7 @@ onBeforeUnmount(() => {
   background: rgba(0, 0, 0, 0.72);
   padding: 0 0.7rem;
   color: #e2e2e2;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--text-2xs);
   font-weight: 600;
   letter-spacing: 0.18em;

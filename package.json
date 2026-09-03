@@ -7,9 +7,12 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test": "node --experimental-strip-types --test tests/*.test.ts && npm run check:typography && npm run check:icons && npm run typecheck",
     "check:typography": "node scripts/typography-audit.mjs",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "typecheck": "vue-tsc --noEmit",
+    "check:icons": "node scripts/icon-coverage.mjs",
+    "fonts:icons": "node scripts/fetch-icon-font.mjs"
   },
   "dependencies": {
     "@nuxtjs/robots": "^6.2.0",

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import { useAudio } from '~/composables/useAudio';
 import {
   dossierControlsAreBlocked,
   isDossierPath,
@@ -15,8 +14,7 @@ import { EMAIL_URL, LINKEDIN_URL } from "~/utils/site";
 const router = useRouter();
 const route = useRoute();
 const hudKey = useHudNav();
-// Audio temporarily disabled
-// const { isMuted, initAudio, toggleMute, playHover, playClick, playHaptic } = useAudio();
+
 const playHaptic = () => {
   if (typeof navigator !== "undefined" && navigator.vibrate) {
     navigator.vibrate(15);
@@ -208,33 +206,7 @@ function onKeydown(e: KeyboardEvent) {
   }
 }
 
-// let lastHoveredElement: HTMLElement | null = null;
-
-// Audio temporarily disabled
-// function onGlobalMouseOver(e: MouseEvent) {
-//   const target = (e.target as HTMLElement).closest(
-//     'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]'
-//   ) as HTMLElement | null;
-//
-//   if (target) {
-//     if (target !== lastHoveredElement) {
-//       lastHoveredElement = target;
-//       playHover();
-//     }
-//   } else {
-//     lastHoveredElement = null;
-//   }
-// }
-//
-// function onGlobalMouseOut(e: MouseEvent) {
-//   if (lastHoveredElement && !lastHoveredElement.contains(e.relatedTarget as Node)) {
-//     lastHoveredElement = null;
-//   }
-// }
-
 function onGlobalClick(e: MouseEvent) {
-  // playClick();
-
   // Trigger brief vibration on tapping links, buttons, and navigation elements
   const target = (e.target as HTMLElement).closest(
     'a, button, [role="button"], .cursor-pointer, [class*="cursor-pointer"], [data-sound-hover]',
@@ -245,18 +217,13 @@ function onGlobalClick(e: MouseEvent) {
 }
 
 onMounted(() => {
-  // initAudio();
   window.addEventListener("keydown", onKeydown);
   window.addEventListener("click", onGlobalClick);
-  // window.addEventListener("mouseover", onGlobalMouseOver);
-  // window.addEventListener("mouseout", onGlobalMouseOut);
 });
 
 onUnmounted(() => {
   window.removeEventListener("keydown", onKeydown);
   window.removeEventListener("click", onGlobalClick);
-  // window.removeEventListener("mouseover", onGlobalMouseOver);
-  // window.removeEventListener("mouseout", onGlobalMouseOut);
 });
 
 // ── Desktop nav items ─────────────────────────────────────────────
@@ -273,8 +240,11 @@ const mobileNavItems = [
   { label: "ABOUT", path: "/bio", icon: "fingerprint" },
   {
     label: "CONNECT",
-    path: "https://www.linkedin.com/in/chrisalesant/",
+    path: LINKEDIN_URL,
     iconSrc: "/images/paper-airplane-svgrepo-com.svg",
+    // Opens a new tab, like the LinkedIn icon in the header does. It used to
+    // navigate away in-tab on mobile only.
+    external: true,
   },
 ];
 
@@ -376,6 +346,11 @@ watch(normalizedPath, (to, from) => {
        composites by group z-index instead, painting the page snapshot over the
        nav. Sizing to the dynamic viewport removes the overlap at the source. -->
   <div class="relative h-dvh overflow-hidden bg-[#131313] text-[#e2e2e2]">
+    <!-- Off-screen until focused. Without it the first Tab on every page walks
+         the logo, both arrow keys, the three tabs and two social links before
+         reaching any content. -->
+    <a href="#main" class="skip-link">Skip to content</a>
+
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
 
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
@@ -485,17 +460,6 @@ watch(normalizedPath, (to, from) => {
       </div>
 
       <div class="flex items-center gap-2 shrink-0 z-10">
-        <!-- Audio temporarily disabled
-        <button
-          class="flex p-2 text-[#919191] hover:text-white hover:bg-[#353535] transition-all focus:outline-none"
-          :aria-label="isMuted ? 'Unmute Audio' : 'Mute Audio'"
-          @click.stop="toggleMute"
-        >
-          <span class="material-symbols-outlined icon-md">
-            {{ isMuted ? 'volume_off' : 'volume_up' }}
-          </span>
-        </button>
-        -->
         <a
           :href="EMAIL_URL"
           class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
@@ -568,16 +532,21 @@ watch(normalizedPath, (to, from) => {
         v-for="item in mobileNavItems"
         :key="item.path"
         :to="item.path"
+        :target="item.external ? '_blank' : undefined"
+        :rel="item.external ? 'noopener noreferrer' : undefined"
+        :aria-label="item.external ? `${item.label} (opens in a new tab)` : undefined"
         :class="[
           'group flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-150',
           mobileNavTone(item.path),
         ]"
         @click="markPending($event, item.path)"
       >
+        <!-- alt="" — the label below it already says CONNECT, and naming the
+             icon too had screen readers announce the link twice. -->
         <img
           v-if="item.iconSrc"
           :src="item.iconSrc"
-          :alt="item.label"
+          alt=""
           class="h-4 w-4 shrink-0"
           :class="
             isActive(item.path)
@@ -601,7 +570,9 @@ watch(normalizedPath, (to, from) => {
     <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
     <!-- Desktop: uses the full viewport below the top navigation -->
     <main
+      id="main"
       ref="mainRef"
+      tabindex="-1"
       class="hud-page absolute inset-x-0 top-14 z-10 bottom-16 lg:pb-0 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
     >
       <slot />

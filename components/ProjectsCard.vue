@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ComponentPublicInstance } from "vue";
 import type { ProjectPreview } from "./ProjectTooltip.vue";
 import { isExternalProjectHref, projectHref } from "~/utils/projects";
 import { LINKEDIN_URL } from "~/utils/site";
@@ -72,7 +73,9 @@ function applyPreviewSize(el: EventTarget | null) {
   }
 }
 
-function syncPreviewEl(el: Element | null) {
+// Vue hands a template ref callback `Element | ComponentPublicInstance | null`,
+// so the signature has to accept all three even though only the <img> matters.
+function syncPreviewEl(el: Element | ComponentPublicInstance | null) {
   if (!(el instanceof HTMLImageElement)) return;
   if (el.complete && el.naturalWidth === 0) {
     imageFailed.value = true;
@@ -145,7 +148,7 @@ const ariaLabel = computed(() => {
         >
           NEW MISSION
         </h2>
-        <p class="text-body-compact mt-2 max-w-[220px] text-[#474747]">
+        <p class="text-body-compact mt-2 max-w-[220px] text-[#919191]">
           Awaiting deployment — drop your next project here.
         </p>
       </div>
@@ -187,7 +190,7 @@ const ariaLabel = computed(() => {
               {{ project.name }}
             </h2>
             <span
-              class="text-label-data shrink-0 tabular-nums tracking-widest text-[#474747]"
+              class="text-label-data shrink-0 tabular-nums tracking-widest text-[#919191]"
             >
               {{ counter }}
             </span>
