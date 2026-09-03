@@ -252,7 +252,6 @@ const replay = (id: string) => {
 
 const typographyUtilities = {
   display: "text-display",
-  "heading-lg": "text-heading-lg",
   "heading-section": "text-heading-section",
   "title-ui": "text-title-ui",
   "body-compact": "text-body-compact",
@@ -393,7 +392,7 @@ onBeforeUnmount(() => {
           <h1 class="text-display">SYSTEM INDEX</h1>
           <p class="text-body-compact">
             A working inventory of the visual language used across the portfolio.
-            Two families, eight roles, two weights. Every value on this page is
+            Two families, seven roles, two weights. Every value on this page is
             read from the live stylesheet at load, so it cannot drift from the
             code.
           </p>
@@ -412,9 +411,8 @@ onBeforeUnmount(() => {
             for — <code>.text-title-ui</code>, <code>.text-label-data</code> —
             emitted from <code>typography.ts</code>. <strong>Steps</strong> are
             what Tailwind's <code>text-*</code> utilities compile to. They meet
-            at 12, 14 and 16px and nowhere else: Display, Heading/Large and
-            Heading/Section sit at 44, 24 and 18px, between steps, and are marked
-            off-step below. Reach for a role first — a step is the answer only
+            at 12, 14 and 16px and nowhere else: Display and Heading/Section sit at 44
+            and 18px, between steps, and are marked off-step below. Reach for a role first — a step is the answer only
             when no role fits.
           </p>
 

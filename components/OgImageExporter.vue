@@ -70,7 +70,7 @@ function exportPng() {
   <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8">
     <div class="space-y-2">
       <span class="hud-label">OG_IMAGE_EXPORT</span>
-      <h1 class="text-heading-lg uppercase tracking-tight text-white">
+      <h1 class="hud-title">
         Open Graph Image Generator
       </h1>
       <p class="text-body-compact max-w-2xl text-muted">

@@ -11,6 +11,12 @@ export interface TypographyStyle {
 }
 
 export const typography = {
+  /* Seven roles. There was an eighth, Heading/Large at 24px, whose only
+     consumer in the whole codebase was the <h1> of /og-export — an internal
+     tool page that `pages:extend` drops from the production route graph. A
+     role no shipped page uses is a size the scale has to keep answering for,
+     so it went; that heading now takes `.hud-title`, the same page hero
+     /projects and /bio wear. */
   display: {
     semanticName: 'Display',
     familyRole: 'display',
@@ -19,15 +25,6 @@ export const typography = {
     weight: 600,
     sample: 'Selected work',
     usage: 'Primary page and project displays.',
-  },
-  'heading-lg': {
-    semanticName: 'Heading/Large',
-    familyRole: 'display',
-    size: '24px',
-    lineHeight: '30px',
-    weight: 600,
-    sample: 'Capabilities',
-    usage: 'Large section headings.',
   },
   'heading-section': {
     semanticName: 'Heading/Section',
