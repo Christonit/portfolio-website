@@ -46,6 +46,29 @@ const spacing = {
   ),
 } as const
 
+// The documented palette, plus the CSS-wide and monochrome values templates
+// use directly. Declared as a replacement so Tailwind's chromatic defaults do
+// not remain available alongside the single signal accent.
+const colors = {
+  inherit: 'inherit',
+  current: 'currentColor',
+  transparent: 'transparent',
+  black: '#000',
+  white: '#fff',
+  // Fills
+  panel: 'rgb(var(--color-panel-rgb) / <alpha-value>)',
+  canvas: 'rgb(var(--color-canvas-rgb) / <alpha-value>)',
+  surface: 'rgb(var(--color-surface-rgb) / <alpha-value>)',
+  // Lines
+  rule: 'rgb(var(--color-rule-rgb) / <alpha-value>)',
+  // Text
+  muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
+  prose: 'rgb(var(--color-prose-rgb) / <alpha-value>)',
+  body: 'rgb(var(--color-body-rgb) / <alpha-value>)',
+  // Accent
+  signal: 'rgb(var(--color-signal-rgb) / <alpha-value>)',
+} as const
+
 export default {
   darkMode: ['class'],
   content: [
@@ -56,6 +79,7 @@ export default {
     './error.vue',
   ],
   theme: {
+    colors,
     spacing,
     // One radius: none. Declared as a replacement so the rest of Tailwind's
     // scale does not exist — see the note in the removed `extend` block.
@@ -96,26 +120,6 @@ export default {
         // above, not from this map.
         sans: ['Tomorrow', 'sans-serif'],
         mono: ['Departure Mono', 'ui-monospace', 'monospace'],
-      },
-      // The documented palette, and nothing else. These map 1:1 onto the
-      // `--color-*-rgb` channel tokens in globals.css, in channel form so
-      // `border-rule/40` and `bg-canvas/95` work like any other Tailwind
-      // colour. What used to be here was shadcn's `background`/`primary`/
-      // `card` set, which no template ever referenced — its only real effect
-      // was to make `#131313` look like the reasonable thing to type.
-      colors: {
-        // Fills
-        panel: 'rgb(var(--color-panel-rgb) / <alpha-value>)',
-        canvas: 'rgb(var(--color-canvas-rgb) / <alpha-value>)',
-        surface: 'rgb(var(--color-surface-rgb) / <alpha-value>)',
-        // Lines
-        rule: 'rgb(var(--color-rule-rgb) / <alpha-value>)',
-        // Text
-        muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
-        prose: 'rgb(var(--color-prose-rgb) / <alpha-value>)',
-        body: 'rgb(var(--color-body-rgb) / <alpha-value>)',
-        // Accent
-        signal: 'rgb(var(--color-signal-rgb) / <alpha-value>)',
       },
       // The cross-component stacking order, defined in globals.css. Templates
       // reach for these instead of `z-50` / `z-[1000]` / `z-[9999]`, which is

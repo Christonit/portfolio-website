@@ -175,7 +175,7 @@ function exportPng() {
           class="absolute inset-0 z-20 flex items-center justify-center bg-canvas"
         >
           <span
-            class="text-label-data uppercase tracking-[0.3em] text-red-400/80"
+            class="text-label-data uppercase tracking-[0.3em] text-signal/80"
           >
             SIGNAL_LOST // MESH_UNAVAILABLE
           </span>

@@ -116,6 +116,36 @@ test('reports on-scale spacing that is hardcoded rather than tokenised', async (
   )
 })
 
+test('reports a final spacing declaration without a semicolon', async () => {
+  await withFixture(
+    { 'components/Row.vue': style('.row {\n  padding: 11px\n}') },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [
+        {
+          file: 'components/Row.vue',
+          line: 4,
+          message: 'padding 11px (11px) is not a step on the space scale',
+        },
+      ])
+    },
+  )
+})
+
+test('audits positive values beside a negative corrective offset', async () => {
+  await withFixture(
+    { 'components/Row.vue': style('.row {\n  margin: -2px 11px;\n}') },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [
+        {
+          file: 'components/Row.vue',
+          line: 4,
+          message: 'margin 11px (11px) is not a step on the space scale',
+        },
+      ])
+    },
+  )
+})
+
 test('allows zero and negative corrective offsets', async () => {
   await withFixture(
     {
@@ -151,6 +181,65 @@ test('ignores markup outside style blocks', async () => {
       // by this script — an off-scale class fails to compile instead.
       'components/Tag.vue':
         '<template><span class="p-3 text-muted">#2a2a2a</span></template>\n',
+    },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [])
+    },
+  )
+})
+
+test('reports arbitrary spacing utilities in component markup', async () => {
+  await withFixture(
+    {
+      'components/Panel.vue':
+        '<template>\n  <div class="p-[11px] gap-[20px]" />\n</template>\n',
+    },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [
+        {
+          file: 'components/Panel.vue',
+          line: 2,
+          message: 'arbitrary spacing gap-[20px] (20px) is not a step on the space scale',
+        },
+        {
+          file: 'components/Panel.vue',
+          line: 2,
+          message: 'arbitrary spacing p-[11px] (11px) is not a step on the space scale',
+        },
+      ])
+    },
+  )
+})
+
+test('reports arbitrary colour utilities in component markup', async () => {
+  await withFixture(
+    {
+      'components/Label.vue':
+        '<template>\n  <span class="text-[#f00]">Alert</span>\n</template>\n',
+    },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [
+        {
+          file: 'components/Label.vue',
+          line: 2,
+          message: 'arbitrary colour text-[#f00] — use a documented colour utility',
+        },
+      ])
+    },
+  )
+})
+
+test('ignores arbitrary utility examples outside class attributes', async () => {
+  await withFixture(
+    {
+      'pages/Guide.vue': [
+        '<script setup>',
+        "const example = 'p-[11px]'",
+        '</script>',
+        '<template>',
+        '  <code>p-[11px] text-[#f00]</code>',
+        '</template>',
+      ].join('\n'),
     },
     async (root) => {
       assert.deepEqual(await auditDesignTokens(root), [])

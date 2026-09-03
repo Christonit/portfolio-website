@@ -26,6 +26,12 @@ const COLOUR_PROPERTIES =
   '|outline(?:-color)?|fill|stroke|box-shadow|text-shadow|text-decoration-color|caret-color' +
   '|column-rule-color|-webkit-text-fill-color)'
 
+const ARBITRARY_SPACING_UTILITY =
+  /(?<![\w-])(-?(?:m[trblxy]?|p[trblxy]?|gap(?:-[xy])?|space-[xy])-\[\s*(-?\d*\.?\d+)(px|rem)\s*\])/g
+
+const ARBITRARY_COLOUR_UTILITY =
+  /(?<![\w-])((?:bg|text|border(?:-[trblxyse])?|outline|ring|fill|stroke|caret)-\[(#[0-9a-fA-F]{3,8})\])/g
+
 /**
  * Every CSS named colour except `white`.
  *
@@ -85,11 +91,44 @@ function styleRegions(source, relativePath) {
   return regions
 }
 
+/** Scan static and bound class attributes without treating prose as a utility. */
+function classAttributeRegions(source, relativePath) {
+  if (path.extname(relativePath) !== '.vue') return []
+
+  const regions = []
+  for (const match of source.matchAll(/(?:^|\s)(?::|v-bind:)?class\s*=\s*(["'])([\s\S]*?)\1/g)) {
+    regions.push({ text: match[2], offset: match.index + match[0].indexOf(match[2]) })
+  }
+  return regions
+}
+
 export function auditSource(source, relativePath) {
   const violations = []
   const masked = withoutComments(source)
   const add = (index, message) =>
     violations.push({ file: relativePath, line: lineAt(source, index), message })
+
+  for (const { text, offset } of classAttributeRegions(masked, relativePath)) {
+    for (const match of text.matchAll(ARBITRARY_COLOUR_UTILITY)) {
+      add(offset + match.index, `arbitrary colour ${match[1]} — use a documented colour utility`)
+    }
+
+    for (const match of text.matchAll(ARBITRARY_SPACING_UTILITY)) {
+      const [utility, value, unit] = match.slice(1)
+      if (utility.startsWith('-') || value.startsWith('-')) continue
+
+      const pixels = Number(value) * (unit === 'rem' ? 16 : 1)
+      if (pixels === 0) continue
+      const step = pixels / 4
+      const onGrid = Number.isInteger(step) && SPACE_STEPS.has(step)
+      add(
+        offset + match.index,
+        onGrid
+          ? `arbitrary spacing ${utility} is hardcoded — use the matching scale utility`
+          : `arbitrary spacing ${utility} (${pixels}px) is not a step on the space scale`,
+      )
+    }
+  }
 
   for (const { text, offset } of styleRegions(masked, relativePath)) {
     // 1. Colour must come from the ramp.
@@ -112,22 +151,23 @@ export function auditSource(source, relativePath) {
 
     // 2. Spacing must land on a step of the scale.
     for (const declaration of text.matchAll(
-      new RegExp(`\\b(${SPACING_PROPERTIES})\\s*:\\s*([^;{}]+);`, 'g'),
+      new RegExp(`\\b(${SPACING_PROPERTIES})\\s*:\\s*([^;{}]+)(?:;|(?=\\s*}))`, 'g'),
     )) {
       const [, property, value] = declaration
-      // Corrective arithmetic answers to the thing it corrects, not the grid.
-      if (/(?:^|[\s:(])-\s*[0-9.]/.test(value)) continue
 
-      for (const length of value.matchAll(/([0-9.]+)(px|rem)\b/g)) {
-        const pixels = Number(length[1]) * (length[2] === 'rem' ? 16 : 1)
+      for (const length of value.matchAll(/(-\s*)?([0-9.]+)(px|rem)\b/g)) {
+        // Corrective arithmetic answers to the thing it corrects, not the grid.
+        if (length[1]) continue
+
+        const pixels = Number(length[2]) * (length[3] === 'rem' ? 16 : 1)
         if (pixels === 0) continue
         const step = pixels / 4
         const onGrid = Number.isInteger(step) && SPACE_STEPS.has(step)
         add(
           offset + declaration.index,
           onGrid
-            ? `${property} ${length[1]}${length[2]} is on the grid but hardcoded — use var(--space-${step})`
-            : `${property} ${length[1]}${length[2]} (${pixels}px) is not a step on the space scale`,
+            ? `${property} ${length[2]}${length[3]} is on the grid but hardcoded — use var(--space-${step})`
+            : `${property} ${length[2]}${length[3]} (${pixels}px) is not a step on the space scale`,
         )
       }
     }

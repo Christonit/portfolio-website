@@ -246,17 +246,27 @@ const motionDemos = [
  * Bumping a stage's id re-keys its root, so Vue remounts it and every CSS
  * animation inside starts from zero. Cheaper and more faithful than driving
  * the sequences from script: what replays is the stylesheet, not a copy of it.
+ *
+ * Only the keyed inner element is ever replaced, never the element carrying
+ * the hover handler — swapping that one out from under the cursor would
+ * re-enter it and loop.
  */
 const runs = reactive<Record<string, number>>({
   page: 0,
   modal: 0,
   tooltip: 0,
   reveal: 0,
-  curves: 0,
+  /* Each curve replays on its own, so hovering one row does not fire the
+     other three at a speed nothing on the page moves at. */
+  ...Object.fromEntries(easings.map((ease) => [ease.token, 0])),
 });
 
 const replay = (id: string) => {
   runs[id] += 1;
+};
+
+const replayCurves = () => {
+  easings.forEach((ease) => replay(ease.token));
 };
 
 const typographyUtilities = {
@@ -520,12 +530,16 @@ onBeforeUnmount(() => {
           <ul class="type-scale" role="list">
             <li v-for="style in typeScale" :key="style.key">
               <div class="type-scale__meta">
-                <strong class="text-label-data">{{ style.semanticName }}</strong>
+                <span class="type-scale__line">
+                  <strong class="text-label-data">{{ style.semanticName }}</strong>
+                  <span class="text-label-data type-scale__step" :class="{ 'is-offscale': !style.step }">
+                    {{ style.step ? `STEP ${style.step}` : "OFF-STEP" }}
+                  </span>
+                </span>
                 <code class="text-label-data">.{{ style.utility }}</code>
-                <span class="text-label-data tabular-nums">{{ style.size }} / {{ style.lineHeight }}</span>
-                <span class="text-label-data">{{ familyName(style.familyRole) }} / {{ style.weight }}</span>
-                <span class="text-label-data type-scale__step" :class="{ 'is-offscale': !style.step }">
-                  {{ style.step ? `STEP ${style.step}` : "OFF-STEP" }}
+                <span class="type-scale__line">
+                  <span class="text-label-data tabular-nums">{{ style.size }} / {{ style.lineHeight }}</span>
+                  <span class="text-label-data">{{ familyName(style.familyRole) }} / {{ style.weight }}</span>
                 </span>
               </div>
               <div class="type-scale__sample">
@@ -749,7 +763,7 @@ onBeforeUnmount(() => {
 
           <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
             SEQUENCES
-            <span class="group-label__note">Press replay to run one again.</span>
+            <span class="group-label__note">Hover a stage, or press replay, to run it again.</span>
           </h3>
           <div class="motion-grid">
             <section
@@ -757,6 +771,7 @@ onBeforeUnmount(() => {
               :key="demo.id"
               class="motion-demo"
               :aria-label="`${demo.label} sequence`"
+              @mouseenter="replay(demo.id)"
             >
               <div class="motion-demo__head">
                 <strong class="text-label-data uppercase tracking-[0.14em]">{{ demo.label }}</strong>
@@ -804,23 +819,33 @@ onBeforeUnmount(() => {
             CURVES
             <span class="group-label__note">
               Four, and only four — every other ease token in the system aliases one of these.
+              Hover a row to run its curve.
             </span>
           </h3>
           <div class="curve-head">
             <button
               class="motion-demo__replay text-label-data uppercase tracking-[0.14em]"
               type="button"
-              @click="replay('curves')"
+              @click="replayCurves"
             >
               REPLAY ALL
             </button>
           </div>
-          <ul :key="runs.curves" class="curve-table" role="list">
-            <li v-for="ease in easings" :key="ease.token" class="curve-row">
+          <ul class="curve-table" role="list">
+            <li
+              v-for="ease in easings"
+              :key="ease.token"
+              class="curve-row"
+              @mouseenter="replay(ease.token)"
+            >
               <strong class="text-label-data">{{ ease.name }}</strong>
               <code class="text-label-data">{{ ease.token }}</code>
               <span class="curve-track" aria-hidden="true">
-                <span class="curve-dot" :style="{ '--curve': `var(${ease.token})` }" />
+                <span
+                  :key="runs[ease.token]"
+                  class="curve-dot"
+                  :style="{ '--curve': `var(${ease.token})` }"
+                />
               </span>
               <span class="curve-row__usage text-label-data">{{ ease.usage }}</span>
             </li>
@@ -976,16 +1001,24 @@ onBeforeUnmount(() => {
    actually render, and a chevron is not one of them — it would ship as the
    word. */
 .system-toc__caret {
+  /* Only two of the four borders are drawn, so the visible chevron is not
+     centred in its own box: it hangs a quarter of the square's diagonal
+     toward the corner those borders meet in, which the rotation then swings
+     above or below centre. The nudge pays that back, in the opposite
+     direction each state throws it. Flex centres the box; this centres the
+     mark. */
+  --caret-nudge: calc(var(--space-2) * 0.354);
+
   width: var(--space-2);
   height: var(--space-2);
   border-right: 1px solid var(--color-muted);
   border-bottom: 1px solid var(--color-muted);
-  transform: translateY(-25%) rotate(-135deg);
+  transform: translateY(var(--caret-nudge)) rotate(-135deg);
   transition: transform var(--duration-quick) var(--ease-out);
 }
 
 .system-toc.is-open .system-toc__caret {
-  transform: translateY(25%) rotate(45deg);
+  transform: translateY(calc(var(--caret-nudge) * -1)) rotate(45deg);
 }
 
 /* Collapsed by height rather than removed, so the panel and the caret travel
@@ -1051,9 +1084,15 @@ onBeforeUnmount(() => {
   color: var(--color-prose);
 }
 
+/* Margin rather than padding so the gap sits outside the section's box: a
+   jumped-to heading lands under `scroll-margin-top` alone, and the scroll spy
+   reads the heading crossing its line rather than the run-up to it. Twice the
+   `--space-8` the token comment nominates for sections, because the groups
+   inside one are already `--space-6` apart — at 32px a section boundary read
+   as just another group break. */
 .system-section {
-  padding-top: var(--space-8);
-  /* Clears the sticky index's own top offset when jumped to. */
+  margin-top: var(--space-16);
+  /* Breathing room above the heading when jumped to. */
   scroll-margin-top: var(--space-6);
 }
 
@@ -1204,17 +1243,30 @@ onBeforeUnmount(() => {
 
 .type-scale li {
   display: grid;
-  grid-template-columns: 14rem minmax(0, 1fr);
-  gap: var(--space-6);
-  padding: var(--space-4) 0;
+  /* 16rem is the width at which the longest specs line — Label/Data's
+     `12px / 16px Departure Mono / 400` — still holds one line, so every row
+     is the same three lines tall. */
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
   border-bottom: 1px solid var(--color-surface);
 }
 
+/* Five stacked lines of metadata set the row height, not the specimen they
+   describe. Pairing them off — name with its step, size with its family —
+   holds the same five facts in three lines. */
 .type-scale__meta {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   color: var(--color-muted);
+}
+
+.type-scale__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-items: baseline;
 }
 
 .type-scale__meta strong {
@@ -1242,7 +1294,7 @@ onBeforeUnmount(() => {
 .type-scale__sample {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
   min-width: 0;
   color: var(--color-body);
 }
@@ -1271,6 +1323,13 @@ onBeforeUnmount(() => {
   gap: var(--space-3);
   padding: var(--space-4);
   border: 1px solid var(--color-surface);
+  transition: border-color var(--duration-quick) var(--ease-out);
+}
+
+/* The border lifting is what says the card is the replay target — without it
+   the sequence restarting under a passing cursor reads as a glitch. */
+.motion-demo:hover {
+  border-color: var(--color-rule);
 }
 
 .motion-demo__head {
@@ -1504,6 +1563,11 @@ onBeforeUnmount(() => {
   padding: var(--space-3) 0;
   border-bottom: 1px solid var(--color-surface);
   color: var(--color-muted);
+  transition: border-color var(--duration-quick) var(--ease-out);
+}
+
+.curve-row:hover {
+  border-bottom-color: var(--color-rule);
 }
 
 .curve-row__usage {
@@ -1561,12 +1625,21 @@ onBeforeUnmount(() => {
   background: var(--color-surface);
 }
 
+/* PARTS is the only section whose groups are mounted components rather than
+   rows of text, and the group rhythm that reads right over a token table
+   binds each label to the block above it here. So: a full section's worth of
+   air before a label, one panel's worth after it, and the pairing is legible
+   without a rule between every sample. */
+#parts .group-label {
+  margin-top: var(--space-12);
+}
+
 .component-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-6);
-  padding: var(--space-6) 0;
+  padding-top: var(--space-4);
 }
 
 /* The card is a full board tile; the board gives it a column, so this does
@@ -1595,6 +1668,7 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4);
+  margin-top: var(--space-6);
   padding-bottom: var(--space-4);
 }
 
@@ -1669,7 +1743,9 @@ onBeforeUnmount(() => {
 
   .system-toc__link,
   .system-toc__toggle,
-  .motion-demo__replay {
+  .motion-demo__replay,
+  .motion-demo,
+  .curve-row {
     transition: none;
   }
 
