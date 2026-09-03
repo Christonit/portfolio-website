@@ -95,7 +95,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
           </h3>
           <div
             v-if="org.location"
-            class="mt-1 font-mono text-xs leading-snug text-[#474747]"
+            class="mt-1 font-mono text-xs leading-snug text-[#919191]"
           >
             // {{ org.location }}
           </div>
@@ -123,7 +123,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
               </div>
               <div
                 v-if="item.type"
-                class="font-mono text-xs leading-snug tracking-widest text-[#474747]"
+                class="font-mono text-xs leading-snug tracking-widest text-[#919191]"
               >
                 {{ item.type }}
               </div>
@@ -137,7 +137,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
             </p>
             <div
               v-if="item.tags"
-              class="exp-measure mt-2 font-mono text-xs leading-relaxed tracking-wide text-[#474747]"
+              class="exp-measure mt-2 font-mono text-xs leading-relaxed tracking-wide text-[#919191]"
             >
               // {{ item.tags }}
             </div>
@@ -178,7 +178,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
                       }}</span>
                       <span
                         v-if="isExternalProjectHref(project)"
-                        class="font-mono text-[10px] text-[#474747]"
+                        class="font-mono text-xs text-[#919191]"
                         aria-hidden="true"
                         >↗</span
                       >

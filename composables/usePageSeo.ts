@@ -51,8 +51,16 @@ export function usePageSeo(options: {
     return toAbsoluteUrl(imagePath.value || "/images/og-image.webp", origin);
   });
 
-  const imageType = computed(() =>
-    image.value.toLowerCase().endsWith(".png") ? "image/png" : "image/webp",
+  /**
+   * `useSeoMeta`'s ogImageType only enumerates gif/jpeg/png, but og:image:type
+   * is a free-form MIME string and every OG image on this site is webp. Cast
+   * to the narrow type rather than dropping the tag or shipping a wrong one.
+   */
+  const imageType = computed(
+    () =>
+      (image.value.toLowerCase().endsWith(".png")
+        ? "image/png"
+        : "image/webp") as "image/png",
   );
 
   const mainEntity = computed(() => {
@@ -87,16 +95,24 @@ export function usePageSeo(options: {
     link: [{ rel: "canonical", href: canonical }],
   });
 
-  useSchemaOrg([
-    defineWebPage({
-      "@type": options.pageType,
-      name: () => title.value,
-      description: () => description.value,
-      url: () => canonical.value,
-      inLanguage: "en",
-      primaryImageOfPage: () => image.value,
-      mainEntity: () => mainEntity.value,
-    }),
-    ...(options.extraSchema?.() ?? []),
-  ]);
+  /**
+   * Cast at the node, not the property.
+   *
+   * `mainEntity` is declared as an intersection of `Arrayable<IdReference>`
+   * and a resolvable record, which no plain getter satisfies — and it has to
+   * stay a getter, because the dossier overlay outlives a pager step and the
+   * node must re-resolve when the slug moves. Pages with no mainEntity resolve
+   * it to undefined, which schema-org drops.
+   */
+  const webPage = {
+    "@type": options.pageType,
+    name: () => title.value,
+    description: () => description.value,
+    url: () => canonical.value,
+    inLanguage: "en",
+    primaryImageOfPage: () => image.value,
+    mainEntity: () => mainEntity.value,
+  } as Parameters<typeof defineWebPage>[0];
+
+  useSchemaOrg([defineWebPage(webPage), ...(options.extraSchema?.() ?? [])]);
 }

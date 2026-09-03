@@ -8,10 +8,11 @@ import type {
   Texture,
   WebGLRenderer,
 } from "three";
+import modelUrl from "~/assets/internal/human+character+3d+model.glb?url";
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
-export const MODEL_URL = "/images/human+character+3d+model.glb";
+export const MODEL_URL = modelUrl;
 
 export interface OgSceneHandle {
   rotationY: number;

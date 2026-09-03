@@ -150,7 +150,7 @@ function exportPng() {
               SUIT INTEGRITY HIGH
             </div>
             <div
-              class="text-label-data mt-0.5 uppercase tracking-widest text-[#474747]"
+              class="text-label-data mt-0.5 uppercase tracking-widest text-[#919191]"
             >
               OPTIMAL_V_2.4
             </div>

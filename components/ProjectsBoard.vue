@@ -131,8 +131,14 @@ onUnmounted(() => {
   <div
     ref="railRef"
     class="projects-rail flex flex-col gap-8 py-5 pb-24 xl:h-full xl:overflow-y-auto"
+    :aria-hidden="interactive ? undefined : 'true'"
   >
-    <header class="flex max-w-3xl flex-col gap-3 pt-2">
+    <!-- Only when the board is the page. As the backdrop behind a cold-loaded
+         dossier the sheet covers this header completely, and shipping it there
+         gave /project/[slug] a second <h1> — "SELECTED WORK" under the
+         project's own title — plus a copy of the board intro on all three
+         project pages. Nothing is visible either way; the outline is. -->
+    <header v-if="interactive" class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// PROJECTS</span>
       <h1 class="hud-title">SELECTED WORK</h1>
       <p class="max-w-xl text-sm leading-relaxed text-[#a8a8a8]">
