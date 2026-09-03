@@ -16,7 +16,7 @@ import { loadNuxtConfig } from "@nuxt/kit";
 
 const root = path.resolve(import.meta.dirname, "..");
 
-test("production removes internal tool pages before Vite builds the route graph", async () => {
+test("production keeps the public design system and removes the internal OG tool", async () => {
   const previousNodeEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = "production";
 
@@ -44,7 +44,16 @@ test("production removes internal tool pages before Vite builds the route graph"
     await extendPages!(pages);
     assert.deepEqual(
       pages.map((page) => page.path),
-      ["/"],
+      ["/", "/design-system"],
+    );
+
+    assert.ok(config.robots && typeof config.robots === "object");
+    assert.deepEqual(config.robots.disallow, ["/og-export"]);
+    assert.ok(config.sitemap && typeof config.sitemap === "object");
+    assert.deepEqual(config.sitemap.exclude, ["/og-export"]);
+    assert.ok(
+      config.nitro?.prerender?.routes?.includes("/design-system/"),
+      "expected the public design system to be explicitly prerendered",
     );
   } finally {
     if (previousNodeEnv === undefined) delete process.env.NODE_ENV;

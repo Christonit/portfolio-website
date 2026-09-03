@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /og-export
-Disallow: /design-system
 
 Sitemap: https://chsantana.com/sitemap.xml

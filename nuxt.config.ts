@@ -16,11 +16,15 @@ const projectPaths = (projects as { slug: string; category: string }[])
   .filter((project) => project.category.toLowerCase() !== "article")
   .map((project) => `/project/${project.slug}/`);
 
-const internalToolRoutes = new Set(["/og-export", "/design-system"]);
+const internalToolRoutes = new Set(["/og-export"]);
 
-const sitemapUrls = ["/", "/bio/", "/projects/", ...projectPaths].map((loc) =>
-  withGitLastmod({ loc }),
-);
+const sitemapUrls = [
+  "/",
+  "/bio/",
+  "/projects/",
+  "/design-system/",
+  ...projectPaths,
+].map((loc) => withGitLastmod({ loc }));
 
 const gaMeasurementId =
   process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID;
@@ -98,7 +102,7 @@ export default defineNuxtConfig({
   },
 
   robots: {
-    disallow: ["/og-export", "/design-system"],
+    disallow: ["/og-export"],
     // Default runtime handler is a Netlify function. Googlebot times that
     // out and Search Console reports "robots.txt not fetched", which blocks
     // indexing of the whole site.
@@ -106,7 +110,7 @@ export default defineNuxtConfig({
   },
 
   sitemap: {
-    exclude: ["/og-export", "/design-system"],
+    exclude: ["/og-export"],
     // Every URL listed explicitly so each one can carry a `lastmod` derived
     // from the commits that actually changed its content — see
     // utils/sitemapLastmod.ts for why not the build clock.
@@ -120,7 +124,6 @@ export default defineNuxtConfig({
     "/robots.txt": { prerender: true },
     "/sitemap.xml": { prerender: true },
     "/og-export": { robots: false },
-    "/design-system": { robots: false },
     // Heal a bad www→apex rule that captured the hostname as a path:
     // www.chsantana.com → https://chsantana.com/chsantana.com/
     "/chsantana.com": { redirect: { to: "/", statusCode: 301 } },
@@ -138,7 +141,13 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: true,
-      routes: ["/", "/sitemap.xml", "/robots.txt", ...projectPaths],
+      routes: [
+        "/",
+        "/design-system/",
+        "/sitemap.xml",
+        "/robots.txt",
+        ...projectPaths,
+      ],
     },
     hooks: {
       // See utils/notFoundFallback.ts — Nuxt renders /404.html as an empty
