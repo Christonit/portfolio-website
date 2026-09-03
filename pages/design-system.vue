@@ -35,16 +35,30 @@ const sections = [
   { id: "parts", label: "PARTS" },
 ];
 
-/* The raw step scale. Distinct from the semantic scale below it: these are the
-   six sizes anything may be, `typography.ts` is the named roles built on them. */
+/* The step scale — the sizes the Tailwind `text-*` utilities compile to.
+   This is a different axis from the roles below, and the page used to list
+   the two as adjacent tables of the same shape, which read as one scale
+   stated twice. They are not the same scale and they do not fully agree: the
+   steps are 10/12/14/16/20, the roles are 44/24/18/16/14/12, and only three
+   sizes appear in both. `step` names the overlap where there is one, so the
+   disagreement is visible in the table rather than buried between two. */
 const typeSteps = [
-  { name: "2XS", token: "--text-2xs", usage: "Micro labels and tags. Mono only." },
-  { name: "XS", token: "--text-xs", usage: "Labels, metadata, captions." },
-  { name: "SM", token: "--text-sm", usage: "Compact body, list rows." },
-  { name: "BASE", token: "--text-base", usage: "Long-form reading copy." },
-  { name: "LG", token: "--text-lg", usage: "Card and section titles." },
-  { name: "HERO", token: "--text-hero", usage: "Home hero only — the one fluid size." },
+  { name: "2XS", token: "--text-2xs", utility: "text-2xs", usage: "Micro labels and tags. Mono only." },
+  { name: "XS", token: "--text-xs", utility: "text-xs", usage: "Labels, metadata, captions." },
+  { name: "SM", token: "--text-sm", utility: "text-sm", usage: "Compact body, list rows." },
+  { name: "BASE", token: "--text-base", utility: "text-base", usage: "Long-form reading copy." },
+  { name: "LG", token: "--text-lg", utility: "text-lg", usage: "Card and section titles." },
+  { name: "HERO", token: "--text-hero", utility: "—", usage: "Home hero only — the one fluid size, read straight off the token." },
 ];
+
+/* Which step a role's size lands on, or null when it sits between them. */
+const stepBySize: Record<string, string> = {
+  "10px": "2XS",
+  "12px": "XS",
+  "14px": "SM",
+  "16px": "BASE",
+  "20px": "LG",
+};
 
 const colorGroups = [
   {
@@ -192,6 +206,7 @@ const typographyUtilities = {
 const typeScale = (Object.keys(typography) as TypographyStyleKey[]).map((key) => ({
   key,
   utility: typographyUtilities[key],
+  step: stepBySize[typography[key].size] ?? null,
   ...typography[key],
 }));
 
@@ -318,8 +333,9 @@ onBeforeUnmount(() => {
           <h1 class="text-display">SYSTEM INDEX</h1>
           <p class="text-body-compact">
             A working inventory of the visual language used across the portfolio.
-            Two families, six sizes, two weights. Every value on this page is read
-            from the live stylesheet at load, so it cannot drift from the code.
+            Two families, eight roles, two weights. Every value on this page is
+            read from the live stylesheet at load, so it cannot drift from the
+            code.
           </p>
         </header>
 
@@ -329,6 +345,18 @@ onBeforeUnmount(() => {
             <h2 id="type-heading" class="text-heading-section">TYPE</h2>
             <span class="text-label-data uppercase tracking-[0.14em]">TOMORROW + DEPARTURE MONO</span>
           </header>
+
+          <p class="section-intro text-body-compact">
+            Two families and two weights, on two size axes that are not the same
+            scale. <strong>Roles</strong> are the named styles a template reaches
+            for — <code>.text-title-ui</code>, <code>.text-label-data</code> —
+            emitted from <code>typography.ts</code>. <strong>Steps</strong> are
+            what Tailwind's <code>text-*</code> utilities compile to. They meet
+            at 12, 14 and 16px and nowhere else: Display, Heading/Large and
+            Heading/Section sit at 44, 24 and 18px, between steps, and are marked
+            off-step below. Reach for a role first — a step is the answer only
+            when no role fits.
+          </p>
 
           <div class="font-specimens">
             <div class="font-card">
@@ -344,8 +372,30 @@ onBeforeUnmount(() => {
           </div>
 
           <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
+            ROLES
+            <span class="group-label__note">The named styles. Every row is set in the style it documents.</span>
+          </h3>
+          <ul class="type-scale" role="list">
+            <li v-for="style in typeScale" :key="style.key">
+              <div class="type-scale__meta">
+                <strong class="text-label-data">{{ style.semanticName }}</strong>
+                <code class="text-label-data">.{{ style.utility }}</code>
+                <span class="text-label-data tabular-nums">{{ style.size }} / {{ style.lineHeight }}</span>
+                <span class="text-label-data">{{ familyName(style.familyRole) }} / {{ style.weight }}</span>
+                <span class="text-label-data type-scale__step" :class="{ 'is-offscale': !style.step }">
+                  {{ style.step ? `STEP ${style.step}` : "OFF-STEP" }}
+                </span>
+              </div>
+              <div class="type-scale__sample">
+                <p :class="style.utility">{{ style.sample }}</p>
+                <span class="text-label-data">{{ style.usage }}</span>
+              </div>
+            </li>
+          </ul>
+
+          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
             STEPS
-            <span class="group-label__note">Six sizes site-wide. Anything that does not fit rounds to the nearest.</span>
+            <span class="group-label__note">The other axis: what the Tailwind text-* utilities compile to. Three of these carry a role; the rest are reached directly.</span>
           </h3>
           <ul class="token-table" role="list">
             <li v-for="step in typeSteps" :key="step.token" class="token-row">
@@ -353,24 +403,6 @@ onBeforeUnmount(() => {
               <span class="text-label-data tabular-nums">{{ resolved[step.token] || "—" }}</span>
               <code class="text-label-data">{{ step.token }}</code>
               <span class="text-label-data">{{ step.usage }}</span>
-            </li>
-          </ul>
-
-          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
-            ROLES
-            <span class="group-label__note">The named styles built on those steps.</span>
-          </h3>
-          <ul class="type-scale" role="list">
-            <li v-for="style in typeScale" :key="style.key">
-              <div class="type-scale__meta">
-                <strong class="text-label-data">{{ style.semanticName }}</strong>
-                <span class="text-label-data">{{ style.size }} / {{ style.lineHeight }}</span>
-                <span class="text-label-data">{{ familyName(style.familyRole) }} / {{ style.weight }}</span>
-              </div>
-              <div class="type-scale__sample">
-                <p :class="style.utility">{{ style.sample }}</p>
-                <span class="text-label-data">{{ style.usage }}</span>
-              </div>
             </li>
           </ul>
         </section>
@@ -716,6 +748,11 @@ onBeforeUnmount(() => {
   color: var(--color-body);
 }
 
+.section-intro strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
 .group-label {
   display: flex;
   flex-wrap: wrap;
@@ -807,7 +844,7 @@ onBeforeUnmount(() => {
 
 .type-scale li {
   display: grid;
-  grid-template-columns: 12rem minmax(0, 1fr);
+  grid-template-columns: 14rem minmax(0, 1fr);
   gap: var(--space-6);
   padding: var(--space-4) 0;
   border-bottom: 1px solid var(--color-surface);
@@ -822,6 +859,24 @@ onBeforeUnmount(() => {
 
 .type-scale__meta strong {
   color: var(--color-ink);
+}
+
+.type-scale__meta code {
+  color: var(--color-body);
+}
+
+/* The roles and the steps are two scales that only partly overlap. Marking
+   each role with the step it lands on — or that it lands on none — is the
+   whole reason the two tables can sit apart without reading as one repeated
+   twice. */
+.type-scale__step {
+  color: var(--color-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.type-scale__step.is-offscale {
+  color: var(--color-signal);
 }
 
 .type-scale__sample {
