@@ -10,7 +10,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#131313] text-[#e2e2e2]">
+  <div class="min-h-screen bg-canvas text-body">
     <ClientOnly>
       <OgImageExporter />
     </ClientOnly>

@@ -70,10 +70,10 @@ function exportPng() {
   <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8">
     <div class="space-y-2">
       <span class="hud-label">OG_IMAGE_EXPORT</span>
-      <h1 class="text-heading-lg uppercase tracking-tight text-white">
+      <h1 class="hud-title">
         Open Graph Image Generator
       </h1>
-      <p class="text-body-compact max-w-2xl text-[#919191]">
+      <p class="text-body-compact max-w-2xl text-muted">
         Renders the 3D operator mesh at {{ OG_WIDTH }}×{{ OG_HEIGHT }} with the
         same lighting, pixel shader, grid background, and HUD overlays used on
         the site. Export the PNG and place it at
@@ -92,13 +92,13 @@ function exportPng() {
           step="0.01"
           class="w-full accent-white"
         />
-        <span class="text-label-data text-[#919191]">
+        <span class="text-label-data text-muted">
           {{ rotationY.toFixed(2) }} rad
         </span>
       </label>
 
       <button
-        class="text-label-data inline-flex items-center justify-center border border-white/20 bg-white px-4 py-2 uppercase tracking-[0.18em] text-black transition hover:bg-[#e2e2e2] disabled:cursor-not-allowed disabled:opacity-50"
+        class="text-label-data inline-flex items-center justify-center border border-white/20 bg-white px-4 py-2 uppercase tracking-[0.18em] text-black transition hover:bg-body disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="loading || errored || exporting"
         @click="exportPng"
       >
@@ -106,7 +106,7 @@ function exportPng() {
       </button>
     </div>
 
-    <div class="overflow-auto rounded border border-white/10 bg-[#0a0a0a] p-4">
+    <div class="overflow-auto rounded border border-white/10 bg-panel p-4">
       <div
         class="relative mx-auto origin-top-left"
         :style="{
@@ -129,9 +129,9 @@ function exportPng() {
           <div class="absolute inset-0 scanline-overlay" />
 
           <div
-            class="absolute top-2 left-2 border-l border-t border-white/15 px-2 py-0.5"
+            class="absolute top-2 left-2 border-l border-t border-white/15 px-2 py-1"
           >
-            <span class="text-label-data uppercase text-[#919191]">
+            <span class="text-label-data uppercase text-muted">
               SCAN_LOCK: TARGET_ACQUIRED
             </span>
           </div>
@@ -139,35 +139,32 @@ function exportPng() {
           <div
             class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent pt-8 pb-3 text-center"
           >
-            <div class="mb-1.5 flex justify-center">
+            <div class="mb-2 flex justify-center">
               <div
                 class="h-0 w-0 border-b-[11px] border-l-[8px] border-r-[8px] border-b-white/25 border-l-transparent border-r-transparent"
               />
             </div>
             <div
-              class="text-label-data uppercase tracking-widest text-[#919191]"
+              class="text-label-data uppercase tracking-widest text-muted"
             >
               SUIT INTEGRITY HIGH
             </div>
             <div
-              class="text-label-data mt-0.5 uppercase tracking-widest text-[#919191]"
+              class="text-label-data mt-1 uppercase tracking-widest text-muted"
             >
               OPTIMAL_V_2.4
             </div>
           </div>
 
-          <div class="corner-tl-w" />
-          <div class="corner-tr-w" />
-          <div class="corner-bl-w" />
-          <div class="corner-br-w" />
+          <HudCorners />
         </div>
 
         <div
           v-if="loading"
-          class="absolute inset-0 z-20 flex items-center justify-center bg-[#131313]"
+          class="absolute inset-0 z-20 flex items-center justify-center bg-canvas"
         >
           <span
-            class="text-label-data animate-pulse uppercase tracking-[0.3em] text-[#919191]"
+            class="text-label-data animate-pulse uppercase tracking-[0.3em] text-muted"
           >
             DECODING_SUIT_MESH…
           </span>
@@ -175,10 +172,10 @@ function exportPng() {
 
         <div
           v-if="errored"
-          class="absolute inset-0 z-20 flex items-center justify-center bg-[#131313]"
+          class="absolute inset-0 z-20 flex items-center justify-center bg-canvas"
         >
           <span
-            class="text-label-data uppercase tracking-[0.3em] text-red-400/80"
+            class="text-label-data uppercase tracking-[0.3em] text-signal/80"
           >
             SIGNAL_LOST // MESH_UNAVAILABLE
           </span>

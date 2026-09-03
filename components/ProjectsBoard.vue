@@ -130,7 +130,7 @@ onUnmounted(() => {
 <template>
   <div
     ref="railRef"
-    class="projects-rail flex flex-col gap-8 py-5 pb-24 xl:h-full xl:overflow-y-auto"
+    class="projects-rail flex flex-col gap-8 py-4 pb-24 xl:h-full xl:overflow-y-auto"
     :aria-hidden="interactive ? undefined : 'true'"
   >
     <!-- Only when the board is the page. As the backdrop behind a cold-loaded
@@ -141,14 +141,14 @@ onUnmounted(() => {
     <header v-if="interactive" class="flex max-w-3xl flex-col gap-3 pt-2">
       <span class="hud-label">// PROJECTS</span>
       <h1 class="hud-title">SELECTED WORK</h1>
-      <p class="max-w-xl text-sm leading-relaxed text-[#a8a8a8]">
+      <p class="max-w-xl text-sm leading-relaxed text-muted">
         A collection of web apps and projects I've collaborated on over the
         years, along with technical articles I'm proud of.
       </p>
     </header>
 
     <section aria-label="Selected work">
-      <ul class="grid grid-cols-1 gap-5 md:grid-cols-2" role="list">
+      <ul class="grid grid-cols-1 gap-4 md:grid-cols-2" role="list">
         <li
           v-for="(project, i) in projects"
           :key="project.slug"

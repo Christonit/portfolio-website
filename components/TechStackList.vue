@@ -18,7 +18,7 @@ defineProps<{
   <div class="order-3 xl:order-2 flex-shrink-0 xl:flex xl:flex-col xl:min-h-0">
     <div class="flex justify-between items-center mb-2 flex-shrink-0">
       <h3 class="hud-label">TECH STACK</h3>
-      <span class="text-label-data text-[#919191]"
+      <span class="text-label-data text-muted"
         >MOD_{{ String(skills.length).padStart(3, "0") }}</span
       >
     </div>
@@ -36,11 +36,11 @@ defineProps<{
         :data-keywords="skill.metadata"
         :aria-label="`${skill.name.replace(/_/g, ' ')} — ${skill.metadata}`"
         :class="[
-          'flex items-center justify-between py-2 border-b border-[#474747]/50 transition-all duration-150',
+          'flex items-center justify-between py-2 border-b border-rule/50 transition-all duration-150',
           'xl:px-3 xl:border-r-2 xl:border-b-0 xl:cursor-pointer xl:group',
           focusedSkill === i
-            ? 'xl:bg-[#353535] xl:border-white xl:translate-x-0.5'
-            : 'xl:bg-[#353535]/10 xl:border-[#474747]/50 xl:hover:bg-[#1f1f1f] xl:hover:translate-x-0.5',
+            ? 'xl:bg-surface xl:border-white xl:translate-x-1'
+            : 'xl:bg-surface/10 xl:border-rule/50 xl:hover:bg-surface xl:hover:translate-x-1',
         ]"
       >
         <div class="flex items-center gap-3">
@@ -66,7 +66,7 @@ defineProps<{
           >
         </div>
         <div
-          class="w-10 h-px shrink-0 bg-[#474747]/60"
+          class="w-8 h-px shrink-0 bg-rule/60"
           :class="focusedSkill === i ? 'xl:bg-white' : ''"
         />
       </div>

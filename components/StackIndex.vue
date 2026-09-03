@@ -48,7 +48,7 @@ defineProps<{
   display: flex;
   min-height: 42px;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
 }
 
 .stack-index li:nth-child(odd) {
@@ -58,8 +58,8 @@ defineProps<{
 .stack-index__label {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #d6d6d6;
+  gap: var(--space-3);
+  color: var(--color-body);
   font-size: var(--text-xs);
   letter-spacing: 0.02em;
 }

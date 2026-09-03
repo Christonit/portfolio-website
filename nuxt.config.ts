@@ -62,7 +62,6 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/tailwindcss",
     "@nuxtjs/color-mode",
-    "shadcn-nuxt",
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "nuxt-schema-org",
@@ -157,11 +156,6 @@ export default defineNuxtConfig({
     classSuffix: "",
     preference: "dark",
     fallback: "dark",
-  },
-
-  shadcn: {
-    prefix: "",
-    componentDir: "./components/ui",
   },
 
   tailwindcss: {

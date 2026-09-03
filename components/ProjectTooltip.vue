@@ -58,7 +58,7 @@ const visitLabel = computed(() =>
 
 <template>
   <article
-    class="project-tt flex w-full flex-col overflow-hidden border border-[#2a2a2a] bg-[#0c0c0c] text-left shadow-[0_24px_80px_rgba(0,0,0,0.72),0_0_0_1px_rgba(103,245,122,0.06)]"
+    class="project-tt flex w-full flex-col overflow-hidden border border-surface bg-panel text-left shadow-[0_24px_80px_rgba(0,0,0,0.72),0_0_0_1px_rgba(103,245,122,0.06)]"
     :aria-label="`${project.name} project preview`"
   >
     <!-- Preview image -->
@@ -66,15 +66,15 @@ const visitLabel = computed(() =>
       class="relative aspect-[16/9] w-full overflow-hidden border-b border-white/10 bg-black"
     >
       <div
-        class="absolute inset-0 flex flex-col items-center justify-center gap-1.5"
+        class="absolute inset-0 flex flex-col items-center justify-center gap-2"
       >
         <div class="absolute inset-0 grid-bg opacity-40" />
         <span
-          class="text-label-data relative z-[1] uppercase tracking-[0.28em] text-[#67F57A]"
+          class="text-label-data relative z-[1] uppercase tracking-[0.28em] text-signal"
           >{{ objectId }}</span
         >
         <span
-          class="text-label-data relative z-[1] uppercase tracking-[0.18em] text-[#919191]"
+          class="text-label-data relative z-[1] uppercase tracking-[0.18em] text-muted"
           >PREVIEW_OFFLINE</span
         >
       </div>
@@ -91,7 +91,7 @@ const visitLabel = computed(() =>
       />
     </div>
 
-    <div class="flex flex-col gap-4 px-4 pb-4 pt-3.5">
+    <div class="flex flex-col gap-4 px-4 pb-4 pt-4">
       <!-- Title -->
       <h3
         class="text-title-ui uppercase tracking-tight text-white"
@@ -100,14 +100,14 @@ const visitLabel = computed(() =>
       </h3>
 
       <!-- Tasks -->
-      <ul v-if="tasks.length" class="flex flex-col gap-1.5" role="list">
+      <ul v-if="tasks.length" class="flex flex-col gap-2" role="list">
         <li
           v-for="(task, i) in tasks"
           :key="task"
-          class="project-tt-task text-label-data flex items-start gap-2 uppercase tracking-wide text-[#e8e8e8]"
+          class="project-tt-task text-label-data flex items-start gap-2 uppercase tracking-wide text-body"
           :style="{ '--task-i': i }"
         >
-          <span class="mt-px shrink-0 text-[#67F57A]" aria-hidden="true"
+          <span class="mt-px shrink-0 text-signal" aria-hidden="true"
             >&gt;</span
           >
           <span>{{ task }}</span>
@@ -115,14 +115,14 @@ const visitLabel = computed(() =>
       </ul>
 
       <!-- Tech stack -->
-      <ul v-if="project.tech.length" class="flex flex-wrap gap-1.5" role="list">
+      <ul v-if="project.tech.length" class="flex flex-wrap gap-2" role="list">
         <li v-for="(item, i) in project.tech" :key="item">
           <span
-            class="text-label-data inline-flex items-center border px-1.5 py-1 uppercase tracking-[0.14em] transition-colors duration-150"
+            class="text-label-data inline-flex items-center border px-2 py-1 uppercase tracking-[0.14em] transition-colors duration-150"
             :class="
               i === 0
-                ? 'border-[#67F57A] text-[#67F57A]'
-                : 'border-[#3a3a3a] text-[#e2e2e2] hover:border-[#67F57A] hover:text-[#67F57A]'
+                ? 'border-signal text-signal'
+                : 'border-rule text-body hover:border-signal hover:text-signal'
             "
           >
             {{ item }}
@@ -162,9 +162,9 @@ const visitLabel = computed(() =>
   justify-content: center;
   min-height: 44px;
   min-width: 0;
-  padding: 0 12px;
-  border: 1px solid #67f57a;
-  color: #67f57a;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-signal);
+  color: var(--color-signal);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
@@ -177,12 +177,12 @@ const visitLabel = computed(() =>
 
 .project-tt-btn:hover,
 .project-tt-btn:focus-visible {
-  background-color: #67f57a;
-  color: #031a0a;
+  background-color: var(--color-signal);
+  color: var(--color-canvas);
 }
 
 .project-tt-btn:focus-visible {
-  outline: 1px solid #67f57a;
+  outline: 1px solid var(--color-signal);
   outline-offset: 2px;
 }
 

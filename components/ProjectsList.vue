@@ -210,8 +210,8 @@ onUnmounted(() => {
         :key="mission.slug"
         :ref="(el) => bindRow(el as Element | null, i)"
         :class="[
-          'border-b border-[#474747]/20 lg:px-1 transition-colors group',
-          highlightedIndex === i ? 'bg-[#2a2a2a]' : 'hover:bg-[#1f1f1f]/60',
+          'border-b border-rule/20 lg:px-1 transition-colors group',
+          highlightedIndex === i ? 'bg-surface' : 'hover:bg-surface/60',
         ]"
         @mouseenter="scheduleShow(i)"
         @mouseleave="scheduleHide"
@@ -227,7 +227,7 @@ onUnmounted(() => {
           :aria-describedby="
             highlightedIndex === i ? `project-tt-${mission.slug}` : undefined
           "
-          class="flex gap-2 lg:gap-3 py-2.5 no-underline cursor-pointer"
+          class="flex gap-2 lg:gap-3 py-3 no-underline cursor-pointer"
         >
           <div
             class="w-[2px] shrink-0 self-stretch transition-colors"
@@ -243,13 +243,13 @@ onUnmounted(() => {
               :class="
                 highlightedIndex === i
                   ? 'text-white'
-                  : 'text-[#e2e2e2] group-hover:text-white'
+                  : 'text-body group-hover:text-white'
               "
             >
               {{ mission.name }}
             </span>
             <span
-              class="text-label-data mt-0.5 uppercase text-[#919191]"
+              class="text-label-data mt-1 uppercase text-muted"
             >
               // {{ mission.tags }}
             </span>
@@ -265,7 +265,7 @@ onUnmounted(() => {
           :id="`project-tt-${floatingMission.slug}`"
           :key="floatingMission.slug"
           ref="tooltipRef"
-          class="project-tt-float fixed z-[9999] max-h-[90vh]"
+          class="project-tt-float fixed z-tooltip max-h-[90vh]"
           :style="tooltipStyle"
           @mouseenter="onEnterCard"
           @mouseleave="scheduleHide"

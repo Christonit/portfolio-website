@@ -15,12 +15,9 @@ const biometrics: Biometric[] = [
 <template>
   <!-- Service Record -->
   <div
-    class="relative flex-shrink-0 border border-[#474747]/40 p-4 bg-[#1f1f1f]/20"
+    class="relative flex-shrink-0 border border-rule/40 p-4 bg-surface/20"
   >
-    <div class="corner-tl" />
-    <div class="corner-tr" />
-    <div class="corner-bl" />
-    <div class="corner-br" />
+    <HudCorners variant="muted" />
 
     <div class="flex justify-between items-center mb-2">
       <span class="hud-label">SERVICE_RECORD</span>
@@ -29,21 +26,21 @@ const biometrics: Biometric[] = [
       >
     </div>
 
-    <div class="h-px bg-[#353535] w-full relative mb-4">
+    <div class="h-px bg-rule w-full relative mb-4">
       <div class="absolute inset-y-0 left-0 bg-white" style="width: 85%" />
     </div>
 
     <div class="grid w-full grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
       <div class="text-left">
-        <span class="hud-label mb-0.5">EXPERIENCE</span>
+        <span class="hud-label mb-1">EXPERIENCE</span>
         <span class="text-label-data block text-white">10_YEARS</span>
       </div>
       <div class="text-right sm:text-center">
-        <span class="hud-label mb-0.5">COFFEE_CUPS</span>
+        <span class="hud-label mb-1">COFFEE_CUPS</span>
         <span class="text-label-data block text-white">+99</span>
       </div>
       <div class="col-span-2 text-left sm:col-span-1 sm:text-right">
-        <span class="hud-label mb-0.5">PROJECTS</span>
+        <span class="hud-label mb-1">PROJECTS</span>
         <span class="text-label-data block text-white">+99</span>
       </div>
     </div>
@@ -54,16 +51,16 @@ const biometrics: Biometric[] = [
 
   <!-- Biometric Data -->
   <div class="">
-    <span class="hud-label pb-3 border-b border-[#474747]/25 mb-2"
+    <span class="hud-label pb-3 border-b border-rule/25 mb-2"
       >BIOMETRIC_DATA</span
     >
-    <div class="space-y-1.5">
+    <div class="space-y-2">
       <div
         v-for="bio in biometrics"
         :key="bio.label"
-        class="flex justify-between items-center border-b border-[#474747]/25 pb-1.5"
+        class="flex justify-between items-center border-b border-rule/25 pb-2"
       >
-        <span class="text-label-data uppercase text-[#919191]">{{
+        <span class="text-label-data uppercase text-muted">{{
           bio.label
         }}</span>
         <span class="text-label-data text-white">{{ bio.value }}</span>

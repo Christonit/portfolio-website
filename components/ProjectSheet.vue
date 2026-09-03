@@ -201,10 +201,7 @@ watch(hudKey, (key) => {
         tabindex="-1"
         @animationend="onPanelAnimationEnd"
       >
-        <div class="corner-tl-w" />
-        <div class="corner-tr-w" />
-        <div class="corner-bl-w" />
-        <div class="corner-br-w" />
+        <HudCorners />
 
         <header class="project-sheet__chrome">
           <div class="min-w-0 flex-1">
@@ -250,12 +247,12 @@ watch(hudKey, (key) => {
 
 <style scoped>
 /* Teleported to body, so these z-indexes compete with the layout chrome
-   (site-nav 50, main 10, mobile bottom nav 100) rather than nesting inside
-   hud-page's stacking context. */
+   rather than nesting inside hud-page's stacking context — hence the shared
+   --z-* scale in globals.css rather than local numbers. */
 .project-sheet__scrim {
   position: fixed;
   inset: 3.5rem 0 0 0;
-  z-index: 40;
+  z-index: var(--z-sheet-scrim);
   background: rgba(6, 6, 6, 0.74);
   animation: sheet-scrim-in var(--sheet-scrim-in-dur) var(--sheet-fade-ease)
     both;
@@ -296,7 +293,6 @@ watch(hudKey, (key) => {
 
 .project-sheet__panel {
   position: fixed;
-  z-index: 45;
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -304,12 +300,12 @@ watch(hudKey, (key) => {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   outline: none;
 
-  /* Phones and small tablets: the panel rises all the way to the top edge,
-     covering the site header, so the dossier reads as a full-height layer
-     rather than one still boxed in by the top nav. It stops short of the
-     mobile bottom nav (fixed, z-100) so that stays reachable. */
+  /* The panel rises all the way to the top edge, covering the site header, so
+     the dossier reads as a full-height layer rather than one still boxed in by
+     the top nav. It stops short of the mobile bottom nav, which sits one step
+     higher on the scale, so that stays reachable. */
   inset: 0 0 4rem 0;
-  z-index: 55;
+  z-index: var(--z-sheet);
   /* A full-bleed sheet rising from the bottom edge doesn't fade — it would
      only muddy the travel. The scrim carries the change in depth. */
   animation: sheet-rise-in var(--sheet-in-dur) var(--sheet-ease) both;
@@ -326,13 +322,11 @@ watch(hudKey, (key) => {
   will-change: transform, opacity;
 }
 
-.project-sheet__panel
-  :is(.corner-tl-w, .corner-tr-w, .corner-bl-w, .corner-br-w) {
-  z-index: 3;
-  width: 14px;
-  height: 14px;
-  border-color: rgba(255, 255, 255, 0.7);
-  pointer-events: none;
+/* HudCorners reads these off the nearest ancestor that sets them; the marks
+   themselves already carry z-index and pointer-events. */
+.project-sheet__panel {
+  --hud-corner-size: 14px;
+  --hud-corner-color: rgba(255, 255, 255, 0.7);
 }
 
 /* ── Chrome ─────────────────────────────────────────────────────── */
@@ -341,10 +335,10 @@ watch(hudKey, (key) => {
   flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--space-3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(8, 8, 8, 0.9);
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-2) var(--space-3);
 }
 
 .project-sheet__close {
@@ -354,7 +348,7 @@ watch(hudKey, (key) => {
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #919191;
+  color: var(--color-muted);
   transition:
     border-color 150ms ease,
     color 150ms ease;
@@ -362,8 +356,8 @@ watch(hudKey, (key) => {
 
 .project-sheet__close:hover,
 .project-sheet__close:focus-visible {
-  border-color: #67f57a;
-  color: #67f57a;
+  border-color: var(--color-signal);
+  color: var(--color-signal);
   outline: none;
 }
 
@@ -390,7 +384,7 @@ watch(hudKey, (key) => {
   /* Even inset all round, so the close button's gap to the panel edge matches
      its gap to the top and bottom of the chrome. */
   .project-sheet__chrome {
-    padding: 0.5rem;
+    padding: var(--space-2);
   }
 
   .project-sheet__close {

@@ -81,49 +81,49 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 
         <div class="exp-body">
           <div
-            class="exp-date mb-1.5"
-            :class="org.active ? 'text-white' : 'text-[#919191]'"
+            class="exp-date mb-2"
+            :class="org.active ? 'text-white' : 'text-muted'"
           >
             {{ org.span }}
           </div>
           <h3
             class="font-semibold uppercase leading-snug tracking-wider"
-            :class="org.active ? 'text-white' : 'text-[#e2e2e2]'"
+            :class="org.active ? 'text-white' : 'text-body'"
             style="font-size: var(--text-lg)"
           >
             {{ org.company }}
           </h3>
           <div
             v-if="org.location"
-            class="mt-1 font-mono text-xs leading-snug text-[#919191]"
+            class="mt-1 font-mono text-xs leading-snug text-muted"
           >
             // {{ org.location }}
           </div>
         </div>
       </div>
 
-      <ol class="exp-roles mt-7 flex flex-col gap-8">
+      <ol class="exp-roles mt-8 flex flex-col gap-8">
         <li v-for="item in org.roles" :key="item.role" class="exp-row">
           <div class="exp-body">
             <!-- A role span is secondary to the org span above it, so it
                  sits on its own title rather than reading as a peer. -->
             <div
               v-if="showRolePeriod(org, item)"
-              class="exp-date mb-1.5"
-              :class="item.current ? 'text-[#c6c6c6]' : 'text-[#919191]'"
+              class="exp-date mb-2"
+              :class="item.current ? 'text-prose' : 'text-muted'"
             >
               {{ item.period }}
             </div>
 
             <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
               <div
-                class="text-sm font-medium uppercase leading-snug tracking-wider text-white"
+                class="text-sm uppercase leading-snug tracking-wider text-white"
               >
                 {{ item.role }}
               </div>
               <div
                 v-if="item.type"
-                class="font-mono text-xs leading-snug tracking-widest text-[#919191]"
+                class="font-mono text-xs leading-snug tracking-widest text-muted"
               >
                 {{ item.type }}
               </div>
@@ -131,20 +131,20 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 
             <p
               v-if="item.note"
-              class="exp-measure mt-3 text-sm leading-relaxed text-[#c6c6c6]"
+              class="exp-measure mt-3 text-sm leading-relaxed text-prose"
             >
               {{ item.note }}
             </p>
             <div
               v-if="item.tags"
-              class="exp-measure mt-2 font-mono text-xs leading-relaxed tracking-wide text-[#919191]"
+              class="exp-measure mt-2 font-mono text-xs leading-relaxed tracking-wide text-muted"
             >
               // {{ item.tags }}
             </div>
 
             <ul
               v-if="roleProjects(item).length"
-              class="exp-measure mt-5 flex flex-col gap-2"
+              class="exp-measure mt-6 flex flex-col gap-2"
               role="list"
             >
               <li v-for="project in roleProjects(item)" :key="project.slug">
@@ -158,7 +158,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
                       ? 'noopener noreferrer'
                       : undefined
                   "
-                  class="exp-project group flex items-center gap-3 border border-[#474747]/40 bg-[#1f1f1f]/40 p-2.5 no-underline outline-none"
+                  class="exp-project group flex items-center gap-3 border border-rule/40 bg-surface/40 p-3 no-underline outline-none"
                 >
                   <span class="exp-thumb shrink-0" aria-hidden="true">
                     <img
@@ -171,20 +171,20 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 
                   <span class="flex min-w-0 flex-col gap-1">
                     <span
-                      class="flex items-center gap-1 text-xs font-semibold uppercase leading-snug tracking-wider text-[#c6c6c6] transition-colors duration-150 group-hover:text-white group-focus-visible:text-white"
+                      class="flex items-center gap-1 text-xs font-semibold uppercase leading-snug tracking-wider text-prose transition-colors duration-150 group-hover:text-white group-focus-visible:text-white"
                     >
                       <span class="truncate">{{
                         formatProjectName(project.name)
                       }}</span>
                       <span
                         v-if="isExternalProjectHref(project)"
-                        class="font-mono text-xs text-[#919191]"
+                        class="font-mono text-xs text-muted"
                         aria-hidden="true"
                         >↗</span
                       >
                     </span>
                     <span
-                      class="font-mono text-xs leading-snug text-[#919191] line-clamp-2"
+                      class="font-mono text-xs leading-snug text-muted line-clamp-2"
                     >
                       {{ project.tags }}
                     </span>
@@ -205,7 +205,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 .exp-row {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: var(--space-4);
 }
 
 /* The org mark leads the block from the top rather than from a side column,
@@ -214,7 +214,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .exp-body {
@@ -250,17 +250,17 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
   font-size: var(--text-xs);
   line-height: 1;
   letter-spacing: 0.06em;
-  color: #919191;
+  color: var(--color-muted);
 }
 
 .exp-logo--active .exp-monogram {
-  color: #ffffff;
+  color: white;
 }
 
 /* With the logo stacked on top there is no column to align against, so the
    roles get a rail instead — it carries the nesting the indent used to. */
 .exp-roles {
-  padding-left: 18px;
+  padding-left: var(--space-6);
   border-left: 1px solid rgba(71, 71, 71, 0.4);
 }
 
@@ -277,8 +277,8 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
   width: 64px;
   height: 44px;
   overflow: hidden;
-  border: 1px solid #2a2a2a;
-  background: #0c0c0c;
+  border: 1px solid var(--color-surface);
+  background: var(--color-panel);
 }
 
 .exp-project {
@@ -294,7 +294,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 }
 
 .exp-project:focus-visible {
-  outline: 1px solid #67f57a;
+  outline: 1px solid var(--color-signal);
   outline-offset: 2px;
 }
 </style>

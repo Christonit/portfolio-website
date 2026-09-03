@@ -212,7 +212,7 @@ if (import.meta.client) {
         :href="visitUrl"
         target="_blank"
         rel="noopener noreferrer"
-        class="px-1 font-mono text-2xs uppercase tracking-[0.18em] text-[#67F57A] transition-colors hover:text-white"
+        class="px-1 font-mono text-2xs uppercase tracking-[0.18em] text-signal transition-colors hover:text-white"
       >
         VISIT_PROJECT
       </a>
@@ -260,9 +260,9 @@ if (import.meta.client) {
 <style scoped>
 .project-nav {
   position: fixed;
-  /* Above the sheet panel (z-55), which on mobile rises to the top edge and
-     would otherwise paint over these rails. */
-  z-index: 56;
+  /* One step above the sheet panel, which rises to the top edge and would
+     otherwise paint over these rails. */
+  z-index: var(--z-sheet-rail);
   display: flex;
   height: 2.75rem;
   width: 2.75rem;
@@ -270,7 +270,7 @@ if (import.meta.client) {
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(11, 11, 11, 0.82);
-  color: #fff;
+  color: white;
   font-size: var(--text-lg);
   line-height: 1;
   /* Carried as a variable because the desktop rails also hold a centring
@@ -291,7 +291,7 @@ if (import.meta.client) {
    move. */
 .project-nav.is-pressed {
   --nav-press-scale: 0.9;
-  border-color: #fff;
+  border-color: white;
 }
 
 /* The rails belong to the sheet's entrance, so they run on its clock and land
@@ -342,9 +342,9 @@ if (import.meta.client) {
 
 .project-nav:hover,
 .project-nav:focus-visible {
-  border-color: #fff;
-  background: #fff;
-  color: #000;
+  border-color: white;
+  background: white;
+  color: var(--color-canvas);
   outline: none;
 }
 

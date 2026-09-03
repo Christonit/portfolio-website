@@ -165,7 +165,7 @@ function onSecondary() {
   align-items: center;
   align-items: safe center;
   justify-content: center;
-  padding: 24px 0 48px;
+  padding: var(--space-6) 0 var(--space-12);
 }
 
 .error-rail {
@@ -173,7 +173,7 @@ function onSecondary() {
   width: min(800px, calc(100% - 32px));
   flex-direction: column;
   align-items: stretch;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .error-panel {
@@ -184,7 +184,7 @@ function onSecondary() {
   background:
     var(--identity-grain),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
-    #101010;
+    var(--color-panel);
   background-size:
     180px 180px,
     auto,
@@ -229,17 +229,13 @@ function onSecondary() {
   min-height: 48px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 0 18px;
+  gap: var(--space-4);
+  padding: 0 var(--space-6);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.error-panel__header .hud-label {
-  color: #777;
-}
-
 .error-panel__status {
-  color: #777;
+  color: var(--color-muted);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -250,12 +246,12 @@ function onSecondary() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 28px 18px 24px;
+  padding: var(--space-8) var(--space-6) var(--space-6);
   text-align: center;
 }
 
 .error-panel__kicker {
-  color: #fff;
+  color: white;
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.13em;
@@ -263,8 +259,8 @@ function onSecondary() {
 }
 
 .error-panel__qualifier {
-  margin-left: 8px;
-  color: #c6c6c6;
+  margin-left: var(--space-2);
+  color: var(--color-prose);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 400;
@@ -272,8 +268,8 @@ function onSecondary() {
 }
 
 .error-panel__code {
-  margin-top: 14px;
-  color: #fff;
+  margin-top: var(--space-4);
+  color: white;
   font-family: var(--font-sans);
   font-size: clamp(3.5rem, 12vh + 6vw, 7rem);
   font-weight: 600;
@@ -284,9 +280,9 @@ function onSecondary() {
 
 .error-panel__copy {
   max-width: 52ch;
-  margin-top: 18px;
+  margin-top: var(--space-6);
   margin-inline: auto;
-  color: #c6c6c6;
+  color: var(--color-prose);
   text-wrap: pretty;
 }
 
@@ -294,18 +290,18 @@ function onSecondary() {
   display: grid;
   grid-template-columns: auto auto;
   justify-content: center;
-  gap: 16px 40px;
-  margin-top: 22px;
+  gap: var(--space-4) var(--space-8);
+  margin-top: var(--space-6);
 }
 
 .error-panel__meta div {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
 .error-panel__meta dt {
-  color: #777;
+  color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   letter-spacing: 0.16em;
@@ -314,7 +310,7 @@ function onSecondary() {
 
 .error-panel__meta dd {
   overflow: hidden;
-  color: #e2e2e2;
+  color: var(--color-body);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.04em;
@@ -323,8 +319,8 @@ function onSecondary() {
 }
 
 .error-panel__detail {
-  margin-top: 16px;
-  color: #919191;
+  margin-top: var(--space-4);
+  color: var(--color-muted);
   overflow-wrap: anywhere;
 }
 
@@ -340,11 +336,11 @@ function onSecondary() {
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 11px 18px;
-  border-top: 1px solid #262626;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  border-top: 1px solid var(--color-surface);
   background: rgba(255, 255, 255, 0.025);
-  color: #fff;
+  color: white;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -376,8 +372,8 @@ function onSecondary() {
 .error-secondary {
   align-self: center;
   min-height: 44px;
-  padding: 0 2px;
-  color: #919191;
+  padding: 0 var(--space-1);
+  color: var(--color-muted);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: underline;
@@ -388,36 +384,36 @@ function onSecondary() {
 
 .error-secondary:hover,
 .error-secondary:focus-visible {
-  color: #fff;
+  color: white;
   outline: none;
 }
 
 @media (max-height: 700px) {
   .error-console {
-    padding: 12px 0 24px;
+    padding: var(--space-3) 0 var(--space-6);
   }
 
   .error-panel__body {
-    padding-top: 18px;
-    padding-bottom: 16px;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-4);
   }
 
   .error-panel__code {
-    margin-top: 8px;
+    margin-top: var(--space-2);
   }
 
   .error-panel__copy {
-    margin-top: 12px;
+    margin-top: var(--space-3);
   }
 
   .error-panel__meta {
-    margin-top: 14px;
+    margin-top: var(--space-4);
   }
 }
 
 @media (max-width: 639px) {
   .error-console {
-    padding: 12px 0 32px;
+    padding: var(--space-3) 0 var(--space-8);
   }
 
   .error-rail {
@@ -426,16 +422,16 @@ function onSecondary() {
 
   .error-panel__header,
   .error-panel__body {
-    padding-inline: 14px;
+    padding-inline: var(--space-4);
   }
 
   .error-panel__body {
-    padding-top: 22px;
-    padding-bottom: 20px;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
   }
 
   .error-panel__code {
-    margin-top: 10px;
+    margin-top: var(--space-3);
   }
 
   .error-panel__kicker {
@@ -444,18 +440,18 @@ function onSecondary() {
   }
 
   .error-panel__qualifier {
-    margin-left: 6px;
+    margin-left: var(--space-2);
     font-size: var(--text-2xs);
   }
 
   .error-panel__meta {
     grid-template-columns: 1fr;
     justify-items: center;
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   .error-panel__cta {
-    padding-inline: 14px;
+    padding-inline: var(--space-4);
   }
 }
 

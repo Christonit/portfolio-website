@@ -98,10 +98,7 @@ onUnmounted(() => {
     >
 
     <div id="local-time-card" class="local-time__card text-label-data" role="tooltip">
-      <div class="corner-tl-w" />
-      <div class="corner-tr-w" />
-      <div class="corner-bl-w" />
-      <div class="corner-br-w" />
+      <HudCorners />
 
       <div class="local-time__map">
         <ClientOnly>
@@ -166,13 +163,13 @@ onUnmounted(() => {
 .local-time__trigger {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
   min-height: 1.5rem;
-  padding: 0.2rem 0.55rem;
+  padding: var(--space-1) var(--space-2);
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: #919191;
+  color: var(--color-muted);
   letter-spacing: 0.02em;
   white-space: nowrap;
   cursor: default;
@@ -190,7 +187,7 @@ onUnmounted(() => {
 .local-time__trigger:focus-visible,
 .local-time.is-open .local-time__trigger {
   background: rgba(255, 255, 255, 0.08);
-  color: #e2e2e2;
+  color: var(--color-body);
 }
 
 .local-time__trigger:focus-visible {
@@ -205,9 +202,9 @@ onUnmounted(() => {
   z-index: 40;
   width: min(22.5rem, calc(100vw - 1.5rem));
   overflow: hidden;
-  border: 1px solid #2a2a2a;
-  background: #0c0c0c;
-  color: #e2e2e2;
+  border: 1px solid var(--color-surface);
+  background: var(--color-panel);
+  color: var(--color-body);
   box-shadow:
     0 24px 80px rgba(0, 0, 0, 0.72),
     0 0 0 1px rgba(103, 245, 122, 0.06);
@@ -254,7 +251,7 @@ onUnmounted(() => {
   height: 11rem;
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: #050505;
+  background: var(--color-panel);
 }
 
 .local-time__map-frame {
@@ -275,7 +272,7 @@ onUnmounted(() => {
 .local-time__map-grade {
   position: absolute;
   inset: 0;
-  background: #67f57a;
+  background: var(--color-signal);
   mix-blend-mode: color;
   opacity: 0.28;
   pointer-events: none;
@@ -319,7 +316,7 @@ onUnmounted(() => {
 .local-time__reticle-ring {
   position: absolute;
   inset: 0;
-  border: 1px solid #67f57a;
+  border: 1px solid var(--color-signal);
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(103, 245, 122, 0.35);
   animation: local-time-pulse 2.2s ease-out infinite;
@@ -331,9 +328,9 @@ onUnmounted(() => {
   left: 50%;
   width: 7px;
   height: 7px;
-  border: 1.5px solid #0c0c0c;
+  border: 1.5px solid var(--color-panel);
   border-radius: 50%;
-  background: #67f57a;
+  background: var(--color-signal);
   box-shadow: 0 0 8px rgba(103, 245, 122, 0.7);
   transform: translate(-50%, -50%);
 }
@@ -343,7 +340,7 @@ onUnmounted(() => {
   top: 0.45rem;
   left: 0.5rem;
   z-index: 2;
-  color: #67f57a;
+  color: var(--color-signal);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.85);
@@ -355,26 +352,26 @@ onUnmounted(() => {
   right: 0.4rem;
   bottom: 0.35rem;
   z-index: 2;
-  padding: 0.2rem 0.4rem;
+  padding: var(--space-1) var(--space-2);
   border: 1px solid rgba(103, 245, 122, 0.35);
   background: rgba(12, 12, 12, 0.82);
-  color: #67f57a;
+  color: var(--color-signal);
   letter-spacing: 0.16em;
   text-decoration: none;
 }
 
 .local-time__attribution:hover,
 .local-time__attribution:focus-visible {
-  border-color: #67f57a;
-  color: #e2e2e2;
+  border-color: var(--color-signal);
+  color: var(--color-body);
 }
 
 .local-time__copy {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0.8rem 0.8rem;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-3) var(--space-3);
 }
 
 .local-time__place,
@@ -382,7 +379,7 @@ onUnmounted(() => {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: var(--space-1);
 }
 
 .local-time__clock {
@@ -392,31 +389,31 @@ onUnmounted(() => {
 }
 
 .local-time__kicker {
-  color: #67f57a;
+  color: var(--color-signal);
   letter-spacing: 0.22em;
 }
 
 .local-time__place strong {
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #fff;
+  color: white;
 }
 
 .local-time__place span:last-child {
-  color: #919191;
+  color: var(--color-muted);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .local-time__card-clock {
-  color: #e2e2e2;
+  color: var(--color-body);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
 }
 
 @media (min-width: 1280px) {
   .local-time__trigger {
-    padding: 0.25rem 0.65rem;
+    padding: var(--space-1) var(--space-3);
   }
 }
 

@@ -81,42 +81,85 @@
 }
 
 @layer base {
-  :root,
-  .dark {
-    --background: 0 0% 7.5%;
-    --foreground: 0 0% 88.6%;
-    --card: 0 0% 7.5%;
-    --card-foreground: 0 0% 88.6%;
-    --popover: 0 0% 7.5%;
-    --popover-foreground: 0 0% 88.6%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 7.5%;
-    --secondary: 0 0% 27.8%;
-    --secondary-foreground: 0 0% 88.6%;
-    --muted: 0 0% 27.8%;
-    --muted-foreground: 0 0% 57%;
-    --accent: 0 0% 16.5%;
-    --accent-foreground: 0 0% 88.6%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 88.6%;
-    --border: 0 0% 27.8%;
-    --input: 0 0% 27.8%;
-    --ring: 0 0% 100%;
-    --radius: 0px;
+  :root {
+    /* Core visual tokens — documented at /design-system.
+       This is the whole palette. There used to be a second, parallel set
+       here (shadcn's `--background` / `--primary` / `--card` HSL triplets,
+       mapped onto Tailwind colour utilities in tailwind.config.ts). Nothing
+       ever consumed it — not one `bg-background` in the app — and having two
+       palettes in one file is what let raw hex spread instead: with no single
+       obvious answer to "which token is the page background", every component
+       just wrote `#131313`. One palette, so there is one answer.
 
-    /* Core visual tokens — documented at /design-system */
-    --color-canvas: #131313;
-    --color-panel: #0b0b0b;
-    --color-surface: #1f1f1f;
-    /* Borders, rules and corner marks only — never text. At 2.0:1 on the
-       canvas it fails WCAG AA by a wide margin, and there is no darker tier
-       than --color-muted that passes, so dimmer-than-muted copy is carried by
-       the mono face and tracking instead of by luminance. */
-    --color-rule: #474747;
-    --color-muted: #919191;
-    --color-body: #e2e2e2;
-    --color-ink: #ffffff;
-    --color-signal: #67f57a;
+       Each colour is declared once, as space-separated RGB channels. The
+       `--color-*` hex-equivalents below are derived from those channels
+       rather than written out a second time, so there is still exactly one
+       place to change a value. The channel form is what lets Tailwind hang
+       an opacity modifier off the same token (`border-rule/40`), which the
+       app needs in a dozen places and a plain `var(--color-rule)` cannot
+       support. */
+    /* ── The ramp ───────────────────────────────────────────────
+       Eight values: seven neutrals and one accent, plus the CSS keyword
+       `white` at the top of the text ramp. Every colour in the app is one of
+       these; there is no "slightly different grey" tier.
+
+       White is not a token. It was `--color-ink` — a token whose whole
+       content was "#ffffff", aliasing a word CSS and Tailwind both already
+       have. The templates never took to it: they said `text-white` 36 times
+       and `text-ink` none, which is the codebase answering the question. Two
+       spellings of one value is the exact redundancy this ramp exists to
+       remove, so the alias went and the keyword stayed.
+
+       The neutrals roughly double in channel value each step —
+       11 · 19 · 38 · 71 · 145 · 198 · 226 · 255 — which is what lets any two
+       of them be told apart at a glance. The previous ramp had thirteen, and
+       six of those (#000 #0b0b0b #131313 #1f1f1f #2a2a2a #353535) lived
+       inside the bottom seventh of the range, some of them 8 channels apart:
+       a distinction the token list can hold but an eye on a screen cannot.
+       So:
+
+         void       #000000  ┐
+         panel      #0b0b0b  ┴→  panel    (letterboxing joins the wells)
+         surface    #1f1f1f  ┐
+         rule-dim   #2a2a2a  ┴→  surface  (one raised / quiet tier, #262626)
+         surface-hi #353535  ┐
+         rule-hi    #686868  ┴→  rule     (one line tier)
+
+       `surface-hi` was the tell that the fill/line split had stopped meaning
+       anything: it was a fill token, and three components were using it as a
+       border. Its border uses went to `rule` and its fill uses to `surface`,
+       which is the split that was intended all along. `rule-hi` was worse —
+       the design system page was setting a heading in it, at 3.4:1. */
+
+    /* Fills — surfaces you put content on, recessed to raised. */
+    --color-panel-rgb: 11 11 11; /*     recessed panels, wells, letterbox */
+    --color-canvas-rgb: 19 19 19; /*    the page, and inverse ink         */
+    --color-surface-rgb: 38 38 38; /*   raised fills, key faces, hovers   */
+
+    /* Lines — borders, rules, corner marks, key edges. Never text: at
+       2.6:1 on the canvas nothing set in it is readable. */
+    --color-rule-rgb: 71 71 71;
+
+    /* Text — dim to emphatic. --color-muted is the darkest tier that
+       clears WCAG AA on the canvas (5.9:1), which is why it is the floor
+       for anything readable. Copy that needs to recede further than muted
+       does it with the mono face and tracking, not with luminance. */
+    --color-muted-rgb: 145 145 145; /*  labels, metadata             */
+    --color-prose-rgb: 198 198 198; /*  long-form reading copy       */
+    --color-body-rgb: 226 226 226; /*   UI strings                   */
+    /* Above --color-body the ramp ends at plain `white` — headings, emphasis. */
+
+    /* Accent — the only chromatic value in the system. */
+    --color-signal-rgb: 103 245 122;
+
+    --color-panel: rgb(var(--color-panel-rgb));
+    --color-canvas: rgb(var(--color-canvas-rgb));
+    --color-surface: rgb(var(--color-surface-rgb));
+    --color-rule: rgb(var(--color-rule-rgb));
+    --color-muted: rgb(var(--color-muted-rgb));
+    --color-prose: rgb(var(--color-prose-rgb));
+    --color-body: rgb(var(--color-body-rgb));
+    --color-signal: rgb(var(--color-signal-rgb));
 
     /* ── Type ────────────────────────────────────────────────────
        Two faces: Tomorrow carries everything readable (display,
@@ -131,10 +174,51 @@
     --text-sm: 14px; /* compact body, list rows     */
     --text-base: 16px; /* long-form reading copy      */
     --text-lg: 20px; /* card and section titles     */
-    /* Home hero only (.identity-name). Note the Tomorrow-based Display
-       token in typography.ts also emits a `.text-display` utility, and it
-       wins over this var's utility — page titles use `.hud-title`. */
-    --text-display: clamp(2.4rem, 6vw, 3.4rem); /* home hero */
+    /* Home hero only (.identity-name) — the single fluid size in the system.
+       Named `hero`, not `display`, because there is also a fixed 44px Display
+       token in typography.ts: when both were called "display" they collided on
+       one `.text-display` utility and the winner was decided by plugin order.
+       Every other page title is fixed-size via `.hud-title`. */
+    --text-hero: clamp(2.4rem, 6vw, 3.4rem);
+
+
+    /* ── Space ──────────────────────────────────────────────────
+       Ten steps. `--space-N` is N × 4px and the number matches the Tailwind
+       utility: `--space-3` and `p-3` are both 12px, so a value moving between
+       a template and a <style> block keeps its name.
+
+       The grid is 4pt; the *scale* is not every multiple of it. It grows by
+       alternating 1.5× and 1.33×, so it doubles every two steps:
+
+         4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 128
+
+       Everything between those (20, 28, 36, 40, 44, 56, 72 …) is gone. They
+       were the steps that made the scale unusable as a scale: with 16, 20 and
+       24 all available there is no answer to "which gap goes here" beyond
+       taste, and taste is what put 23 distinct spacing values in the CSS
+       before any of this existed. Adjacent steps now differ by enough to
+       read as a decision.
+
+       They are removed from `tailwind.config.ts` rather than merely
+       discouraged, the same way the type scale replaces rather than extends
+       Tailwind's: `p-6` stops compiling instead of quietly working. Note this
+       governs sizing too — `h-*` and `w-*` draw on the same map — which is
+       deliberate: the site header and the mobile nav are both `h-16` now
+       precisely because the scale left them nowhere else to sit.
+
+       The one thing this grid does not govern is corrective arithmetic —
+       a negative margin cancelling a known 1px source edge answers to that
+       edge, not to the rhythm. Those stay literal and carry a comment. */
+    --space-1: 4px; /*    hairline gaps, icon-to-label */
+    --space-2: 8px; /*    inside chips and tags */
+    --space-3: 12px; /*   the default internal gap */
+    --space-4: 16px; /*   panel padding */
+    --space-6: 24px; /*   between grouped blocks */
+    --space-8: 32px; /*   between sections */
+    --space-12: 48px; /*  page rhythm, chrome height */
+    --space-16: 64px; /*  page gutters */
+    --space-24: 96px;
+    --space-32: 128px;
 
     /* ── Dossier geometry ───────────────────────────────────────
        Shared by the sheet panel (ProjectSheet) and the project pager
@@ -144,6 +228,40 @@
     --dossier-max-w: 1160px;
     --dossier-gutter: 5rem;
 
+    /* ── Icons ──────────────────────────────────────────────────
+       A separate axis from the type scale — an icon is sized to the
+       control it sits in, not to the text beside it. Two steps, and the
+       Material Symbols optical size is drawn for 24px, so straying far
+       from these thins or thickens the stroke visibly. */
+    --icon-md: 20px;
+    --icon-lg: 40px;
+
+    /* ── Stacking order ─────────────────────────────────────────
+       The full set of layers this UI has, named and ordered here so the
+       relationships are readable in one place. These used to be bare
+       numbers spread over eight files, coordinated only by comments that
+       quoted each other's values — and one had already drifted (the sheet
+       described the mobile nav as "z-100" when it was 1000).
+
+       Values are the ones that were already in force, only named — the order
+       here is the order the app renders today, not a re-layering. The three
+       four-digit numbers (1000 / 1100 / 9999) collapsed to 60 / 70 / 80: they
+       never needed the headroom, they just had no scale to sit on.
+
+       Gaps are deliberate: a new layer between two of these should get a
+       token, not a decimal. Within-component stacking (a popover over its own
+       trigger, a label over its own backdrop) stays local — LocalTime's card
+       rides its own `position: relative; z-index` context and is none of this
+       file's business. These are the layers that have to agree *across*
+       components, which is the set that kept drifting. */
+    --z-sheet-scrim: 40; /* dossier backdrop — under the header */
+    --z-nav: 50; /*        site header                         */
+    --z-sheet: 55; /*      dossier sheet panel, over the header */
+    --z-sheet-rail: 56; /* pager rails, just over the panel     */
+    --z-nav-mobile: 60; /* bottom nav — stays reachable above   */
+    --z-skip-link: 70; /*  first Tab target                     */
+    --z-tooltip: 80; /*    follows the cursor, clears the rest  */
+
     /* transitions-dev motion tokens */
     --duration-stagger: 40ms;
     --duration-micro: 80ms;
@@ -152,18 +270,13 @@
     --duration-very-slow: 750ms;
     --ease-out: ease-out;
     --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --scale-small: 0.98;
     --distance-micro: 4px;
-    --distance-medium: 12px;
-    --blur-medium: 3px;
 
     /* Page side-by-side / view transitions */
     --page-slide-dur: 340ms;
     --page-fade-dur: 190ms;
-    --page-slide-distance: 8px;
     --page-blur: 1px;
     --page-stagger: 0ms;
-    --page-exit-enabled: 1;
     --page-slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
     --page-fade-ease: cubic-bezier(0.4, 0, 0.2, 1);
     /* Just a hint of travel — the fade carries the transition, the slide
@@ -186,8 +299,6 @@
     --tt-delay: 80ms;
     --tt-in-ease: ease-out;
     --tt-out-ease: ease-out;
-    --tt-bg: #0c0c0c;
-    --tt-fg: #e2e2e2;
   }
 }
 
@@ -202,8 +313,8 @@
   body {
     height: 100%;
     overflow: hidden;
-    background-color: #131313;
-    color: #e2e2e2;
+    background-color: var(--color-canvas);
+    color: var(--color-body);
     -webkit-font-smoothing: antialiased;
   }
 
@@ -233,15 +344,15 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #131313;
+    background: var(--color-canvas);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #474747;
+    background: var(--color-rule);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #919191;
+    background: var(--color-muted);
   }
 
   /* font-family and the `liga` feature used to arrive with Google's hosted
@@ -277,14 +388,13 @@
     font-synthesis: none;
   }
 
-  /* The one page-hero title. /projects and /bio share it so the two
-     headers read at exactly the same size and weight. Sizing comes from
-     the documented Display token (typography.ts), not the --text-display
-     clamp — see the note on that var above. */
   /* Off-screen rather than display:none — a hidden link is not focusable, and
      the point is to be reachable by the first Tab. */
   .skip-link {
-    @apply absolute left-4 z-[1100] inline-flex h-11 items-center border border-white/30 bg-[#131313] px-4 text-label-data uppercase tracking-[0.18em] text-white;
+    @apply absolute left-4 inline-flex h-12 items-center border border-white/30 px-4 text-label-data uppercase tracking-[0.18em];
+    z-index: var(--z-skip-link);
+    background-color: var(--color-canvas);
+    color: white;
     top: -100px;
     transition: top 120ms ease-out;
   }
@@ -293,25 +403,25 @@
     top: 0.75rem;
   }
 
+  /* The one page-hero title. /projects and /bio share it so the two headers
+     read at exactly the same size and weight — the fixed Display token from
+     typography.ts. The fluid `--text-hero` is the home hero alone. */
   .hud-title {
-    @apply text-display uppercase tracking-tighter text-white;
+    @apply text-display uppercase tracking-tighter;
+    color: white;
   }
 
   .hud-label {
-    @apply block text-label-data tracking-[0.2em] uppercase text-[#919191];
+    @apply block text-label-data tracking-[0.2em] uppercase;
+    color: var(--color-muted);
   }
 
-  .hud-kbd {
-    @apply inline-flex items-center px-1.5 py-0.5 border border-[#474747] text-label-data text-[#919191];
-  }
-
-  /* Icon sizing is a separate axis from the type scale — two steps. */
   .icon-md {
-    font-size: 20px;
+    font-size: var(--icon-md);
   }
 
   .icon-lg {
-    font-size: 40px;
+    font-size: var(--icon-lg);
   }
 }
 
@@ -338,89 +448,17 @@
   }
 
   .grid-bg {
-    background-image: radial-gradient(circle, #474747 1px, transparent 1px);
+    background-image: radial-gradient(circle, var(--color-rule) 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
-  .corner-tl {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 8px;
-    height: 8px;
-    border-top: 1px solid #474747;
-    border-left: 1px solid #474747;
-  }
 
-  .corner-tr {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 8px;
-    height: 8px;
-    border-top: 1px solid #474747;
-    border-right: 1px solid #474747;
-  }
 
-  .corner-bl {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 8px;
-    height: 8px;
-    border-bottom: 1px solid #474747;
-    border-left: 1px solid #474747;
-  }
 
-  .corner-br {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 8px;
-    height: 8px;
-    border-bottom: 1px solid #474747;
-    border-right: 1px solid #474747;
-  }
 
-  .corner-tl-w {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 10px;
-    height: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
-    border-left: 1px solid rgba(255, 255, 255, 0.4);
-  }
 
-  .corner-tr-w {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 10px;
-    height: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
-    border-right: 1px solid rgba(255, 255, 255, 0.4);
-  }
 
-  .corner-bl-w {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 10px;
-    height: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    border-left: 1px solid rgba(255, 255, 255, 0.4);
-  }
 
-  .corner-br-w {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 10px;
-    height: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    border-right: 1px solid rgba(255, 255, 255, 0.4);
-  }
 }
 
 /* ── Named regions for View Transitions ─────────────────────────── */
@@ -432,10 +470,10 @@
   view-transition-name: site-nav;
 }
 
-.site-nav-key {
-  border: 1px solid #686868;
-  background-color: #1b1b1b;
-  box-shadow: 0 2px 0 #3a3a3a;
+.hud-key {
+  border: 1px solid var(--color-rule);
+  background-color: var(--color-surface);
+  box-shadow: 0 2px 0 var(--color-rule);
 }
 
 .site-nav :is(a, button) {
@@ -444,15 +482,15 @@
 
 .site-nav a:focus-visible,
 .site-nav button:focus-visible {
-  background-color: #1b1b1b;
+  background-color: var(--color-surface);
   box-shadow:
-    inset 0 0 0 1px #686868,
-    0 2px 0 #3a3a3a;
+    inset 0 0 0 1px var(--color-rule),
+    0 2px 0 var(--color-rule);
 }
 
-.site-nav-key:focus-visible {
-  border-color: #919191;
-  box-shadow: 0 2px 0 #3a3a3a;
+.hud-key:focus-visible {
+  border-color: var(--color-muted);
+  box-shadow: 0 2px 0 var(--color-rule);
 }
 
 ::view-transition-old(root),

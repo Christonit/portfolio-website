@@ -49,7 +49,7 @@ withDefaults(
 }
 
 .hud-corners.is-muted .hud-corners__mark {
-  --hud-corner-color: var(--color-rule, #474747);
+  --hud-corner-color: var(--color-rule, var(--color-rule));
   --hud-corner-size: 8px;
 }
 
@@ -113,7 +113,7 @@ withDefaults(
 .group.is-focused .hud-corners.is-reveal-hover .hud-corners__mark {
   opacity: 1;
   transform: none;
-  border-color: var(--hud-corner-hover-color, var(--color-signal, #67f57a));
+  border-color: var(--hud-corner-hover-color, var(--color-signal, var(--color-signal)));
 }
 
 @media (prefers-reduced-motion: reduce) {

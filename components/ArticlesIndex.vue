@@ -59,10 +59,10 @@ defineProps<{
   display: grid;
   grid-template-columns: 144px minmax(0, 1fr);
   align-items: center;
-  gap: 20px;
+  gap: var(--space-6);
   min-height: 104px;
-  padding: 12px 0;
-  color: #d6d6d6;
+  padding: var(--space-3) 0;
+  color: var(--color-body);
   text-decoration: none;
   transition:
     background-color 120ms ease,
@@ -72,15 +72,15 @@ defineProps<{
 .articles-index-list a:hover,
 .articles-index-list a:focus-visible {
   background: rgba(255, 255, 255, 0.035);
-  color: #fff;
+  color: white;
   outline: none;
 }
 
 .articles-index-list__thumb {
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border: 1px solid #292929;
-  background: #0b0b0b;
+  border: 1px solid var(--color-surface);
+  background: var(--color-panel);
 }
 
 .articles-index-list__thumb img {
@@ -93,7 +93,7 @@ defineProps<{
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .articles-index-list strong {
@@ -104,7 +104,7 @@ defineProps<{
 }
 
 .articles-index-list small {
-  color: #919191;
+  color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.12em;
@@ -113,7 +113,7 @@ defineProps<{
 @media (max-width: 639px) {
   .articles-index-list a {
     grid-template-columns: 96px minmax(0, 1fr);
-    gap: 12px;
+    gap: var(--space-3);
     min-height: 84px;
   }
 
