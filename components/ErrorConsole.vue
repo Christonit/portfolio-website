@@ -98,23 +98,23 @@ function onSecondary() {
         </header>
 
         <div class="error-panel__body">
-          <p class="error-panel__kicker text-label-data" v-reveal="0">
+          <p class="error-panel__kicker text-label-data">
             {{ copy.signal }}
             <span class="error-panel__qualifier"
               >// {{ copy.qualifier }}</span
             >
           </p>
 
-          <h1 :id="`error-title-${statusCode}`" class="error-panel__code" v-reveal="40">
+          <h1 :id="`error-title-${statusCode}`" class="error-panel__code">
             <span class="sr-only">{{ copy.title }}</span>
             <span aria-hidden="true">{{ codeLabel }}</span>
           </h1>
 
-          <p class="error-panel__copy text-body-compact" v-reveal="80">
+          <p class="error-panel__copy text-body-compact">
             {{ copy.body }}
           </p>
 
-          <dl v-if="pathLabel" class="error-panel__meta" v-reveal="120">
+          <dl v-if="pathLabel" class="error-panel__meta">
             <div>
               <dt>PATH</dt>
               <dd>{{ pathLabel }}</dd>

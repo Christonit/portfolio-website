@@ -7,6 +7,7 @@ import {
   isArticle,
   isExternalProjectHref,
   openProject,
+  projectBadges,
   projectHref,
   projectMediaAlt,
 } from "~/utils/projects";
@@ -69,10 +70,6 @@ const portraitHover = ref(false);
 
 function bindCard(el: Element | null, index: number) {
   cardRefs.value[index] = el instanceof HTMLElement ? el : null;
-}
-
-function projectCounter(index: number) {
-  return String(index + 1).padStart(3, "0");
 }
 
 function moveCardFocus(direction: number) {
@@ -177,7 +174,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
             v-for="(project, index) in featuredProjects"
             :key="project.slug"
             :ref="(el) => bindCard(el as Element | null, index)"
-            v-reveal="index * 60"
           >
             <NuxtLink
               :to="projectHref(project)"
@@ -211,16 +207,21 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
               </div>
 
               <div class="dossier-card__body">
-                <div class="dossier-card__title-row">
-                  <h3>{{ project.name }}</h3>
-                  <span class="dossier-card__index">{{
-                    projectCounter(index)
-                  }}</span>
-                </div>
+                <h3>{{ project.name }}</h3>
 
                 <p class="dossier-card__summary">
                   {{ project.description || project.tasks[0] }}
                 </p>
+
+                <ul
+                  v-if="projectBadges(project).length"
+                  class="dossier-card__tags"
+                  role="list"
+                >
+                  <li v-for="badge in projectBadges(project)" :key="badge">
+                    <span class="text-label-data">{{ badge }}</span>
+                  </li>
+                </ul>
               </div>
 
               <span class="dossier-card__cta">
@@ -457,7 +458,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   transition:
     border-color 150ms ease,
     background-color 150ms ease;
-  --hud-corner-size: 16px;
+  /* Corner marks answer the pointer — hidden at rest, green on hover, and
+     stationary, so a row of cards stays quiet until you aim at one. */
+  --hud-corner-size: 18px;
   --hud-corner-inset: 0px;
   --distance-micro: 0px;
 }
@@ -530,24 +533,6 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   white-space: nowrap;
 }
 
-/* Slot number rides the title baseline on the opposite end of the row, so the
-   card reads as one line instead of a stranded number under the name. */
-.dossier-card__title-row {
-  display: flex;
-  min-width: 0;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.dossier-card__index {
-  flex-shrink: 0;
-  color: #3f3f3f;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.11em;
-}
-
 /* Two lines of context under the name — same summary the projects index
    shows, clamped so every card in the row keeps the same body height. */
 .dossier-card__summary {
@@ -559,6 +544,29 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+/* Same tag badges the projects index cards carry. `margin-top: auto` parks the
+   row on the body's bottom edge, so badges line up across a row of cards
+   whether a summary runs one line or two. */
+.dossier-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  margin-top: auto;
+  padding: 3px 0 0;
+  gap: 6px;
+  list-style: none;
+}
+
+.dossier-card__tags span {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #3a3a3a;
+  padding: 3px 6px;
+  color: #c6c6c6;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 /* Reads as the card's button: full-width strip on the bottom edge, lit by the

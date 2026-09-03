@@ -14,6 +14,15 @@ export function projectMediaAlt(project: ProjectMediaAlt): string {
   return project.imageAlt?.trim() || project.description?.trim() || project.name;
 }
 
+/* Tags ship as one "A // B // C" string; every card renders them as the same
+   underscored badges, so the split lives here rather than in each card. */
+export function projectBadges(project: { tags?: string }): string[] {
+  return (project.tags ?? "")
+    .split("//")
+    .map((tag) => tag.trim().replace(/\s+/g, "_"))
+    .filter(Boolean);
+}
+
 export function isArticle(project: Pick<ProjectLink, "category">): boolean {
   return project.category.toLowerCase() === "article";
 }
