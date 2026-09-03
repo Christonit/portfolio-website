@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  access,
+  mkdtemp,
+  mkdir,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -43,6 +50,45 @@ test("production removes internal tool pages before Vite builds the route graph"
     if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
     else process.env.NODE_ENV = previousNodeEnv;
   }
+});
+
+test("the internal OG model is not copied from the public directory", async () => {
+  await assert.rejects(
+    access(path.join(root, "public/images/human+character+3d+model.glb")),
+  );
+  await access(path.join(root, "assets/internal/human+character+3d+model.glb"));
+});
+
+test("the generated 404 overrides home-page social metadata", async () => {
+  const config = await loadNuxtConfig({ cwd: root });
+  const hooks = config.nitro?.hooks as
+    | Record<string, (route: { route: string; contents: string }) => unknown>
+    | undefined;
+  const generate = hooks?.["prerender:generate"];
+  assert.equal(typeof generate, "function");
+
+  const route = {
+    route: "/404.html",
+    contents: [
+      "<html><head>",
+      "<title>Home</title>",
+      '<meta name="description" content="Home description">',
+      '<meta property="og:title" content="Home">',
+      '<meta property="og:description" content="Home description">',
+      "</head><body><div id=\"__nuxt\"></div></body></html>",
+    ].join(""),
+  };
+
+  await generate!(route);
+  assert.match(
+    route.contents,
+    /property="og:title" content="Christopher Santana - Page Not Found"/,
+  );
+  assert.match(
+    route.contents,
+    /property="og:description" content="This page isn't on Christopher Santana's site\."/,
+  );
+  assert.doesNotMatch(route.contents, /property="og:title" content="Home"/);
 });
 
 test("stable public asset URLs revalidate instead of remaining fresh", async () => {

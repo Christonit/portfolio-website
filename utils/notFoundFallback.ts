@@ -100,6 +100,14 @@ export function injectNotFoundFallback(html: string): string {
       /<meta name="description" content="[^"]*">/,
       `<meta name="description" content="${description}">`,
     )
+    .replace(
+      /<meta property="og:title" content="[^"]*">/,
+      `<meta property="og:title" content="${title}">`,
+    )
+    .replace(
+      /<meta property="og:description" content="[^"]*">/,
+      `<meta property="og:description" content="${description}">`,
+    )
     .replace("</head>", `<style>${STYLES}</style></head>`)
     .replace('<div id="__nuxt"></div>', `<div id="__nuxt"></div>${MARKUP}`);
 }

@@ -1,4 +1,5 @@
 import { isDossierPath } from "~/composables/useDossierBackground";
+import { createHeadAwarePageViewTracker } from "~/utils/pageViewTracker";
 import { GA_MEASUREMENT_ID } from "~/utils/site";
 
 declare global {
@@ -18,27 +19,32 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Initial page_view is sent by the gtag snippet in <head>. Only record
   // client-side navigations so SPA routes still show up in GA.
   let isFirstPage = true;
-  let lastPath: string | null = null;
 
   function sendPageView(path: string) {
-    if (typeof window.gtag !== "function") return;
-    if (path === lastPath) return;
-    lastPath = path;
+    if (typeof window.gtag !== "function") return false;
 
     window.gtag("event", "page_view", {
       page_path: path,
       page_title: document.title,
       page_location: window.location.href,
     });
+    return true;
   }
+
+  const router = useRouter();
+  const head = injectHead();
+  const pageViews = createHeadAwarePageViewTracker({
+    onHeadRendered: (callback) => head.hooks.hook("dom:rendered", callback),
+    send: sendPageView,
+  });
 
   nuxtApp.hook("page:finish", () => {
     if (isFirstPage) {
       isFirstPage = false;
-      lastPath = useRoute().fullPath;
+      pageViews.markInitial(useRoute().fullPath);
       return;
     }
-    sendPageView(useRoute().fullPath);
+    pageViews.queue(useRoute().fullPath);
   });
 
   /**
@@ -51,34 +57,11 @@ export default defineNuxtPlugin((nuxtApp) => {
    * projects section reported nothing but its cold loads.
    *
    * The router fires either way, so the sheet's own URLs are counted here.
-   * `sendPageView` de-dupes, so the two paths can't double-count a hop.
+   * The shared tracker de-dupes, so the two hooks can't double-count a hop.
    */
-  const router = useRouter();
-  const head = injectHead();
-
-  /**
-   * `page_title` is read off the document, so the send has to wait for the
-   * head to actually reach the DOM — a `nextTick` is too early and every
-   * project view was reported under the *previous* page's title.
-   * `dom:rendered` is the moment unhead finishes patching; the timer is the
-   * backstop for a hop whose head never changes and so never renders.
-   */
-  function sendAfterHeadFlush(path: string) {
-    let done = false;
-    const finish = () => {
-      if (done) return;
-      done = true;
-      stop();
-      clearTimeout(timer);
-      sendPageView(path);
-    };
-    const stop = head.hooks.hook("dom:rendered", () => finish());
-    const timer = setTimeout(finish, 300);
-  }
-
   router.afterEach((to, from) => {
     if (to.fullPath === from.fullPath) return;
     if (!isDossierPath(to.path) && !isDossierPath(from.path)) return;
-    sendAfterHeadFlush(to.fullPath);
+    pageViews.queue(to.fullPath);
   });
 });

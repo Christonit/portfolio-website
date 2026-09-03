@@ -34,6 +34,8 @@ useHead(
     title: title.value,
     meta: [
       { name: "description", content: description.value },
+      { property: "og:title", content: title.value },
+      { property: "og:description", content: description.value },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
