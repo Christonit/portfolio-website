@@ -156,65 +156,99 @@ const layers = [
   { name: "TOOLTIP", token: "--z-tooltip", usage: "Cursor-following card." },
 ];
 
-const motionGroups = [
+/* The vocabulary — every duration and distance a sequence is assembled from.
+   The curves used to sit in this table too, as cubic-bezier strings nobody can
+   read as a shape; they have their own group below, where they run. */
+const motionPrimitives = [
+  { name: "STAGGER", token: "--duration-stagger", usage: "Per-item offset in a list." },
+  { name: "MICRO", token: "--duration-micro", usage: "Colour and opacity nudges." },
+  { name: "QUICK", token: "--duration-quick", usage: "Hover and focus states." },
+  { name: "FAST", token: "--duration-fast", usage: "Element-level travel." },
+  { name: "VERY SLOW", token: "--duration-very-slow", usage: "Scroll reveals." },
+  { name: "MICRO DIST", token: "--distance-micro", usage: "Corner marks, hover nudges." },
+];
+
+/* Four curves, and only four: `--page-modal-ease` is the same bezier as
+   `--page-slide-ease`, `--scroll-reveal-ease` aliases `--ease-smooth-out`, and
+   both tooltip eases alias `--ease-out`. Listing the aliases as separate rows
+   was most of why MOTION read as a wall. */
+const easings = [
+  { name: "OUT", token: "--ease-out", usage: "The default. Hover, focus, colour — and both tooltip eases." },
+  { name: "SMOOTH OUT", token: "--ease-smooth-out", usage: "Travel that settles. Scroll reveals alias this one." },
+  { name: "SLIDE", token: "--page-slide-ease", usage: "Page and modal travel — the modal ease is this same curve." },
+  { name: "FADE", token: "--page-fade-ease", usage: "Opacity, on both the page and the modal." },
+];
+
+/**
+ * The four sequences, as things that run rather than rows of numbers.
+ *
+ * Each stage is built in scoped CSS from the same tokens the real sequence
+ * uses — no timing is restated here, so a stage cannot play at a speed the app
+ * does not. `tokens` is only the caption under it.
+ */
+const motionDemos = [
   {
-    label: "PRIMITIVES",
-    note: "The vocabulary. A sequence below is built from these, never from a new number.",
-    rows: [
-      { name: "MICRO", token: "--duration-micro", usage: "Colour and opacity nudges." },
-      { name: "QUICK", token: "--duration-quick", usage: "Hover and focus states." },
-      { name: "FAST", token: "--duration-fast", usage: "Element-level travel." },
-      { name: "VERY SLOW", token: "--duration-very-slow", usage: "Scroll reveals." },
-      { name: "STAGGER", token: "--duration-stagger", usage: "Per-item offset in a list." },
-      { name: "OUT", token: "--ease-out", usage: "Default curve." },
-      { name: "SMOOTH OUT", token: "--ease-smooth-out", usage: "Travel that settles." },
-      { name: "MICRO DIST", token: "--distance-micro", usage: "Corner marks, hover nudges." },
-    ],
-  },
-  {
+    id: "page",
     label: "PAGE",
-    note: "Link-to-link navigation. The fade runs on a shorter clock than the slide, so neither page waits on its travel.",
-    rows: [
-      { name: "SLIDE", token: "--page-slide-dur", usage: "Travel." },
-      { name: "FADE", token: "--page-fade-dur", usage: "Crossfade — deliberately shorter." },
-      { name: "DISTANCE", token: "--vt-slide-distance", usage: "A hint of direction, not a journey." },
-      { name: "BLUR", token: "--page-blur", usage: "Applied through the fade." },
-      { name: "SLIDE EASE", token: "--page-slide-ease", usage: "Travel curve." },
-      { name: "FADE EASE", token: "--page-fade-ease", usage: "Opacity curve." },
+    note: "Link to link. The fade runs on a shorter clock than the slide, so neither page waits on the other's travel.",
+    tokens: [
+      { name: "SLIDE", token: "--page-slide-dur" },
+      { name: "FADE", token: "--page-fade-dur" },
+      { name: "DISTANCE", token: "--vt-slide-distance" },
+      { name: "BLUR", token: "--page-blur" },
     ],
   },
   {
+    id: "modal",
     label: "MODAL",
-    note: "The project dossier rising over the page that launched it, which recedes behind it.",
-    rows: [
-      { name: "TRAVEL", token: "--page-modal-dur", usage: "Rise and recede." },
-      { name: "FADE IN", token: "--page-modal-fade-in-dur", usage: "Short, so the pages do not stack legibly." },
-      { name: "FADE OUT", token: "--page-modal-fade-out-dur", usage: "Shorter still." },
-      { name: "RISE", token: "--page-modal-rise", usage: "How far the sheet travels." },
-      { name: "SCALE", token: "--page-modal-scale", usage: "How far the backdrop recedes." },
-      { name: "BLUR", token: "--page-modal-blur", usage: "On the receding page." },
+    note: "The project dossier rising over the page that launched it, which recedes and blurs behind it.",
+    tokens: [
+      { name: "TRAVEL", token: "--page-modal-dur" },
+      { name: "FADE IN", token: "--page-modal-fade-in-dur" },
+      { name: "RISE", token: "--page-modal-rise" },
+      { name: "SCALE", token: "--page-modal-scale" },
+      { name: "BLUR", token: "--page-modal-blur" },
     ],
   },
   {
+    id: "tooltip",
     label: "TOOLTIP",
-    note: "Opens on a delay so a cursor crossing the row does not flash it; closes almost instantly.",
-    rows: [
-      { name: "DELAY", token: "--tt-delay", usage: "Intent filter before opening." },
-      { name: "IN", token: "--tt-in-dur", usage: "Open." },
-      { name: "OUT", token: "--tt-out-dur", usage: "Close — fast, it is already read." },
-      { name: "SCALE", token: "--tt-scale", usage: "Entrance scale." },
+    note: "Opens on a delay, so a cursor crossing the row does not flash it. Closes almost instantly — it has already been read.",
+    tokens: [
+      { name: "DELAY", token: "--tt-delay" },
+      { name: "IN", token: "--tt-in-dur" },
+      { name: "OUT", token: "--tt-out-dur" },
+      { name: "SCALE", token: "--tt-scale" },
     ],
   },
   {
+    id: "reveal",
     label: "REVEAL",
-    note: "Scroll-triggered slide-up. Slow on purpose — it plays once, under reading.",
-    rows: [
-      { name: "DURATION", token: "--scroll-reveal-dur", usage: "Full travel." },
-      { name: "DISTANCE", token: "--scroll-reveal-distance", usage: "Rise from rest." },
-      { name: "EASE", token: "--scroll-reveal-ease", usage: "Settling curve." },
+    note: "Scroll-triggered slide-up, one stagger step apart. Slow on purpose — it plays once, under reading.",
+    tokens: [
+      { name: "DURATION", token: "--scroll-reveal-dur" },
+      { name: "DISTANCE", token: "--scroll-reveal-distance" },
+      { name: "STAGGER", token: "--duration-stagger" },
     ],
   },
 ];
+
+/**
+ * Bumping a stage's id re-keys its root, so Vue remounts it and every CSS
+ * animation inside starts from zero. Cheaper and more faithful than driving
+ * the sequences from script: what replays is the stylesheet, not a copy of it.
+ */
+const runs = reactive<Record<string, number>>({
+  page: 0,
+  modal: 0,
+  tooltip: 0,
+  reveal: 0,
+  curves: 0,
+});
+
+const replay = (id: string) => {
+  runs[id] += 1;
+};
 
 const typographyUtilities = {
   display: "text-display",
@@ -312,7 +346,9 @@ onMounted(() => {
     ...layout,
     ...icons,
     ...layers,
-    ...motionGroups.flatMap((group) => group.rows),
+    ...motionPrimitives,
+    ...easings,
+    ...motionDemos.flatMap((demo) => demo.tokens),
   ];
 
   resolved.value = {
@@ -619,24 +655,104 @@ onBeforeUnmount(() => {
           </header>
 
           <p class="section-intro text-body-compact">
-            Every sequence below is switched off wholesale under
-            <code>prefers-reduced-motion</code>.
+            The four sequences run here, off the same tokens the app uses — no
+            timing is restated in this page, so a stage cannot play at a speed
+            the site does not. Everything below is switched off wholesale under
+            <code>prefers-reduced-motion</code>, including these stages, which
+            then sit in their finished state.
           </p>
 
-          <template v-for="group in motionGroups" :key="group.label">
-            <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
-              {{ group.label }}
-              <span class="group-label__note">{{ group.note }}</span>
-            </h3>
-            <ul class="token-table" role="list">
-              <li v-for="row in group.rows" :key="row.token" class="token-row">
-                <strong class="text-label-data">{{ row.name }}</strong>
-                <span class="text-label-data tabular-nums">{{ resolved[row.token] || "—" }}</span>
-                <code class="text-label-data">{{ row.token }}</code>
-                <span class="text-label-data">{{ row.usage }}</span>
-              </li>
-            </ul>
-          </template>
+          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
+            SEQUENCES
+            <span class="group-label__note">Press replay to run one again.</span>
+          </h3>
+          <div class="motion-grid">
+            <section
+              v-for="demo in motionDemos"
+              :key="demo.id"
+              class="motion-demo"
+              :aria-label="`${demo.label} sequence`"
+            >
+              <div class="motion-demo__head">
+                <strong class="text-label-data uppercase tracking-[0.14em]">{{ demo.label }}</strong>
+                <button
+                  class="motion-demo__replay text-label-data uppercase tracking-[0.14em]"
+                  type="button"
+                  @click="replay(demo.id)"
+                >
+                  REPLAY
+                </button>
+              </div>
+
+              <div :key="runs[demo.id]" class="motion-stage" :class="`stage-${demo.id}`" aria-hidden="true">
+                <template v-if="demo.id === 'page'">
+                  <span class="stage-page__pane is-out">A</span>
+                  <span class="stage-page__pane is-in">B</span>
+                </template>
+                <template v-else-if="demo.id === 'modal'">
+                  <span class="stage-modal__page" />
+                  <span class="stage-modal__sheet" />
+                </template>
+                <template v-else-if="demo.id === 'tooltip'">
+                  <span class="stage-tooltip__row" />
+                  <span class="stage-tooltip__card" />
+                </template>
+                <template v-else>
+                  <span class="stage-reveal__row" />
+                  <span class="stage-reveal__row" />
+                  <span class="stage-reveal__row" />
+                </template>
+              </div>
+
+              <p class="motion-demo__note text-label-data">{{ demo.note }}</p>
+
+              <ul class="motion-demo__tokens" role="list">
+                <li v-for="row in demo.tokens" :key="row.token" class="text-label-data">
+                  <code>{{ row.token }}</code>
+                  <span class="tabular-nums">{{ resolved[row.token] || "—" }}</span>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
+            CURVES
+            <span class="group-label__note">
+              Four, and only four — every other ease token in the system aliases one of these.
+            </span>
+          </h3>
+          <div class="curve-head">
+            <button
+              class="motion-demo__replay text-label-data uppercase tracking-[0.14em]"
+              type="button"
+              @click="replay('curves')"
+            >
+              REPLAY ALL
+            </button>
+          </div>
+          <ul :key="runs.curves" class="curve-table" role="list">
+            <li v-for="ease in easings" :key="ease.token" class="curve-row">
+              <strong class="text-label-data">{{ ease.name }}</strong>
+              <code class="text-label-data">{{ ease.token }}</code>
+              <span class="curve-track" aria-hidden="true">
+                <span class="curve-dot" :style="{ '--curve': `var(${ease.token})` }" />
+              </span>
+              <span class="curve-row__usage text-label-data">{{ ease.usage }}</span>
+            </li>
+          </ul>
+
+          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
+            PRIMITIVES
+            <span class="group-label__note">The numbers those sequences are assembled from, never a new one.</span>
+          </h3>
+          <ul class="token-table" role="list">
+            <li v-for="row in motionPrimitives" :key="row.token" class="token-row">
+              <strong class="text-label-data">{{ row.name }}</strong>
+              <span class="text-label-data tabular-nums">{{ resolved[row.token] || "—" }}</span>
+              <code class="text-label-data">{{ row.token }}</code>
+              <span class="text-label-data">{{ row.usage }}</span>
+            </li>
+          </ul>
         </section>
 
         <!-- ── PARTS ────────────────────────────────────────────── -->
@@ -973,6 +1089,299 @@ onBeforeUnmount(() => {
   color: var(--color-muted);
 }
 
+/* ── Motion stages ──────────────────────────────────────────── */
+
+/* Every stage below is assembled from the shipped tokens and nothing else —
+   no duration, distance or curve is restated here. A stage that drifted from
+   the sequence it documents would be the motion version of the invented
+   button PARTS used to carry. */
+
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.motion-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-surface);
+}
+
+.motion-demo__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--color-ink);
+}
+
+.motion-demo__replay {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-rule);
+  color: var(--color-muted);
+  transition: color var(--duration-quick) var(--ease-out),
+    border-color var(--duration-quick) var(--ease-out);
+}
+
+.motion-demo__replay:hover,
+.motion-demo__replay:focus-visible {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+.motion-demo__note {
+  color: var(--color-muted);
+}
+
+.motion-demo__tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+}
+
+.motion-demo__tokens li {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.motion-demo__tokens code {
+  color: var(--color-body);
+}
+
+.motion-demo__tokens span {
+  color: var(--color-muted);
+}
+
+.motion-stage {
+  position: relative;
+  height: var(--space-24);
+  overflow: hidden;
+  border: 1px solid var(--color-surface);
+  background: var(--color-panel);
+}
+
+/* PAGE — one pane leaves, the next arrives, on the two clocks. */
+.stage-page__pane {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.stage-page__pane.is-out {
+  animation:
+    ds-slide-out var(--page-slide-dur) var(--page-slide-ease) both,
+    ds-fade-out var(--page-fade-dur) var(--page-fade-ease) both;
+}
+
+.stage-page__pane.is-in {
+  animation:
+    ds-slide-in var(--page-slide-dur) var(--page-slide-ease) both,
+    ds-fade-in var(--page-fade-dur) var(--page-fade-ease) both;
+}
+
+@keyframes ds-slide-out {
+  to {
+    transform: translateX(calc(var(--vt-slide-distance) * -1));
+  }
+}
+
+@keyframes ds-slide-in {
+  from {
+    transform: translateX(var(--vt-slide-distance));
+  }
+}
+
+@keyframes ds-fade-out {
+  to {
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+@keyframes ds-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(var(--page-blur));
+  }
+}
+
+/* MODAL — the launching page recedes and blurs, the sheet rises over it. */
+.stage-modal__page {
+  position: absolute;
+  inset: var(--space-2);
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+  animation: ds-modal-recede var(--page-modal-dur) var(--page-slide-ease) both;
+}
+
+.stage-modal__sheet {
+  position: absolute;
+  inset: var(--space-6) var(--space-4) 0;
+  border: 1px solid var(--color-rule);
+  border-bottom: 0;
+  background: var(--color-panel);
+  animation:
+    ds-modal-rise var(--page-modal-dur) var(--page-slide-ease) both,
+    ds-fade-in var(--page-modal-fade-in-dur) var(--page-fade-ease) both;
+}
+
+@keyframes ds-modal-recede {
+  to {
+    transform: scale(var(--page-modal-scale));
+    filter: blur(var(--page-modal-blur));
+  }
+}
+
+@keyframes ds-modal-rise {
+  from {
+    transform: translateY(var(--page-modal-rise));
+  }
+}
+
+/* TOOLTIP — the delay before it opens is the point, so the stage waits it out,
+   holds, then closes on the shorter clock. The hold is VERY SLOW rather than a
+   number invented for this page. */
+.stage-tooltip__row {
+  position: absolute;
+  inset: auto var(--space-4) var(--space-4);
+  height: 1px;
+  background: var(--color-rule);
+}
+
+.stage-tooltip__card {
+  position: absolute;
+  inset: var(--space-4) var(--space-8) var(--space-8) var(--space-4);
+  transform-origin: bottom left;
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+  animation:
+    ds-tt-in var(--tt-in-dur) var(--tt-in-ease) var(--tt-delay) both,
+    ds-tt-out var(--tt-out-dur) var(--tt-out-ease)
+      calc(var(--tt-delay) + var(--tt-in-dur) + var(--duration-very-slow))
+      forwards;
+}
+
+/* `forwards`, not `both` — a backwards fill on the closing half would apply
+   its start frame from time zero and cancel the opening half outright. */
+@keyframes ds-tt-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--tt-scale));
+  }
+}
+
+@keyframes ds-tt-out {
+  to {
+    opacity: 0;
+    transform: scale(var(--tt-scale));
+  }
+}
+
+/* REVEAL — three rows, one stagger step apart. */
+.stage-reveal__row {
+  position: absolute;
+  inset-inline: var(--space-4);
+  height: var(--space-2);
+  background: var(--color-surface);
+  animation: ds-reveal var(--scroll-reveal-dur) var(--scroll-reveal-ease) both;
+}
+
+.stage-reveal__row:nth-child(1) {
+  top: var(--space-4);
+}
+
+.stage-reveal__row:nth-child(2) {
+  top: var(--space-8);
+  animation-delay: var(--duration-stagger);
+}
+
+.stage-reveal__row:nth-child(3) {
+  top: var(--space-12);
+  animation-delay: calc(var(--duration-stagger) * 2);
+}
+
+@keyframes ds-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--scroll-reveal-distance));
+  }
+}
+
+/* ── Curves ─────────────────────────────────────────────────── */
+
+/* Four dots racing the same distance over the same clock, so the curves can be
+   compared as shapes rather than read as bezier coefficients. */
+
+.curve-head {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-3);
+}
+
+.curve-table {
+  display: grid;
+  margin-top: var(--space-2);
+}
+
+/* The track takes the flexible column rather than a fixed one — over 6rem the
+   four curves land within a few pixels of each other and the whole point of
+   showing them is lost. */
+.curve-row {
+  display: grid;
+  grid-template-columns: 9rem 13rem minmax(0, 1fr);
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-surface);
+  color: var(--color-muted);
+}
+
+.curve-row__usage {
+  grid-column: 2 / -1;
+}
+
+.curve-row strong {
+  color: var(--color-ink);
+}
+
+.curve-row code {
+  color: var(--color-body);
+}
+
+.curve-track {
+  position: relative;
+  height: var(--space-3);
+  border-bottom: 1px solid var(--color-surface);
+}
+
+.curve-dot {
+  position: absolute;
+  bottom: 0;
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: 9999px;
+  background: var(--color-signal);
+  animation: ds-travel var(--duration-very-slow) var(--curve) both;
+}
+
+@keyframes ds-travel {
+  from {
+    left: 0;
+  }
+
+  to {
+    left: calc(100% - var(--space-2));
+  }
+}
+
 /* ── Parts ──────────────────────────────────────────────────── */
 
 .radius-demo {
@@ -1101,6 +1510,14 @@ onBeforeUnmount(() => {
     padding: var(--space-3) 0;
   }
 
+  .curve-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .curve-row__usage {
+    grid-column: 1;
+  }
+
   .token-row > strong {
     grid-column: 2;
   }
@@ -1123,8 +1540,21 @@ onBeforeUnmount(() => {
     scroll-behavior: auto;
   }
 
-  .system-toc__link {
+  .system-toc__link,
+  .motion-demo__replay {
     transition: none;
+  }
+
+  /* The stages sit in their finished state rather than running, which is what
+     the sequences themselves do under this query — so the page still shows
+     what a reduced-motion visitor actually gets. */
+  .motion-stage *,
+  .curve-dot {
+    animation: none !important;
+  }
+
+  .curve-dot {
+    left: calc(100% - var(--space-2));
   }
 }
 </style>
