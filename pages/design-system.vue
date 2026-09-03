@@ -90,9 +90,22 @@ const layout = [
   { name: "DOSSIER GUTTER", token: "--dossier-gutter", usage: "Space either side; the pager rails centre in it." },
 ];
 
+/* Each row renders the icon that actually uses that size, at that size. Both
+   rows used to draw `fingerprint`, which made LG look like a size nothing
+   asked for — it is the project-card thumbnail, and it draws `deployed_code`. */
 const icons = [
-  { name: "MD", token: "--icon-md", usage: "Inline with a control or label." },
-  { name: "LG", token: "--icon-lg", usage: "Standalone, card-scale." },
+  {
+    name: "MD",
+    token: "--icon-md",
+    icon: "fingerprint",
+    usage: "Inline with a control or label — the bottom nav, the dossier close.",
+  },
+  {
+    name: "LG",
+    token: "--icon-lg",
+    icon: "deployed_code",
+    usage: "Standalone, card-scale — a project card with no preview image.",
+  },
 ];
 
 const layers = [
@@ -485,9 +498,11 @@ onBeforeUnmount(() => {
 
           <ul class="token-table" role="list">
             <li v-for="row in icons" :key="row.token" class="token-row has-chip">
-              <span class="material-symbols-outlined icon-sample" :class="row.name === 'MD' ? 'icon-md' : 'icon-lg'">
-                fingerprint
-              </span>
+              <span
+                class="material-symbols-outlined icon-sample"
+                :class="row.name === 'MD' ? 'icon-md' : 'icon-lg'"
+                aria-hidden="true"
+              >{{ row.icon }}</span>
               <strong class="text-label-data">{{ row.name }}</strong>
               <span class="text-label-data tabular-nums">{{ resolved[row.token] || "—" }}</span>
               <code class="text-label-data">{{ row.token }}</code>
