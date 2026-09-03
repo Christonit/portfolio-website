@@ -1,34 +1,30 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from "vue";
 import type { ProjectPreview } from "./ProjectTooltip.vue";
-import { isExternalProjectHref, projectHref } from "~/utils/projects";
+import {
+  isExternalProjectHref,
+  projectBadges,
+  projectHref,
+} from "~/utils/projects";
 import { LINKEDIN_URL } from "~/utils/site";
 
 const props = withDefaults(
   defineProps<{
     variant?: "work" | "mission";
     project?: ProjectPreview;
-    index?: number;
-    total?: number;
     focused?: boolean;
   }>(),
   {
     variant: "work",
-    index: 0,
-    total: 1,
     focused: false,
   },
 );
 
 const isMission = computed(() => props.variant === "mission");
 
-const badges = computed(() => {
-  if (!props.project) return [];
-  return props.project.tags
-    .split("//")
-    .map((tag) => tag.trim().replace(/\s+/g, "_"))
-    .filter(Boolean);
-});
+const badges = computed(() =>
+  props.project ? projectBadges(props.project) : [],
+);
 
 const ctaLabel = computed(() =>
   props.project?.category.toLowerCase() === "article"
@@ -92,12 +88,6 @@ watch(
   },
 );
 
-const counter = computed(() => {
-  const n = String(props.index + 1).padStart(2, "0");
-  const t = String(props.total).padStart(2, "0");
-  return `${n}/${t}`;
-});
-
 const ariaLabel = computed(() => {
   if (isMission.value) {
     return "New mission — get in touch to start a project";
@@ -125,8 +115,7 @@ const ariaLabel = computed(() => {
       isMission ? 'justify-center' : '',
     ]"
   >
-    <div class="corner-tl-w" />
-    <div class="corner-br-w" />
+    <HudCorners reveal="hover" />
 
     <!-- ── NEW MISSION ── -->
     <div
@@ -181,20 +170,13 @@ const ariaLabel = computed(() => {
         </span>
       </div>
 
-      <div class="flex flex-1 flex-col gap-4 px-5 pb-5 pt-5">
+      <div class="flex flex-1 flex-col gap-4 px-4 pb-5 pt-5">
         <div class="flex flex-col gap-2">
-          <div class="flex min-w-0 items-baseline justify-between gap-3">
-            <h2
-              class="text-title-ui line-clamp-2 uppercase tracking-tight text-white"
-            >
-              {{ project.name }}
-            </h2>
-            <span
-              class="text-label-data shrink-0 tabular-nums tracking-widest text-[#919191]"
-            >
-              {{ counter }}
-            </span>
-          </div>
+          <h2
+            class="text-title-ui line-clamp-2 uppercase tracking-tight text-white"
+          >
+            {{ project.name }}
+          </h2>
           <p
             class="text-body-compact line-clamp-2 text-[#919191]"
           >
@@ -202,7 +184,11 @@ const ariaLabel = computed(() => {
           </p>
         </div>
 
-        <ul v-if="badges.length" class="flex flex-wrap gap-1.5" role="list">
+        <!-- Same badge row the home page cards carry, and it holds one line at
+             the same widths: the body padding matches their 16px so the row gets
+             the same runway, and the tighter gap covers the few px the rail's
+             wider grid gutter costs this card. -->
+        <ul v-if="badges.length" class="flex flex-wrap gap-1" role="list">
           <li v-for="badge in badges" :key="badge">
             <span
               class="text-label-data inline-flex items-center border border-[#3a3a3a] px-1.5 py-1 uppercase tracking-[0.14em] text-[#c6c6c6]"
@@ -222,20 +208,12 @@ const ariaLabel = computed(() => {
 </template>
 
 <style scoped>
-.projects-card .corner-tl-w,
-.projects-card .corner-br-w {
-  width: 18px;
-  height: 18px;
-  border-color: rgba(255, 255, 255, 0.72);
-}
-
-.projects-card.is-focused .corner-tl-w,
-.projects-card.is-focused .corner-br-w,
-.projects-card:hover .corner-tl-w,
-.projects-card:hover .corner-br-w,
-.projects-card:focus-visible .corner-tl-w,
-.projects-card:focus-visible .corner-br-w {
-  border-color: rgba(103, 245, 122, 0.9);
+/* Same corner marks the featured cards on the home page wear: all four, held
+   back until the pointer (or keyboard focus) is on the card, and stationary. */
+.projects-card {
+  --hud-corner-size: 18px;
+  --hud-corner-inset: 0px;
+  --distance-micro: 0px;
 }
 
 .projects-card__thumb {

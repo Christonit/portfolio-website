@@ -11,7 +11,6 @@ defineProps<{
   <ul class="articles-index-list" role="list">
     <li v-for="(article, index) in articles" :key="article.slug">
       <NuxtLink
-        v-reveal="index * 60"
         :to="projectHref(article)"
         :external="isExternalProjectHref(article)"
         :target="isExternalProjectHref(article) ? '_blank' : undefined"

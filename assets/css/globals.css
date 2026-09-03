@@ -157,11 +157,6 @@
     --distance-medium: 12px;
     --blur-medium: 3px;
 
-    /* Scroll reveal — soft slide-up + fade */
-    --scroll-reveal-dur: var(--duration-very-slow);
-    --scroll-reveal-distance: 16px;
-    --scroll-reveal-ease: var(--ease-smooth-out);
-
     /* Page side-by-side / view transitions */
     --page-slide-dur: 340ms;
     --page-fade-dur: 190ms;
@@ -738,24 +733,6 @@ html[data-nav-dir="modal-out"]::view-transition-new(hud-page) {
   filter: blur(var(--page-modal-blur));
 }
 
-/* Scroll reveal — starts translated down + faded; data-reveal="shown"
-   flips to rest. Delay is set per-item via --reveal-delay. */
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(var(--scroll-reveal-distance));
-  transition:
-    opacity var(--scroll-reveal-dur) var(--scroll-reveal-ease)
-      var(--reveal-delay, 0ms),
-    transform var(--scroll-reveal-dur) var(--scroll-reveal-ease)
-      var(--reveal-delay, 0ms);
-  will-change: transform, opacity;
-}
-
-[data-reveal="shown"] {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 @media (prefers-reduced-motion: reduce) {
   html[data-nav-dir="forward"]::view-transition-old(hud-page),
   html[data-nav-dir="forward"]::view-transition-new(hud-page),
@@ -775,13 +752,6 @@ html[data-nav-dir="modal-out"]::view-transition-new(hud-page) {
   .hud-modal-out-leave-active {
     animation: none !important;
     transition: none !important;
-  }
-
-  [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-    will-change: auto;
   }
 
   .skip-link {
