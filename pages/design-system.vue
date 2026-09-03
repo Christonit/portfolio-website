@@ -308,6 +308,54 @@ const railRef = ref<HTMLElement | null>(null);
 const activeSection = ref(sections[0].id);
 
 /**
+ * The index floats over the page as one pill rather than standing in a rail.
+ * The rail was a fixed 8rem column that ran the height of a very long page to
+ * carry nine words, and below 900px it had already given up and become a
+ * horizontally scrolling strip — two layouts for one control.
+ *
+ * Collapsed, the pill reports the section you are in: the scroll spy below is
+ * what writes that label, so it reads as a position display as much as a
+ * control. Expanded, it is the same list it always was.
+ */
+const indexOpen = ref(false);
+const tocRef = ref<HTMLElement | null>(null);
+const toggleRef = ref<HTMLButtonElement | null>(null);
+
+const activeLabel = computed(
+  () =>
+    sections.find((section) => section.id === activeSection.value)?.label ??
+    sections[0].label,
+);
+
+function closeIndex(returnFocus = false) {
+  if (!indexOpen.value) return;
+  indexOpen.value = false;
+  // Only on Escape. A pointer dismissal has already moved focus somewhere the
+  // visitor chose, and yanking it back to the pill would undo that.
+  if (returnFocus) toggleRef.value?.focus();
+}
+
+function onDocumentPointerDown(event: PointerEvent) {
+  if (tocRef.value?.contains(event.target as Node)) return;
+  closeIndex();
+}
+
+/**
+ * Capture phase, and swallowed while the panel is open. The layout binds a
+ * bare Escape to "go home" (layouts/default.vue), so a plain listener would
+ * shut the index and leave the page in the same keystroke. ProjectSheet takes
+ * this same measure against the same handler.
+ *
+ * Only swallowed while open — with the index shut, Escape still goes home.
+ */
+function onDocumentKeydown(event: KeyboardEvent) {
+  if (event.key !== "Escape" || !indexOpen.value) return;
+  event.preventDefault();
+  event.stopPropagation();
+  closeIndex(true);
+}
+
+/**
  * Deterministic rather than IntersectionObserver: the active entry is the last
  * heading that has passed the read line. An observer would have to arbitrate
  * between two sections that are both on screen, and flickers between them at
@@ -366,33 +414,59 @@ onMounted(() => {
   };
 
   railRef.value?.addEventListener("scroll", onScroll, { passive: true });
+  document.addEventListener("pointerdown", onDocumentPointerDown);
+  window.addEventListener("keydown", onDocumentKeydown, true);
   syncActiveSection();
 });
 
 onBeforeUnmount(() => {
   if (frame) cancelAnimationFrame(frame);
   railRef.value?.removeEventListener("scroll", onScroll);
+  document.removeEventListener("pointerdown", onDocumentPointerDown);
+  window.removeEventListener("keydown", onDocumentKeydown, true);
 });
 </script>
 
 <template>
   <div ref="railRef" class="system-page">
     <div class="system-shell">
-      <!-- Sticky within .system-page, which is the scroller. -->
-      <nav class="system-toc" aria-label="Design system sections">
-        <span class="hud-label system-toc__title">// INDEX</span>
-        <ul role="list">
+      <!-- Fixed to the viewport, not sticky: `.system-page` is the scroller,
+           so a sticky element inside it would ride the content. -->
+      <nav
+        ref="tocRef"
+        class="system-toc"
+        :class="{ 'is-open': indexOpen }"
+        aria-label="Design system sections"
+      >
+        <ul id="system-index-list" class="system-toc__list" role="list">
           <li v-for="section in sections" :key="section.id">
             <a
               :href="`#${section.id}`"
               class="system-toc__link text-label-data uppercase tracking-[0.14em]"
               :class="{ 'is-active': activeSection === section.id }"
               :aria-current="activeSection === section.id ? 'true' : undefined"
+              :tabindex="indexOpen ? undefined : -1"
+              @click="closeIndex()"
             >
               {{ section.label }}
             </a>
           </li>
         </ul>
+
+        <button
+          ref="toggleRef"
+          class="system-toc__toggle"
+          type="button"
+          aria-controls="system-index-list"
+          :aria-expanded="indexOpen"
+          @click="indexOpen = !indexOpen"
+        >
+          <span class="hud-label system-toc__title">// INDEX</span>
+          <span class="system-toc__current text-label-data uppercase tracking-[0.14em]">{{
+            activeLabel
+          }}</span>
+          <span class="system-toc__caret" aria-hidden="true" />
+        </button>
       </nav>
 
       <div class="system-body">
@@ -401,9 +475,10 @@ onBeforeUnmount(() => {
           <h1 class="text-display">SYSTEM INDEX</h1>
           <p class="text-body-compact">
             A working inventory of the visual language used across the portfolio.
-            Two families, seven roles, two weights. Every value on this page is
-            read from the live stylesheet at load, so it cannot drift from the
-            code.
+            Two families, seven roles, two weights. Every token value on this
+            page is read from the live stylesheet at load, so it cannot drift
+            from the code. The one value not read that way is white, which is a
+            CSS keyword rather than a token and has nothing to drift from.
           </p>
         </header>
 
@@ -499,6 +574,7 @@ onBeforeUnmount(() => {
                 <span class="color-chip" :style="{ backgroundColor: swatchPaint(color) }" />
                 <strong class="text-label-data">{{ color.name }}</strong>
                 <span class="text-label-data tabular-nums">
+                  <!-- Restated, not resolved: `white` is a spec constant. -->
                   {{ color.token ? resolved[color.token] || "—" : "#FFFFFF" }}
                 </span>
                 <code class="text-label-data">{{ color.token ?? color.css }}</code>
@@ -837,38 +913,115 @@ onBeforeUnmount(() => {
 
 .system-shell {
   display: grid;
-  grid-template-columns: 8rem minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8);
   width: min(60rem, calc(100% - var(--space-8)));
   margin-inline: auto;
-  padding: var(--space-6) 0 var(--space-16);
+  /* The tail clears the floating index, which is out of flow — without it the
+     pill sits on top of the last section's final row. */
+  padding: var(--space-6) 0 var(--space-24);
 }
 
 /* ── Index ──────────────────────────────────────────────────── */
 
+/* Sits on the header's layer: clear of the page, but under --z-nav-mobile so
+   the bottom bar stays reachable. Local to this page, so it is not a token. */
 .system-toc {
-  position: sticky;
-  top: var(--space-6);
-  align-self: start;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Clears the bottom nav, which is mounted until xl. */
+  bottom: calc(var(--space-16) + var(--space-4));
+  z-index: var(--z-nav);
   display: flex;
   flex-direction: column;
+  gap: var(--space-2);
+  width: max-content;
+  max-width: calc(100% - var(--space-8));
+}
+
+@media (min-width: 1280px) {
+  .system-toc {
+    bottom: var(--space-8);
+  }
+}
+
+.system-toc__toggle {
+  display: flex;
+  align-items: center;
   gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-rule);
+  background-color: var(--color-surface);
+  box-shadow: 0 2px 0 var(--color-rule);
+  transition: border-color var(--duration-quick) var(--ease-out);
+}
+
+.system-toc__toggle:hover,
+.system-toc__toggle:focus-visible {
+  border-color: var(--color-muted);
 }
 
 .system-toc__title {
   color: var(--color-muted);
 }
 
-.system-toc ul {
+/* The readout. Green because it is live state, the same reason a hovered link
+   and an online dot are. */
+.system-toc__current {
+  color: var(--color-signal);
+}
+
+/* Drawn, not set in the icon font: that face is subset to the names templates
+   actually render, and a chevron is not one of them — it would ship as the
+   word. */
+.system-toc__caret {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-right: 1px solid var(--color-muted);
+  border-bottom: 1px solid var(--color-muted);
+  transform: translateY(-25%) rotate(-135deg);
+  transition: transform var(--duration-quick) var(--ease-out);
+}
+
+.system-toc.is-open .system-toc__caret {
+  transform: translateY(25%) rotate(45deg);
+}
+
+/* Collapsed by height rather than removed, so the panel and the caret travel
+   on one clock. `visibility` is what takes it out of the tab order's way; the
+   links carry tabindex="-1" while it is shut. */
+.system-toc__list {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  max-height: 0;
+  padding-block: 0;
+  opacity: 0;
+  visibility: hidden;
+  border: 1px solid var(--color-rule);
+  background-color: var(--color-canvas);
+  transition:
+    max-height var(--duration-fast) var(--ease-smooth-out),
+    padding-block var(--duration-fast) var(--ease-smooth-out),
+    opacity var(--duration-quick) var(--ease-out),
+    visibility 0s linear var(--duration-fast);
+}
+
+.system-toc.is-open .system-toc__list {
+  max-height: 24rem;
+  padding-block: var(--space-2);
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .system-toc__link {
   display: block;
-  padding: var(--space-1) 0 var(--space-1) var(--space-3);
-  border-left: 1px solid var(--color-surface);
+  padding: var(--space-1) var(--space-4);
+  border-left: 1px solid transparent;
   color: var(--color-muted);
+  white-space: nowrap;
   transition: color var(--duration-quick) var(--ease-out),
     border-color var(--duration-quick) var(--ease-out);
 }
@@ -1471,45 +1624,10 @@ onBeforeUnmount(() => {
     width: min(60rem, calc(100% - var(--space-6)));
   }
 
-  /* The index stops being a rail and becomes a scrollable strip pinned to
-     the top of the page — a sticky sidebar has nowhere to sit at this width. */
-  .system-toc {
-    top: 0;
-    z-index: 1;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-3);
-    margin-inline: calc(var(--space-3) * -1);
-    padding: var(--space-2) var(--space-3);
-    background: var(--color-canvas);
-    border-bottom: 1px solid var(--color-surface);
-  }
-
+  /* The pill itself needs no second layout at this width — only the prefix
+     goes, so the readout keeps the room. */
   .system-toc__title {
     display: none;
-  }
-
-  .system-toc ul {
-    flex-direction: row;
-    gap: var(--space-4);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .system-toc ul::-webkit-scrollbar {
-    display: none;
-  }
-
-  .system-toc__link {
-    padding: var(--space-1) 0;
-    border-left: 0;
-    border-bottom: 1px solid transparent;
-    white-space: nowrap;
-  }
-
-  .system-toc__link.is-active {
-    border-left-color: transparent;
-    border-bottom-color: var(--color-signal);
   }
 
   .token-row,
@@ -1550,7 +1668,14 @@ onBeforeUnmount(() => {
   }
 
   .system-toc__link,
+  .system-toc__toggle,
   .motion-demo__replay {
+    transition: none;
+  }
+
+  /* The panel still opens and shuts, it just does not travel to get there. */
+  .system-toc__list,
+  .system-toc__caret {
     transition: none;
   }
 
