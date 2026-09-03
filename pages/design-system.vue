@@ -5,10 +5,6 @@ import { ICON_NAMES } from "~/scripts/icon-names.mjs";
 import { pageTitle } from "~/utils/site";
 import { typography, type TypographyStyleKey } from "~/utils/typography";
 
-useSeoMeta({
-  robots: "noindex, nofollow",
-});
-
 usePageSeo({
   title: pageTitle("Design System"),
   description:

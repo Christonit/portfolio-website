@@ -296,15 +296,13 @@ function navLinkTone(path: string) {
  *
  * The wordmark itself stays the home link it has always been — the shortcut
  * sits next to it rather than taking it over, so nothing about the header
- * changes meaning. It is dev-only because the page is: `pages:extend` in
- * nuxt.config.ts drops `/design-system` from the production route graph, so a
- * built site never renders a link that would 404. It also hides on the design
- * system itself, where it would only point at the page you are reading.
+ * changes meaning. It hides on the design system itself, where it would only
+ * point at the page you are reading.
  */
 const DESIGN_SYSTEM_PATH = "/design-system";
 
 const showDesignSystemLink = computed(
-  () => import.meta.dev && normalizedPath.value !== DESIGN_SYSTEM_PATH,
+  () => normalizedPath.value !== DESIGN_SYSTEM_PATH,
 );
 
 const mainRef = ref<HTMLElement | null>(null);
@@ -354,9 +352,8 @@ watch(normalizedPath, (to, from) => {
       class="site-nav sticky top-0 inset-x-0 h-16 z-nav flex items-center px-4 xl:px-8 bg-canvas/95 backdrop-blur-sm border-b border-white/10"
       :inert="dossierClosing || undefined"
     >
-      <!-- Logo: always visible. The design system link beside it is dev-only
-           (see `showDesignSystemLink`) and hidden until this group is hovered
-           or the link itself is focused. -->
+      <!-- Logo: always visible. The design system link beside it is hidden
+           until this group is hovered or the link itself is focused. -->
       <div class="group mr-auto flex items-center">
         <NuxtLink
           to="/"
