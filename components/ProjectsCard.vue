@@ -117,16 +117,15 @@ const ariaLabel = computed(() => {
     :rel="isExternal ? 'noopener noreferrer' : undefined"
     :aria-label="ariaLabel"
     :class="[
-      'projects-card group relative flex h-full min-h-[320px] flex-col border bg-[#0c0c0c] text-left no-underline outline-none',
+      'projects-card group relative flex h-full min-h-[320px] flex-col border bg-panel text-left no-underline outline-none',
       'transition-[border-color,background-color] duration-150',
       focused
-        ? 'is-focused border-[#67F57A]'
-        : 'border-[#2a2a2a] hover:border-[#67F57A]/55 focus-visible:border-[#67F57A]',
+        ? 'is-focused border-signal'
+        : 'border-surface hover:border-signal/55 focus-visible:border-signal',
       isMission ? 'justify-center' : '',
     ]"
   >
-    <div class="corner-tl-w" />
-    <div class="corner-br-w" />
+    <HudCorners :corners="['tl', 'br']" />
 
     <!-- ── NEW MISSION ── -->
     <div
@@ -134,7 +133,7 @@ const ariaLabel = computed(() => {
       class="flex flex-1 flex-col items-center justify-center gap-4 px-8 py-12 text-center"
     >
       <div
-        class="flex h-12 w-12 items-center justify-center border border-[#474747] text-[#919191] transition-colors duration-150 group-hover:border-[#67F57A] group-hover:text-[#67F57A] group-focus-visible:border-[#67F57A] group-focus-visible:text-[#67F57A]"
+        class="flex h-12 w-12 items-center justify-center border border-rule text-muted transition-colors duration-150 group-hover:border-signal group-hover:text-signal group-focus-visible:border-signal group-focus-visible:text-signal"
         style="border-radius: 9999px"
         aria-hidden="true"
       >
@@ -144,11 +143,11 @@ const ariaLabel = computed(() => {
       </div>
       <div>
         <h2
-          class="text-title-ui uppercase tracking-[0.18em] text-[#919191] transition-colors duration-150 group-hover:text-white"
+          class="text-title-ui uppercase tracking-[0.18em] text-muted transition-colors duration-150 group-hover:text-white"
         >
           NEW MISSION
         </h2>
-        <p class="text-body-compact mt-2 max-w-[220px] text-[#919191]">
+        <p class="text-body-compact mt-2 max-w-[220px] text-muted">
           Awaiting deployment — drop your next project here.
         </p>
       </div>
@@ -158,7 +157,7 @@ const ariaLabel = computed(() => {
     <template v-else-if="project">
       <div
         class="projects-card__thumb relative shrink-0 overflow-hidden"
-        :class="{ 'has-media': showPreview, 'h-36': !previewRatio }"
+        :class="{ 'has-media': showPreview, 'h-32': !previewRatio }"
         :style="previewRatio ? { aspectRatio: previewRatio } : undefined"
       >
         <img
@@ -181,7 +180,7 @@ const ariaLabel = computed(() => {
         </span>
       </div>
 
-      <div class="flex flex-1 flex-col gap-4 px-5 pb-5 pt-5">
+      <div class="flex flex-1 flex-col gap-4 px-4 pb-4 pt-4">
         <div class="flex flex-col gap-2">
           <div class="flex min-w-0 items-baseline justify-between gap-3">
             <h2
@@ -190,22 +189,22 @@ const ariaLabel = computed(() => {
               {{ project.name }}
             </h2>
             <span
-              class="text-label-data shrink-0 tabular-nums tracking-widest text-[#919191]"
+              class="text-label-data shrink-0 tabular-nums tracking-widest text-muted"
             >
               {{ counter }}
             </span>
           </div>
           <p
-            class="text-body-compact line-clamp-2 text-[#919191]"
+            class="text-body-compact line-clamp-2 text-muted"
           >
             {{ project.description || project.tasks[0] }}
           </p>
         </div>
 
-        <ul v-if="badges.length" class="flex flex-wrap gap-1.5" role="list">
+        <ul v-if="badges.length" class="flex flex-wrap gap-2" role="list">
           <li v-for="badge in badges" :key="badge">
             <span
-              class="text-label-data inline-flex items-center border border-[#3a3a3a] px-1.5 py-1 uppercase tracking-[0.14em] text-[#c6c6c6]"
+              class="text-label-data inline-flex items-center border border-rule px-2 py-1 uppercase tracking-[0.14em] text-prose"
             >
               {{ badge }}
             </span>
@@ -222,28 +221,26 @@ const ariaLabel = computed(() => {
 </template>
 
 <style scoped>
-.projects-card .corner-tl-w,
-.projects-card .corner-br-w {
-  width: 18px;
-  height: 18px;
-  border-color: rgba(255, 255, 255, 0.72);
+/* The marks stay put and only change colour — this card brightens its whole
+   frame on hover, so corners flying in on top of that would be one motion too
+   many. `reveal="always"` keeps them visible; only the colour is stateful. */
+.projects-card {
+  --hud-corner-size: 18px;
+  --hud-corner-color: rgba(255, 255, 255, 0.72);
 }
 
-.projects-card.is-focused .corner-tl-w,
-.projects-card.is-focused .corner-br-w,
-.projects-card:hover .corner-tl-w,
-.projects-card:hover .corner-br-w,
-.projects-card:focus-visible .corner-tl-w,
-.projects-card:focus-visible .corner-br-w {
-  border-color: rgba(103, 245, 122, 0.9);
+.projects-card.is-focused,
+.projects-card:hover,
+.projects-card:focus-visible {
+  --hud-corner-color: rgba(103, 245, 122, 0.9);
 }
 
 .projects-card__thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #111;
-  border-bottom: 1px solid #1f1f1f;
+  background-color: var(--color-panel);
+  border-bottom: 1px solid var(--color-surface);
 }
 
 .projects-card__thumb::before {
@@ -274,11 +271,11 @@ const ariaLabel = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 11px 16px;
-  border-top: 1px solid #262626;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-surface);
   background: rgba(255, 255, 255, 0.025);
-  color: #fff;
+  color: var(--color-ink);
   font-weight: 600;
   letter-spacing: 0.14em;
   transition:

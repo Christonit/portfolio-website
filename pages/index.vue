@@ -131,7 +131,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
         @touchcancel.passive="portraitHover = false"
       >
         <div class="identity-copy">
-          <h1 id="identity-name" class="identity-name text-display">
+          <h1 id="identity-name" class="identity-name">
             CHRISTO<wbr />PHER<br />SANTANA
           </h1>
 
@@ -273,7 +273,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   overscroll-behavior: contain;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: 64px;
+  padding-bottom: var(--space-16);
 }
 
 .home-console::-webkit-scrollbar {
@@ -284,7 +284,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   width: min(800px, calc(100% - 32px));
   margin-inline: auto;
   /* Top gap matches the hero's bottom gap (.featured-work margin-top). */
-  padding: 40px 0 72px;
+  padding: var(--space-8) 0 var(--space-16);
 }
 
 .identity-panel {
@@ -296,7 +296,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
      one continuous surface instead of copy-panel-plus-photo. */
   background:
     var(--identity-grain),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%), #101010;
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%), var(--color-panel);
   background-size:
     180px 180px,
     auto,
@@ -339,19 +339,18 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 22px 18px 20px;
+  padding: var(--space-6) var(--space-6) var(--space-6);
   width: 100%;
 }
 
 .identity-name {
-  margin-top: 10px;
-  color: #fff;
-  font-size: var(--text-display);
+  margin-top: var(--space-3);
+  color: var(--color-ink);
+  font-size: var(--text-hero);
   font-weight: 600;
-  /* `.text-display` ships a fixed 40px leading sized for its own fixed 44px.
-     This heading overrides the size with the fluid token, so the leading has
-     to be proportional too — otherwise the two lines collide at desktop and
-     drift apart at phone widths. */
+  /* Proportional, not the fixed 40px that the Display token pairs with its
+     fixed 44px: this size is fluid, so a fixed leading would collide the two
+     lines at desktop and drift them apart at phone widths. */
   line-height: 0.92;
   letter-spacing: -0.025em;
   text-transform: uppercase;
@@ -360,21 +359,21 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .identity-facts {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   margin-top: auto;
 }
 
 .identity-role {
-  margin-top: 2px;
-  color: #fff;
+  margin-top: var(--space-1);
+  color: var(--color-ink);
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.13em;
 }
 
 .identity-role__location {
-  margin-left: 8px;
-  color: #c6c6c6;
+  margin-left: var(--space-2);
+  color: var(--color-prose);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 400;
@@ -385,9 +384,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .identity-mission {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-top: 3px;
-  color: #c6c6c6;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  color: var(--color-prose);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   line-height: 1.35;
@@ -395,7 +394,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .identity-mission a {
-  color: #fff;
+  color: var(--color-ink);
   text-decoration: underline;
   text-decoration-color: rgba(255, 255, 255, 0.4);
   text-underline-offset: 2px;
@@ -403,7 +402,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .identity-mission a:hover,
 .identity-mission a:focus-visible {
-  color: #67f57a;
+  color: var(--color-signal);
 }
 
 .identity-portrait {
@@ -413,7 +412,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   position: relative;
   min-width: 262px;
   overflow: hidden;
-  background: #101010;
+  background: var(--color-panel);
 }
 
 .identity-portrait::after {
@@ -422,22 +421,22 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   inset: 0;
   background: linear-gradient(
     90deg,
-    #101010 0%,
+    var(--color-panel) 0%,
     rgba(16, 16, 16, 0) 34%,
     rgba(16, 16, 16, 0) 78%,
-    #101010 100%
+    var(--color-panel) 100%
   );
   pointer-events: none;
 }
 
 .featured-work {
-  margin-top: 40px;
+  margin-top: var(--space-8);
 }
 
 .featured-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--space-4);
 }
 
 .featured-grid > li {
@@ -450,9 +449,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   height: 100%;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #292929;
+  border: 1px solid var(--color-surface);
   background: rgba(11, 11, 11, 0.88);
-  color: #e2e2e2;
+  color: var(--color-body);
   text-decoration: none;
   transition:
     border-color 150ms ease,
@@ -466,7 +465,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .dossier-card:focus-visible,
 .dossier-card.is-focused {
   border-color: rgba(103, 245, 122, 0.72);
-  background: #0a0a0a;
+  background: var(--color-panel);
   outline: none;
 }
 
@@ -477,9 +476,9 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-bottom: 1px solid #262626;
-  background: #111;
-  color: #919191;
+  border-bottom: 1px solid var(--color-surface);
+  background: var(--color-panel);
+  color: var(--color-muted);
 }
 
 .dossier-card__image::after {
@@ -514,14 +513,14 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 7px;
-  padding: 14px 16px 16px;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-4);
 }
 
 .dossier-card__body h3 {
   min-width: 0;
   overflow: hidden;
-  color: #fff;
+  color: var(--color-ink);
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: -0.015em;
@@ -537,12 +536,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   min-width: 0;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .dossier-card__index {
   flex-shrink: 0;
-  color: #3f3f3f;
+  color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.11em;
@@ -567,11 +566,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 11px 16px;
-  border-top: 1px solid #262626;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-surface);
   background: rgba(255, 255, 255, 0.025);
-  color: #fff;
+  color: var(--color-ink);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -619,7 +618,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .index-module {
   position: relative;
-  margin-top: 40px;
+  margin-top: var(--space-8);
   overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -640,7 +639,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   justify-content: space-between;
   min-height: 48px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  color: #777;
+  color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   font-weight: 600;
@@ -652,13 +651,13 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .articles-index {
-  margin-top: 48px;
+  margin-top: var(--space-12);
 }
 
 @media (max-width: 639px) {
   .home-rail {
     width: min(100% - 24px, 800px);
-    padding-top: 28px;
+    padding-top: var(--space-8);
   }
 
   .identity-panel {
@@ -674,11 +673,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-portrait::after {
-    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 42%, #101010 100%);
+    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 42%, var(--color-panel) 100%);
   }
 
   .identity-copy {
-    padding: 16px 14px 18px;
+    padding: var(--space-4) var(--space-4) var(--space-6);
   }
 
   .identity-name {
@@ -686,8 +685,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-facts {
-    gap: 8px;
-    margin-top: 16px;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
   }
 
   .identity-role {
@@ -696,7 +695,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-role__location {
-    margin-left: 6px;
+    margin-left: var(--space-2);
     font-size: var(--text-2xs);
   }
 
@@ -712,12 +711,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
   .featured-work,
   .index-module {
-    margin-top: 28px;
+    margin-top: var(--space-8);
   }
 
   .featured-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: var(--space-6);
   }
 
   .dossier-card {
@@ -725,13 +724,13 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .articles-index {
-    margin-top: 36px;
+    margin-top: var(--space-8);
   }
 }
 
 @media (min-width: 1280px) {
   .home-rail {
-    padding-bottom: 48px;
+    padding-bottom: var(--space-12);
   }
 }
 

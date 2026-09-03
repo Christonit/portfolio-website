@@ -7,11 +7,12 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "test": "node --experimental-strip-types --test tests/*.test.ts && npm run check:typography && npm run check:icons && npm run typecheck",
+    "test": "node --experimental-strip-types --test tests/*.test.ts && npm run check:typography && npm run check:tokens && npm run check:icons && npm run typecheck",
     "check:typography": "node scripts/typography-audit.mjs",
+    "check:tokens": "node scripts/design-tokens-audit.mjs",
+    "check:icons": "node scripts/icon-coverage.mjs",
     "postinstall": "nuxt prepare",
     "typecheck": "vue-tsc --noEmit",
-    "check:icons": "node scripts/icon-coverage.mjs",
     "fonts:icons": "node scripts/fetch-icon-font.mjs"
   },
   "dependencies": {
@@ -30,12 +31,6 @@
     "@types/three": "^0.184.1",
     "@vueuse/core": "^11.0.0",
     "agentation-vue": "^0.3.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.0",
-    "lucide-vue-next": "^0.468.0",
-    "radix-vue": "^1.9.0",
-    "shadcn-nuxt": "^0.11.0",
-    "tailwind-merge": "^2.5.0",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.7.0",
     "vue-tsc": "^2.0.0"

@@ -289,7 +289,7 @@ onBeforeUnmount(() => {
       >
         <button
           type="button"
-          class="flex min-h-11 min-w-11 items-center justify-center border-r border-white/20 text-lg text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
+          class="flex min-h-12 min-w-12 items-center justify-center border-r border-white/20 text-lg text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
           aria-label="Previous image"
           @click="prevFrame"
         >
@@ -297,7 +297,7 @@ onBeforeUnmount(() => {
         </button>
         <button
           type="button"
-          class="flex min-h-11 min-w-11 items-center justify-center border-r border-white/20 text-lg text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
+          class="flex min-h-12 min-w-12 items-center justify-center border-r border-white/20 text-lg text-white transition-colors hover:bg-white hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none xl:min-h-12 xl:min-w-12"
           aria-label="Next image"
           @click="nextFrame"
         >
@@ -307,7 +307,7 @@ onBeforeUnmount(() => {
           class="flex min-w-0 flex-1 items-center justify-between gap-3 px-3"
         >
           <span
-            class="font-mono text-2xs uppercase tracking-[0.28em] text-[#919191]"
+            class="font-mono text-2xs uppercase tracking-[0.28em] text-muted"
           >
             IMAGES
           </span>
@@ -331,11 +331,11 @@ onBeforeUnmount(() => {
         v-if="project.role"
         class="flex shrink-0 items-baseline gap-2 border-b border-white/10 px-4 py-3 font-mono text-2xs uppercase leading-snug tracking-[0.18em] xl:px-6"
       >
-        <span class="shrink-0 text-[#919191]">ROLE</span>
-        <span class="text-[#67F57A]">{{ project.role }}</span>
+        <span class="shrink-0 text-muted">ROLE</span>
+        <span class="text-signal">{{ project.role }}</span>
       </header>
 
-      <div class="project-dossier px-4 pt-5 pb-32 xl:px-6 xl:py-6">
+      <div class="project-dossier px-4 pt-6 pb-32 xl:px-6 xl:py-6">
         <div class="project-dossier-inner">
           <div class="project-dossier-main">
             <article
@@ -344,7 +344,7 @@ onBeforeUnmount(() => {
               class="project-dossier-beat flex flex-col gap-4"
             >
               <p
-                class="project-dossier-copy text-base leading-relaxed text-[#c6c6c6]"
+                class="project-dossier-copy text-base leading-relaxed text-prose"
               >
                 {{ beat.text }}
               </p>
@@ -362,9 +362,9 @@ onBeforeUnmount(() => {
                 <li
                   v-for="task in project.tasks"
                   :key="task"
-                  class="flex items-start gap-2 font-mono text-sm uppercase leading-relaxed tracking-wide text-[#e2e2e2]"
+                  class="flex items-start gap-2 font-mono text-sm uppercase leading-relaxed tracking-wide text-body"
                 >
-                  <span class="mt-px text-[#67F57A]" aria-hidden="true"
+                  <span class="mt-px text-signal" aria-hidden="true"
                     >&gt;</span
                   >
                   <span>{{ task }}</span>
@@ -378,14 +378,14 @@ onBeforeUnmount(() => {
               aria-label="Tech stack"
             >
               <h2 class="hud-label">Tech</h2>
-              <ul class="flex flex-wrap gap-1.5" role="list">
+              <ul class="flex flex-wrap gap-2" role="list">
                 <li v-for="(item, ti) in project.tech" :key="item">
                   <span
-                    class="inline-flex items-center border px-1.5 py-1 font-mono text-2xs uppercase tracking-[0.14em]"
+                    class="inline-flex items-center border px-2 py-1 font-mono text-2xs uppercase tracking-[0.14em]"
                     :class="
                       ti === 0
-                        ? 'border-[#67F57A] text-[#67F57A]'
-                        : 'border-[#3a3a3a] text-[#e2e2e2]'
+                        ? 'border-signal text-signal'
+                        : 'border-rule text-body'
                     "
                   >
                     {{ item }}
@@ -402,7 +402,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .project-dossier-panel {
-  background-color: #0c0c0c;
+  background-color: var(--color-panel);
   background-image:
     radial-gradient(rgba(255, 255, 255, 0.035) 0.5px, transparent 0.5px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 40%);
@@ -432,13 +432,13 @@ onBeforeUnmount(() => {
     display: grid;
     max-width: none;
     align-items: start;
-    gap: 0 3rem;
+    gap: 0 var(--space-12);
     grid-template-columns: minmax(0, 620px) minmax(200px, 1fr);
   }
 }
 
 .project-dossier-beat {
-  padding-bottom: 1.75rem;
+  padding-bottom: var(--space-8);
 }
 
 /* Media band: capped so the written record stays reachable below it. */
@@ -494,7 +494,7 @@ onBeforeUnmount(() => {
   height: 100%;
   object-fit: cover;
   object-position: center top;
-  background: #000;
+  background: var(--color-panel);
   pointer-events: none;
 }
 
@@ -506,7 +506,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.45);
-  color: #e2e2e2;
+  color: var(--color-body);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   font-weight: 600;
@@ -518,7 +518,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #000;
+  background: var(--color-panel);
   pointer-events: auto;
 }
 
@@ -531,11 +531,11 @@ onBeforeUnmount(() => {
   min-width: 44px;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: var(--space-1);
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(0, 0, 0, 0.72);
-  padding: 0 0.7rem;
-  color: #e2e2e2;
+  padding: 0 var(--space-3);
+  color: var(--color-body);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   font-weight: 600;
@@ -545,8 +545,8 @@ onBeforeUnmount(() => {
 
 .project-demo-expand:hover,
 .project-demo-expand:focus-visible {
-  background: #fff;
-  color: #000;
+  background: var(--color-ink);
+  color: var(--color-canvas);
   outline: none;
 }
 

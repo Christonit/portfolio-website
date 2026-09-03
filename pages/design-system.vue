@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import projectsJson from "~/data/projects.json";
+import { ICON_NAMES } from "~/scripts/icon-names.mjs";
 import { pageTitle } from "~/utils/site";
 import { typography, type TypographyStyleKey } from "~/utils/typography";
 
@@ -103,6 +104,29 @@ const layout = [
   { name: "DOSSIER MAX", token: "--dossier-max-w", usage: "Sheet panel width ceiling." },
   { name: "DOSSIER GUTTER", token: "--dossier-gutter", usage: "Space either side; the pager rails centre in it." },
 ];
+
+/**
+ * Where each glyph in the subset lands. The names come from
+ * `scripts/icon-names.mjs` — the same list the font is subset against and
+ * `scripts/icon-coverage.mjs` checks templates for — so an icon added to the
+ * site appears here without this page being touched, and one that is dropped
+ * disappears. Anything without a note below is carried for project data.
+ */
+const iconUsage: Record<string, string> = {
+  add: "The NEW MISSION card at the end of the board.",
+  analytics: "Bottom nav — HOME.",
+  article: "Article cards, tooltips, and the articles index.",
+  close: "Dossier and sheet close.",
+  deployed_code: "Project card fallback, when there is no preview image.",
+  fingerprint: "Bottom nav — ABOUT.",
+  fullscreen: "Dossier and sheet fullscreen toggle.",
+  grid_view: "Bottom nav — PROJECTS.",
+};
+
+const iconInventory = ICON_NAMES.map((name: string) => ({
+  name,
+  usage: iconUsage[name] ?? "Project icon, set per entry in data/projects.json.",
+}));
 
 /* Each row renders the icon that actually uses that size, at that size. Both
    rows used to draw `fingerprint`, which made LG look like a size nothing
@@ -528,6 +552,10 @@ onBeforeUnmount(() => {
             <code>npm run fonts:icons</code>, or it ships as its ligature name.
           </p>
 
+          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
+            SIZES
+            <span class="group-label__note">Two steps, each drawn with an icon that uses it.</span>
+          </h3>
           <ul class="token-table" role="list">
             <li v-for="row in icons" :key="row.token" class="token-row has-chip">
               <span
@@ -539,6 +567,23 @@ onBeforeUnmount(() => {
               <span class="text-label-data tabular-nums">{{ resolved[row.token] || "—" }}</span>
               <code class="text-label-data">{{ row.token }}</code>
               <span class="text-label-data">{{ row.usage }}</span>
+            </li>
+          </ul>
+
+          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
+            THE SUBSET
+            <span class="group-label__note">
+              All {{ iconInventory.length }}, read from scripts/icon-names.mjs — the list the font is cut
+              against. Nothing outside this renders; it falls back to its own ligature text.
+            </span>
+          </h3>
+          <ul class="icon-grid" role="list">
+            <li v-for="icon in iconInventory" :key="icon.name">
+              <span class="material-symbols-outlined icon-md icon-sample" aria-hidden="true">{{
+                icon.name
+              }}</span>
+              <code class="text-label-data">{{ icon.name }}</code>
+              <span class="text-label-data icon-grid__usage">{{ icon.usage }}</span>
             </li>
           </ul>
         </section>
@@ -616,6 +661,14 @@ onBeforeUnmount(() => {
           </h3>
           <div class="card-demo">
             <ProjectsCard :project="sampleProject" :index="0" :total="1" />
+          </div>
+
+          <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
+            MOBILE NAV
+            <span class="group-label__note">MobileNav — the bottom bar below the xl breakpoint. It is on this page too, under 900px.</span>
+          </h3>
+          <div class="mobile-demo">
+            <MobileNav preview />
           </div>
 
           <h3 class="group-label text-label-data uppercase tracking-[0.14em]">
@@ -807,6 +860,35 @@ onBeforeUnmount(() => {
   color: var(--color-body);
 }
 
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.icon-grid li {
+  display: grid;
+  grid-template-columns: var(--space-8) minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  border: 1px solid var(--color-surface);
+}
+
+.icon-grid .icon-sample {
+  grid-row: span 2;
+  justify-self: center;
+}
+
+.icon-grid code {
+  color: var(--color-body);
+}
+
+.icon-grid__usage {
+  color: var(--color-muted);
+}
+
 .space-bar {
   height: var(--space-2);
   background: var(--color-signal);
@@ -921,6 +1003,13 @@ onBeforeUnmount(() => {
 .card-demo {
   width: min(24rem, 100%);
   padding-top: var(--space-4);
+}
+
+/* Held to a handset width. The bar is `flex-1` per item, so at section width
+   the four targets stretch to a proportion that no phone produces. */
+.mobile-demo {
+  width: min(24rem, 100%);
+  margin-top: var(--space-4);
 }
 
 .hud-corner-demo {

@@ -248,3 +248,86 @@ test('excludes artwork utilities while retaining in-scope OG views', async () =>
     },
   )
 })
+
+test('allows the documented sub-floor micro-label token and its references', async () => {
+  await withFixture(
+    {
+      'assets/css/globals.css': ':root {\n  --text-2xs: 10px;\n  --text-xs: 12px;\n}\n',
+      'components/Tag.vue': '<style>\n.tag { font-size: var(--text-2xs); }\n</style>\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [])
+    },
+  )
+})
+
+test('reports type tokens that fall under the floor without being documented', async () => {
+  await withFixture(
+    {
+      'assets/css/globals.css': ':root {\n  --text-xs: 11px;\n}\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [
+        {
+          file: 'assets/css/globals.css',
+          line: 2,
+          message:
+            'type token --text-xs 11px is below the 12px minimum and is not a documented micro-label token',
+        },
+      ])
+    },
+  )
+})
+
+test('reports type tokens under the absolute minimum even if allowlisted', async () => {
+  await withFixture(
+    {
+      'assets/css/globals.css': ':root {\n  --text-2xs: 8px;\n}\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [
+        {
+          file: 'assets/css/globals.css',
+          line: 2,
+          message: 'type token --text-2xs 8px is below the 10px absolute minimum',
+        },
+      ])
+    },
+  )
+})
+
+test('resolves var() font sizes that the literal checks cannot see', async () => {
+  await withFixture(
+    {
+      'assets/css/globals.css': ':root {\n  --text-xs: 11px;\n}\n',
+      'components/Meta.vue': '<style>\n.meta { font-size: var(--text-xs); }\n</style>\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [
+        {
+          file: 'assets/css/globals.css',
+          line: 2,
+          message:
+            'type token --text-xs 11px is below the 12px minimum and is not a documented micro-label token',
+        },
+        {
+          file: 'components/Meta.vue',
+          line: 2,
+          message: 'font-size var(--text-xs) resolves to 11px, below the 12px minimum',
+        },
+      ])
+    },
+  )
+})
+
+test('ignores fluid type tokens that have no single size to check', async () => {
+  await withFixture(
+    {
+      'assets/css/globals.css': ':root {\n  --text-hero: clamp(2.4rem, 6vw, 3.4rem);\n}\n',
+      'pages/index.vue': '<style>\n.hero { font-size: var(--text-hero); }\n</style>\n',
+    },
+    async (fixtureRoot) => {
+      assert.deepEqual(await auditTypography(fixtureRoot), [])
+    },
+  )
+})

@@ -7,6 +7,17 @@ const SOURCE_EXTENSIONS = new Set(['.css', '.cjs', '.js', '.jsx', '.mjs', '.ts',
 const STALE_FONT_FAMILIES = ['Menlo', 'Inter', 'Cuisine', 'ui-monospace']
 const MIN_FONT_SIZE_PX = 12
 const ROOT_FONT_SIZE_PX = 16
+/* The one documented tier below the 12px floor: Departure Mono micro-labels
+   and tags, where the mono face and wide tracking carry legibility that size
+   alone would not. Everything else answers to MIN_FONT_SIZE_PX, and nothing
+   at all may go under ABSOLUTE_MIN_FONT_SIZE_PX.
+
+   This exists because the floor used to be unenforceable in practice: the
+   checks below only ever saw literal lengths, so `font-size: var(--text-2xs)`
+   — and any future `--text-tiny: 8px` — walked straight past a guard whose
+   whole job was to stop exactly that. */
+const SUB_FLOOR_TYPE_TOKENS = new Set(['--text-2xs'])
+const ABSOLUTE_MIN_FONT_SIZE_PX = 10
 const ARTWORK_UTILITY_NAMES = new Set([
   'svg',
   'raster',
@@ -42,6 +53,45 @@ function sizeMessage(label, value, unit) {
   const computedPixels = toPixels(value, normalizedUnit)
   const computation = normalizedUnit === 'rem' ? ` computes to ${computedPixels}px,` : ' is'
   return `${label} ${size}${computation} below the 12px minimum`
+}
+
+/** Collect `--text-*: <length>` declarations so var() references resolve. */
+function collectTypeTokens(source, relativePath, tokens) {
+  for (const match of source.matchAll(/(--text-[a-z0-9-]+)\s*:\s*([^;}\n]+)/gi)) {
+    const [, token, rawValue] = match
+    const size = rawValue.trim().match(/^(\d*\.?\d+)(px|rem)$/i)
+    // Fluid values (clamp/calc) have no single size to check — skipped by design.
+    if (!size) continue
+    tokens.set(token.toLowerCase(), {
+      pixels: toPixels(size[1], size[2]),
+      value: `${size[1]}${size[2].toLowerCase()}`,
+      file: relativePath,
+      line: lineAt(source, match.index),
+    })
+  }
+}
+
+function auditTypeTokens(tokens) {
+  const violations = []
+
+  for (const [token, { pixels, value, file, line }] of tokens) {
+    const allowed = SUB_FLOOR_TYPE_TOKENS.has(token)
+    if (pixels < ABSOLUTE_MIN_FONT_SIZE_PX) {
+      violations.push({
+        file,
+        line,
+        message: `type token ${token} ${value} is below the ${ABSOLUTE_MIN_FONT_SIZE_PX}px absolute minimum`,
+      })
+    } else if (pixels < MIN_FONT_SIZE_PX && !allowed) {
+      violations.push({
+        file,
+        line,
+        message: `type token ${token} ${value} is below the ${MIN_FONT_SIZE_PX}px minimum and is not a documented micro-label token`,
+      })
+    }
+  }
+
+  return violations
 }
 
 function isExcludedArtwork(relativePath) {
@@ -86,9 +136,21 @@ async function sourceFiles(root) {
   return files.sort((a, b) => a.localeCompare(b))
 }
 
-function auditSource(source, relativePath) {
+function auditSource(source, relativePath, tokens = new Map()) {
   const violations = []
   const add = (index, message) => violations.push({ file: relativePath, line: lineAt(source, index), message })
+
+  // `font-size: var(--text-…)` / `fontSize: 'var(--text-…)'`. A reference to
+  // the documented sub-floor token is fine; a reference to anything else that
+  // resolves under the floor is the same violation as writing the number.
+  for (const match of source.matchAll(/(?:font-size\s*:|\bfontSize\b\s*:)\s*['"`]?\s*var\(\s*(--text-[a-z0-9-]+)/gi)) {
+    const token = match[1].toLowerCase()
+    const resolved = tokens.get(token)
+    if (!resolved || SUB_FLOOR_TYPE_TOKENS.has(token)) continue
+    if (resolved.pixels < MIN_FONT_SIZE_PX) {
+      add(match.index, `font-size var(${token}) resolves to ${resolved.value}, below the ${MIN_FONT_SIZE_PX}px minimum`)
+    }
+  }
 
   for (const match of source.matchAll(/font-size\s*:\s*(\d*\.?\d+)(px|rem)\b/gi)) {
     if (toPixels(match[1], match[2]) < MIN_FONT_SIZE_PX) {
@@ -143,10 +205,21 @@ function auditSource(source, relativePath) {
 
 export async function auditTypography(root = process.cwd()) {
   const violations = []
+  const sources = []
+  const tokens = new Map()
 
+  // Two passes: the type tokens have to be known before a var() reference to
+  // one of them can be judged.
   for (const relativePath of await sourceFiles(root)) {
     const source = await readFile(path.join(root, relativePath), 'utf8')
-    violations.push(...auditSource(source, relativePath))
+    sources.push([relativePath, source])
+    collectTypeTokens(source, relativePath, tokens)
+  }
+
+  violations.push(...auditTypeTokens(tokens))
+
+  for (const [relativePath, source] of sources) {
+    violations.push(...auditSource(source, relativePath, tokens))
   }
 
   return violations.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.message.localeCompare(right.message))

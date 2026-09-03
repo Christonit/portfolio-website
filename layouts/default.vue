@@ -233,21 +233,6 @@ const navItems = [
   { label: "ABOUT", path: "/bio" },
 ];
 
-// ── Mobile bottom nav items ───────────────────────────────────────
-const mobileNavItems = [
-  { label: "HOME", path: "/", icon: "analytics" },
-  { label: "PROJECTS", path: "/projects", icon: "grid_view" },
-  { label: "ABOUT", path: "/bio", icon: "fingerprint" },
-  {
-    label: "CONNECT",
-    path: LINKEDIN_URL,
-    iconSrc: "/images/paper-airplane-svgrepo-com.svg",
-    // Opens a new tab, like the LinkedIn icon in the header does. It used to
-    // navigate away in-tab on mobile only.
-    external: true,
-  },
-];
-
 // Routes resolve with a trailing slash (`nuxtLink.trailingSlash: "append"` in
 // nuxt.config.ts), so comparing against the raw `route.path` never matches
 // "/projects" or "/bio" — only "/" survives untouched. Compare against the
@@ -301,15 +286,26 @@ router.afterEach(() => {
 // still belongs to the page you are on until the new one is actually up.
 function navLinkTone(path: string) {
   if (isActive(path)) return "text-white after:bg-white";
-  if (isPending(path)) return "text-white bg-[#1f1f1f] after:bg-transparent";
-  return "text-[#919191] hover:text-white hover:bg-[#1f1f1f] after:bg-transparent";
+  if (isPending(path)) return "text-white bg-surface after:bg-transparent";
+  return "text-muted hover:text-white hover:bg-surface after:bg-transparent";
 }
 
-function mobileNavTone(path: string) {
-  if (isActive(path)) return "bg-white text-black";
-  if (isPending(path)) return "text-white bg-[#1f1f1f]";
-  return "text-[#919191] hover:text-white hover:bg-[#1f1f1f]";
-}
+/**
+ * The way into the design system: a link that rests invisible beside the
+ * wordmark and fades up when you hover the logo (or tab onto it).
+ *
+ * The wordmark itself stays the home link it has always been — the shortcut
+ * sits next to it rather than taking it over, so nothing about the header
+ * changes meaning. It is dev-only because the page is: `pages:extend` in
+ * nuxt.config.ts drops `/design-system` from the production route graph, so a
+ * built site never renders a link that would 404. It also hides on the design
+ * system itself, where it would only point at the page you are reading.
+ */
+const DESIGN_SYSTEM_PATH = "/design-system";
+
+const showDesignSystemLink = computed(
+  () => import.meta.dev && normalizedPath.value !== DESIGN_SYSTEM_PATH,
+);
 
 const mainRef = ref<HTMLElement | null>(null);
 
@@ -342,10 +338,10 @@ watch(normalizedPath, (to, from) => {
   <!-- h-dvh, not h-screen: on mobile `100vh` is the *large* viewport (browser
        chrome hidden), so the shell measured taller than the screen and pushed
        `.hud-page`'s bottom edge under the fixed bottom nav and off-screen. That
-       overlap is invisible normally (the nav is z-[1000]) but a view transition
+       overlap is invisible normally (the nav sits at --z-nav-mobile) but a view transition
        composites by group z-index instead, painting the page snapshot over the
        nav. Sizing to the dynamic viewport removes the overlap at the source. -->
-  <div class="relative h-dvh overflow-hidden bg-[#131313] text-[#e2e2e2]">
+  <div class="relative h-dvh overflow-hidden bg-canvas text-body">
     <!-- Off-screen until focused. Without it the first Tab on every page walks
          the logo, both arrow keys, the three tabs and two social links before
          reaching any content. -->
@@ -355,16 +351,50 @@ watch(normalizedPath, (to, from) => {
 
     <!-- ── TOP NAVIGATION ──────────────────────────────────── -->
     <nav
-      class="site-nav sticky top-0 inset-x-0 h-14 z-50 flex items-center px-4 xl:px-8 bg-[#131313]/95 backdrop-blur-sm border-b border-white/10"
+      class="site-nav sticky top-0 inset-x-0 h-16 z-nav flex items-center px-4 xl:px-8 bg-canvas/95 backdrop-blur-sm border-b border-white/10"
       :inert="dossierClosing || undefined"
     >
-      <!-- Logo: always visible -->
-      <NuxtLink
-        to="/"
-        class="text-title-ui mr-auto inline-flex h-8 items-center px-1 select-none uppercase tracking-tighter text-white"
-      >
-        CHRISTOPHER SANTANA
-      </NuxtLink>
+      <!-- Logo: always visible. The design system link beside it is dev-only
+           (see `showDesignSystemLink`) and hidden until this group is hovered
+           or the link itself is focused. -->
+      <div class="group mr-auto flex items-center">
+        <NuxtLink
+          to="/"
+          class="text-title-ui inline-flex h-8 items-center px-1 select-none uppercase tracking-tighter text-white"
+        >
+          CHRISTOPHER SANTANA
+        </NuxtLink>
+
+        <!-- Reserves its width at rest so revealing it can't shift the
+             wordmark, and stays untouchable while invisible so it can't
+             swallow a click in the blank space it holds. Tab still reaches it:
+             opacity leaves it in the a11y tree, and focus paints it. -->
+        <NuxtLink
+          v-if="showDesignSystemLink"
+          :to="DESIGN_SYSTEM_PATH"
+          class="text-label-ui ml-3 hidden h-8 items-center gap-2 px-2 uppercase tracking-[0.2em] text-muted opacity-0 transition-opacity duration-150 pointer-events-none hover:text-white focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100 xl:inline-flex"
+        >
+          GO TO SYSTEM INDEX
+          <!-- Same stroke weight and square caps as the header's arrow keys,
+               so the two read as one set of controls. -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            width="12"
+            height="12"
+            fill="none"
+            class="shrink-0"
+            aria-hidden="true"
+          >
+            <path
+              d="M2.5 8h11M9 3.5 13.5 8 9 12.5"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="square"
+            />
+          </svg>
+        </NuxtLink>
+      </div>
 
       <!-- Previous-page keyboard control (desktop only) -->
 
@@ -373,7 +403,7 @@ watch(normalizedPath, (to, from) => {
         style="width: fit-content"
       >
         <button
-          class="site-nav-key mr-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
+          class="hud-key mr-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
             isPressed('ArrowLeft')
               ? 'opacity-100 scale-90'
@@ -385,7 +415,7 @@ watch(normalizedPath, (to, from) => {
           @click="prevPage"
         >
           <kbd
-            class="text-label-data flex h-6 min-w-7 items-center justify-center text-white"
+            class="text-label-data flex h-6 min-w-6 items-center justify-center text-white"
             aria-hidden="true"
           >
             <svg
@@ -412,7 +442,7 @@ watch(normalizedPath, (to, from) => {
             <NuxtLink
               :to="item.path"
               :class="[
-                'relative inline-flex h-14 items-center px-4 text-label-ui tracking-[0.2em] uppercase transition-colors duration-150',
+                'relative inline-flex h-16 items-center px-4 text-label-ui tracking-[0.2em] uppercase transition-colors duration-150',
                 'after:absolute after:bottom-0 after:left-4 after:right-[calc(1rem+0.2em)] after:h-px',
                 navLinkTone(item.path),
               ]"
@@ -425,7 +455,7 @@ watch(normalizedPath, (to, from) => {
 
         <!-- Next-page keyboard control (desktop only) -->
         <button
-          class="site-nav-key ml-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
+          class="hud-key ml-6 self-center hidden items-center justify-center transition-all duration-100 xl:inline-flex"
           :class="
             isPressed('ArrowRight')
               ? 'opacity-100 scale-90'
@@ -437,7 +467,7 @@ watch(normalizedPath, (to, from) => {
           @click="nextPage"
         >
           <kbd
-            class="text-label-data flex h-6 min-w-7 items-center justify-center text-white"
+            class="text-label-data flex h-6 min-w-6 items-center justify-center text-white"
             aria-hidden="true"
           >
             <svg
@@ -462,7 +492,7 @@ watch(normalizedPath, (to, from) => {
       <div class="flex items-center gap-2 shrink-0 z-10">
         <a
           :href="EMAIL_URL"
-          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
           aria-label="Email Christopher Santana"
         >
           <!-- Icons share an h-6 w-6 box; each viewBox is padded so the glyphs
@@ -484,7 +514,7 @@ watch(normalizedPath, (to, from) => {
           :href="X_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
           aria-label="X profile"
         >
           <svg
@@ -504,7 +534,7 @@ watch(normalizedPath, (to, from) => {
           :href="LINKEDIN_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex h-9 w-9 items-center justify-center text-[#919191] transition-all hover:bg-[#353535] hover:text-white"
+          class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
           aria-label="LinkedIn profile"
         >
           <svg
@@ -524,47 +554,7 @@ watch(normalizedPath, (to, from) => {
 
     <!-- <ClientOnly> -->
     <!-- ── MOBILE BOTTOM NAVIGATION ───────────────────────── -->
-    <nav
-      class="xl:hidden fixed bottom-0 inset-x-0 z-[1000] flex h-16 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.6)]"
-      :inert="dossierClosing || undefined"
-    >
-      <NuxtLink
-        v-for="item in mobileNavItems"
-        :key="item.path"
-        :to="item.path"
-        :target="item.external ? '_blank' : undefined"
-        :rel="item.external ? 'noopener noreferrer' : undefined"
-        :aria-label="item.external ? `${item.label} (opens in a new tab)` : undefined"
-        :class="[
-          'group flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-150',
-          mobileNavTone(item.path),
-        ]"
-        @click="markPending($event, item.path)"
-      >
-        <!-- alt="" — the label below it already says CONNECT, and naming the
-             icon too had screen readers announce the link twice. -->
-        <img
-          v-if="item.iconSrc"
-          :src="item.iconSrc"
-          alt=""
-          class="h-4 w-4 shrink-0"
-          :class="
-            isActive(item.path)
-              ? 'brightness-0'
-              : isPending(item.path)
-                ? 'brightness-0 invert opacity-100'
-                : 'brightness-0 invert opacity-60 group-hover:opacity-100'
-          "
-          draggable="false"
-        />
-        <span v-else class="material-symbols-outlined icon-md leading-none">{{
-          item.icon
-        }}</span>
-        <span class="text-label-ui uppercase tracking-widest">{{
-          item.label
-        }}</span>
-      </NuxtLink>
-    </nav>
+    <MobileNav />
     <!-- </ClientOnly> -->
     <!-- ── MAIN CONTENT ────────────────────────────────────── -->
     <!-- Mobile : scrollable, sits between top nav and mobile bottom nav -->
@@ -573,7 +563,7 @@ watch(normalizedPath, (to, from) => {
       id="main"
       ref="mainRef"
       tabindex="-1"
-      class="hud-page absolute inset-x-0 top-14 z-10 bottom-16 lg:pb-0 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
+      class="hud-page absolute inset-x-0 top-16 z-10 bottom-16 lg:pb-0 flex flex-col overflow-x-hidden overflow-y-auto xl:bottom-0 xl:overflow-hidden"
     >
       <slot />
     </main>
