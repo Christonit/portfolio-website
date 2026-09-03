@@ -99,8 +99,16 @@
        app needs in a dozen places and a plain `var(--color-rule)` cannot
        support. */
     /* ── The ramp ───────────────────────────────────────────────
-       Nine values: eight neutrals and one accent. Every colour in the app is
-       one of these; there is no "slightly different grey" tier.
+       Eight values: seven neutrals and one accent, plus the CSS keyword
+       `white` at the top of the text ramp. Every colour in the app is one of
+       these; there is no "slightly different grey" tier.
+
+       White is not a token. It was `--color-ink` — a token whose whole
+       content was "#ffffff", aliasing a word CSS and Tailwind both already
+       have. The templates never took to it: they said `text-white` 36 times
+       and `text-ink` none, which is the codebase answering the question. Two
+       spellings of one value is the exact redundancy this ramp exists to
+       remove, so the alias went and the keyword stayed.
 
        The neutrals roughly double in channel value each step —
        11 · 19 · 38 · 71 · 145 · 198 · 226 · 255 — which is what lets any two
@@ -139,7 +147,7 @@
     --color-muted-rgb: 145 145 145; /*  labels, metadata             */
     --color-prose-rgb: 198 198 198; /*  long-form reading copy       */
     --color-body-rgb: 226 226 226; /*   UI strings                   */
-    --color-ink-rgb: 255 255 255; /*    headings, emphasis           */
+    /* Above --color-body the ramp ends at plain `white` — headings, emphasis. */
 
     /* Accent — the only chromatic value in the system. */
     --color-signal-rgb: 103 245 122;
@@ -151,7 +159,6 @@
     --color-muted: rgb(var(--color-muted-rgb));
     --color-prose: rgb(var(--color-prose-rgb));
     --color-body: rgb(var(--color-body-rgb));
-    --color-ink: rgb(var(--color-ink-rgb));
     --color-signal: rgb(var(--color-signal-rgb));
 
     /* ── Type ────────────────────────────────────────────────────
@@ -392,7 +399,7 @@
     @apply absolute left-4 inline-flex h-12 items-center border border-white/30 px-4 text-label-data uppercase tracking-[0.18em];
     z-index: var(--z-skip-link);
     background-color: var(--color-canvas);
-    color: var(--color-ink);
+    color: white;
     top: -100px;
     transition: top 120ms ease-out;
   }
@@ -406,7 +413,7 @@
      typography.ts. The fluid `--text-hero` is the home hero alone. */
   .hud-title {
     @apply text-display uppercase tracking-tighter;
-    color: var(--color-ink);
+    color: white;
   }
 
   .hud-label {

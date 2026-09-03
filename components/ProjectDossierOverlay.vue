@@ -270,7 +270,7 @@ if (import.meta.client) {
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(11, 11, 11, 0.82);
-  color: var(--color-ink);
+  color: white;
   font-size: var(--text-lg);
   line-height: 1;
   /* Carried as a variable because the desktop rails also hold a centring
@@ -291,7 +291,7 @@ if (import.meta.client) {
    move. */
 .project-nav.is-pressed {
   --nav-press-scale: 0.9;
-  border-color: var(--color-ink);
+  border-color: white;
 }
 
 /* The rails belong to the sheet's entrance, so they run on its clock and land
@@ -342,8 +342,8 @@ if (import.meta.client) {
 
 .project-nav:hover,
 .project-nav:focus-visible {
-  border-color: var(--color-ink);
-  background: var(--color-ink);
+  border-color: white;
+  background: white;
   color: var(--color-canvas);
   outline: none;
 }

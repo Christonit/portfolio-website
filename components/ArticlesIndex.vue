@@ -73,7 +73,7 @@ defineProps<{
 .articles-index-list a:hover,
 .articles-index-list a:focus-visible {
   background: rgba(255, 255, 255, 0.035);
-  color: var(--color-ink);
+  color: white;
   outline: none;
 }
 

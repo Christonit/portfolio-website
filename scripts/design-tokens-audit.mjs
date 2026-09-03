@@ -21,6 +21,38 @@ const SOURCE_EXTENSIONS = new Set(['.css', '.vue'])
 const SPACING_PROPERTIES =
   '(?:padding|margin|gap|row-gap|column-gap)(?:-(?:top|right|bottom|left|inline|block))?'
 
+const COLOUR_PROPERTIES =
+  '(?:color|background|background-color|border(?:-(?:top|right|bottom|left|block|inline))?(?:-color)?' +
+  '|outline(?:-color)?|fill|stroke|box-shadow|text-shadow|text-decoration-color|caret-color' +
+  '|column-rule-color|-webkit-text-fill-color)'
+
+/**
+ * Every CSS named colour except `white`.
+ *
+ * `white` is the one keyword the ramp uses directly — it is the top of the
+ * text scale, and it earned that by replacing a `--color-ink` token whose
+ * entire content was "#ffffff". Blessing one keyword would otherwise open the
+ * door to all 147 of the others, so the rest are named here and rejected.
+ * `transparent` and `currentColor` are not colours in this sense and are not
+ * listed.
+ */
+const NAMED_COLOURS = new Set(
+  `aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood
+   cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray
+   darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen
+   darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue
+   firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew
+   hotpink indianred indigo ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan
+   lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen lightskyblue lightslategray
+   lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue
+   mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred
+   midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid
+   palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple
+   rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue
+   slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat whitesmoke
+   yellow yellowgreen`.split(/\s+/),
+)
+
 /**
  * N x 4px, mirroring `--space-N` in globals.css. Ten steps, not every multiple
  * of four: the scale doubles every two steps (4 8 12 16 24 32 48 64 96 128).
@@ -63,6 +95,19 @@ export function auditSource(source, relativePath) {
     // 1. Colour must come from the ramp.
     for (const match of text.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) {
       add(offset + match.index, `raw colour ${match[0]} — use a --color-* token`)
+    }
+
+    for (const declaration of text.matchAll(
+      new RegExp(`(?<![\\w-])(${COLOUR_PROPERTIES})\\s*:\\s*([^;{}]+)`, 'g'),
+    )) {
+      for (const word of declaration[2].matchAll(/[a-zA-Z][a-zA-Z-]*/g)) {
+        if (NAMED_COLOURS.has(word[0].toLowerCase())) {
+          add(
+            offset + declaration.index,
+            `named colour \`${word[0]}\` — use a --color-* token (only \`white\` is in the ramp)`,
+          )
+        }
+      }
     }
 
     // 2. Spacing must land on a step of the scale.

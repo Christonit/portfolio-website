@@ -345,7 +345,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .identity-name {
   margin-top: var(--space-3);
-  color: var(--color-ink);
+  color: white;
   font-size: var(--text-hero);
   font-weight: 600;
   /* Proportional, not the fixed 40px that the Display token pairs with its
@@ -365,7 +365,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .identity-role {
   margin-top: var(--space-1);
-  color: var(--color-ink);
+  color: white;
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.13em;
@@ -394,7 +394,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 }
 
 .identity-mission a {
-  color: var(--color-ink);
+  color: white;
   text-decoration: underline;
   text-decoration-color: rgba(255, 255, 255, 0.4);
   text-underline-offset: 2px;
@@ -520,7 +520,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 .dossier-card__body h3 {
   min-width: 0;
   overflow: hidden;
-  color: var(--color-ink);
+  color: white;
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: -0.015em;
@@ -570,7 +570,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--color-surface);
   background: rgba(255, 255, 255, 0.025);
-  color: var(--color-ink);
+  color: white;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 600;

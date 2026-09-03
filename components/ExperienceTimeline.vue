@@ -254,7 +254,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
 }
 
 .exp-logo--active .exp-monogram {
-  color: var(--color-ink);
+  color: white;
 }
 
 /* With the logo stacked on top there is no column to align against, so the

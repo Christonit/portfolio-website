@@ -545,7 +545,7 @@ onBeforeUnmount(() => {
 
 .project-demo-expand:hover,
 .project-demo-expand:focus-visible {
-  background: var(--color-ink);
+  background: white;
   color: var(--color-canvas);
   outline: none;
 }

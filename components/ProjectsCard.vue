@@ -275,7 +275,7 @@ const ariaLabel = computed(() => {
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--color-surface);
   background: rgba(255, 255, 255, 0.025);
-  color: var(--color-ink);
+  color: white;
   font-weight: 600;
   letter-spacing: 0.14em;
   transition:

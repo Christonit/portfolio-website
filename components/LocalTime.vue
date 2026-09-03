@@ -396,7 +396,7 @@ onUnmounted(() => {
 .local-time__place strong {
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--color-ink);
+  color: white;
 }
 
 .local-time__place span:last-child {

@@ -83,7 +83,9 @@ const colorGroups = [
       { name: "MUTED", token: "--color-muted", usage: "Labels, metadata." },
       { name: "PROSE", token: "--color-prose", usage: "Long-form reading copy." },
       { name: "BODY", token: "--color-body", usage: "UI strings." },
-      { name: "INK", token: "--color-ink", usage: "Headings, emphasis." },
+      // No token: the top of the text ramp is the CSS keyword. See the note
+      // on the ramp in globals.css for why the `--color-ink` alias went.
+      { name: "WHITE", css: "white", usage: "Headings, emphasis." },
     ],
   },
   {
@@ -94,6 +96,13 @@ const colorGroups = [
 ];
 
 const colors = colorGroups.flatMap((group) => group.swatches);
+/* Only the tokenised swatches get looked up; `white` reports itself. */
+const colorTokens = colors.filter((swatch) => "token" in swatch) as {
+  token: string;
+}[];
+
+const swatchPaint = (swatch: { token?: string; css?: string }) =>
+  swatch.token ? `var(${swatch.token})` : (swatch.css as string);
 
 /* The whole scale. N x 4px, matching the Tailwind utility number: --space-3
    and p-3 are both 12px. It doubles every two steps, so adjacent values are
@@ -351,7 +360,7 @@ onMounted(() => {
   ];
 
   resolved.value = {
-    ...Object.fromEntries(colors.map(({ token }) => [token, toHex(read(token))])),
+    ...Object.fromEntries(colorTokens.map(({ token }) => [token, toHex(read(token))])),
     ...Object.fromEntries(plain.map(({ token }) => [token, read(token)])),
     ...Object.fromEntries(spaceSteps.map((step) => [`--space-${step}`, read(`--space-${step}`)])),
   };
@@ -486,11 +495,13 @@ onBeforeUnmount(() => {
               <span class="group-label__note">{{ group.note }}</span>
             </h3>
             <ul class="token-table" role="list">
-              <li v-for="color in group.swatches" :key="color.token" class="token-row has-chip">
-                <span class="color-chip" :style="{ backgroundColor: `var(${color.token})` }" />
+              <li v-for="color in group.swatches" :key="color.name" class="token-row has-chip">
+                <span class="color-chip" :style="{ backgroundColor: swatchPaint(color) }" />
                 <strong class="text-label-data">{{ color.name }}</strong>
-                <span class="text-label-data tabular-nums">{{ resolved[color.token] || "—" }}</span>
-                <code class="text-label-data">{{ color.token }}</code>
+                <span class="text-label-data tabular-nums">
+                  {{ color.token ? resolved[color.token] || "—" : "#FFFFFF" }}
+                </span>
+                <code class="text-label-data">{{ color.token ?? color.css }}</code>
                 <span class="text-label-data">{{ color.usage }}</span>
               </li>
             </ul>
@@ -916,7 +927,7 @@ onBeforeUnmount(() => {
 }
 
 .section-intro strong {
-  color: var(--color-ink);
+  color: white;
   font-weight: 600;
 }
 
@@ -926,7 +937,7 @@ onBeforeUnmount(() => {
   gap: var(--space-2) var(--space-3);
   align-items: baseline;
   margin-top: var(--space-6);
-  color: var(--color-ink);
+  color: white;
 }
 
 .group-label__note {
@@ -957,7 +968,7 @@ onBeforeUnmount(() => {
 }
 
 .token-row strong {
-  color: var(--color-ink);
+  color: white;
 }
 
 .token-row code {
@@ -1054,7 +1065,7 @@ onBeforeUnmount(() => {
 }
 
 .type-scale__meta strong {
-  color: var(--color-ink);
+  color: white;
 }
 
 .type-scale__meta code {
@@ -1114,7 +1125,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  color: var(--color-ink);
+  color: white;
 }
 
 .motion-demo__replay {
@@ -1168,7 +1179,7 @@ onBeforeUnmount(() => {
   inset: 0;
   display: grid;
   place-items: center;
-  color: var(--color-ink);
+  color: white;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
 }
@@ -1347,7 +1358,7 @@ onBeforeUnmount(() => {
 }
 
 .curve-row strong {
-  color: var(--color-ink);
+  color: white;
 }
 
 .curve-row code {

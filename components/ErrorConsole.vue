@@ -251,7 +251,7 @@ function onSecondary() {
 }
 
 .error-panel__kicker {
-  color: var(--color-ink);
+  color: white;
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.13em;
@@ -269,7 +269,7 @@ function onSecondary() {
 
 .error-panel__code {
   margin-top: var(--space-4);
-  color: var(--color-ink);
+  color: white;
   font-family: var(--font-sans);
   font-size: clamp(3.5rem, 12vh + 6vw, 7rem);
   font-weight: 600;
@@ -340,7 +340,7 @@ function onSecondary() {
   padding: var(--space-3) var(--space-6);
   border-top: 1px solid var(--color-surface);
   background: rgba(255, 255, 255, 0.025);
-  color: var(--color-ink);
+  color: white;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -384,7 +384,7 @@ function onSecondary() {
 
 .error-secondary:hover,
 .error-secondary:focus-visible {
-  color: var(--color-ink);
+  color: white;
   outline: none;
 }
 

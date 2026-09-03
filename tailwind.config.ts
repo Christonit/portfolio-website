@@ -114,7 +114,6 @@ export default {
         muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
         prose: 'rgb(var(--color-prose-rgb) / <alpha-value>)',
         body: 'rgb(var(--color-body-rgb) / <alpha-value>)',
-        ink: 'rgb(var(--color-ink-rgb) / <alpha-value>)',
         // Accent
         signal: 'rgb(var(--color-signal-rgb) / <alpha-value>)',
       },

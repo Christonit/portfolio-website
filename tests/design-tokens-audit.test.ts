@@ -169,3 +169,54 @@ test('scans plain stylesheets end to end', async () => {
     },
   )
 })
+
+test('accepts the one keyword in the ramp and the non-colour keywords', async () => {
+  await withFixture(
+    {
+      // `white` is the top of the text ramp — it replaced a `--color-ink`
+      // token whose entire content was "#ffffff". `transparent` and
+      // `currentColor` are not colours in this sense.
+      'components/Head.vue': style(
+        '.a {\n  color: white;\n  border: 1px solid white;\n  background: transparent;\n  outline-color: currentColor;\n}',
+      ),
+    },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [])
+    },
+  )
+})
+
+test('reports named colours other than white', async () => {
+  await withFixture(
+    { 'components/Bad.vue': style('.a {\n  color: red;\n}\n.b {\n  background-color: black;\n}') },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [
+        {
+          file: 'components/Bad.vue',
+          line: 4,
+          message: 'named colour `red` — use a --color-* token (only `white` is in the ramp)',
+        },
+        {
+          file: 'components/Bad.vue',
+          line: 7,
+          message: 'named colour `black` — use a --color-* token (only `white` is in the ramp)',
+        },
+      ])
+    },
+  )
+})
+
+test('does not mistake shorthand or timing keywords for colours', async () => {
+  await withFixture(
+    {
+      // `solid` sits in a border shorthand; `ease-out` is on a property this
+      // check does not look at. Neither is a colour.
+      'components/Fine.vue': style(
+        '.a {\n  border: 1px solid var(--color-rule);\n  transition: color 150ms ease-out;\n  background: rgba(0, 0, 0, 0.5);\n}',
+      ),
+    },
+    async (root) => {
+      assert.deepEqual(await auditDesignTokens(root), [])
+    },
+  )
+})

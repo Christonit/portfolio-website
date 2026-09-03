@@ -374,7 +374,7 @@ watch(normalizedPath, (to, from) => {
           :to="DESIGN_SYSTEM_PATH"
           class="text-label-ui ml-3 hidden h-8 items-center gap-2 px-2 uppercase tracking-[0.2em] text-muted opacity-0 transition-opacity duration-150 pointer-events-none hover:text-white focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100 xl:inline-flex"
         >
-          GO TO SYSTEM INDEX
+          DESIGN SYSTEM
           <!-- Same stroke weight and square caps as the header's arrow keys,
                so the two read as one set of controls. -->
           <svg
