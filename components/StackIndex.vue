@@ -10,15 +10,8 @@ defineProps<{
 </script>
 
 <template>
-  <ul class="stack-index" role="list" v-reveal>
-    <li
-      v-for="(skill, index) in skills"
-      :key="skill.name"
-      :style="{
-        '--stack-row': Math.floor(index / 2),
-        '--stack-row-narrow': index,
-      }"
-    >
+  <ul class="stack-index" role="list">
+    <li v-for="skill in skills" :key="skill.name">
       <span class="stack-index__row">
         <span class="stack-index__label">
           <img :src="skill.iconSrc" alt="" width="18" height="18" />
@@ -40,14 +33,6 @@ defineProps<{
   -ms-overflow-style: none;
 }
 
-/* The list owns the observer while the rows own the staggered motion. */
-.stack-index[data-reveal] {
-  opacity: 1;
-  transform: none;
-  transition: none;
-  will-change: auto;
-}
-
 .stack-index::-webkit-scrollbar {
   display: none;
   width: 0;
@@ -57,7 +42,6 @@ defineProps<{
 .stack-index li {
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  --stack-delay: calc(var(--stack-row, 0) * 70ms);
 }
 
 .stack-index__row {
@@ -65,18 +49,6 @@ defineProps<{
   min-height: 42px;
   align-items: center;
   padding: 0 var(--space-3);
-  opacity: 0;
-  transform: translateY(var(--scroll-reveal-distance));
-  transition:
-    opacity var(--scroll-reveal-dur) var(--scroll-reveal-ease)
-      var(--stack-delay),
-    transform var(--scroll-reveal-dur) var(--scroll-reveal-ease)
-      var(--stack-delay);
-}
-
-.stack-index[data-reveal="shown"] .stack-index__row {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .stack-index li:nth-child(odd) {
@@ -104,18 +76,6 @@ defineProps<{
 
   .stack-index li:nth-child(odd) {
     border-right: none;
-  }
-
-  .stack-index li {
-    --stack-delay: calc(var(--stack-row-narrow, 0) * 45ms);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stack-index__row {
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
 }
 </style>

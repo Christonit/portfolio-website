@@ -157,8 +157,6 @@ onUnmounted(() => {
         >
           <ProjectsCard
             :project="project"
-            :index="i"
-            :total="totalWork"
             :focused="interactive && focusedIndex === i"
           />
         </li>
