@@ -103,6 +103,7 @@ const ariaLabel = computed(() => {
 <template>
   <NuxtLink
     :to="href"
+    :external="isExternal"
     :target="isExternal ? '_blank' : undefined"
     :rel="isExternal ? 'noopener noreferrer' : undefined"
     :aria-label="ariaLabel"

@@ -466,6 +466,14 @@
   view-transition-name: hud-page;
 }
 
+/* Skip-to-content (and any other programmatic focus) lands on <main
+   tabindex="-1">. The default ring frames the whole page — it is a
+   destination, not a control, so it does not need one. */
+.hud-page:focus,
+.hud-page:focus-visible {
+  outline: none;
+}
+
 .site-nav {
   view-transition-name: site-nav;
 }

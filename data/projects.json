@@ -94,6 +94,33 @@
     }
   },
   {
+    "name": "Pulseara",
+    "slug": "pulseara",
+    "tags": "React // GraphQL // Electron // AI // AWS",
+    "category": "Healthcare",
+    "role": "Frontend Engineer (Contract)",
+    "image": "/images/pulseara-image.webp",
+    "imageWidth": 960,
+    "imageHeight": 540,
+    "imageAlt": "Pulseara: patient summary in a Spanish-language EHR, with vitals, consultations, and an AI diagnosis tab.",
+    "imageTone": "light",
+    "video": "/videos/pulseara.mp4",
+    "icon": "deployed_code",
+    "description": "Frontend Engineer (Contract) for Pulseara — clinical EHR frontend for patient histories, prescriptions, and consultations. Made with  Electron, React and GraphQL.",
+    "dossier": [
+      "Collaborated as a Frontend Engineer. Pulseara is an electronic health record platform for  the Dominican Republic. I owned the clinical frontend: the screens doctors use to manage patient histories, prescriptions, consultations, and waitlists, plus the  history-tracking flows for both doctors and patients.",
+      "My involement was first helping with the development of features for it's Electron desktop app to later transition into porting the webapp to a responsive web app using React and GraphQL, keeping the same clinical workflows."
+    ],
+    "tasks": [
+      "Clinical frontend for histories, prescriptions, consultations, and waitlists",
+      "History-tracking for doctors and patients",
+      "Responsive design implementation",
+      "Maintained the Electron offline desktop app",
+      "Led the desktop-to-web port on React and GraphQL"
+    ],
+    "tech": ["React", "GraphQL", "Electron", "AI", "AWS"]
+  },
+  {
     "name": "Content automation with AWS, JavaScript, and WordPress",
     "slug": "content-automation-ai",
     "tags": "Article // AWS // AI",

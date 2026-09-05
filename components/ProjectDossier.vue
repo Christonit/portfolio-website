@@ -222,7 +222,9 @@ onBeforeUnmount(() => {
       >
         <!-- No `autoplay`: playback is started from script once the sheet has
              finished its entrance, and the attribute would pull the fetch and
-             the first decode back into the middle of it. -->
+             the first decode back into the middle of it. `preload="auto"`
+             would download the whole reel on open; metadata is enough to
+             start, and the rest streams on Range requests as it plays. -->
         <video
           v-if="hasVideo"
           ref="demoVideo"
@@ -232,7 +234,7 @@ onBeforeUnmount(() => {
           muted
           loop
           playsinline
-          :preload="sheetEntered ? 'auto' : 'none'"
+          :preload="sheetEntered ? 'metadata' : 'none'"
           :aria-label="`${project.name} product demo`"
           @canplay="onCanPlay"
           @playing="needsGesture = false"

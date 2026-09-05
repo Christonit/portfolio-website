@@ -121,6 +121,19 @@ export default defineNuxtConfig({
     "/sitemap.xml": { prerender: true },
     "/og-export": { robots: false },
     "/design-system": { robots: false },
+    "/videos/**": {
+      headers: {
+        "Accept-Ranges": "bytes",
+        "Content-Disposition": "inline",
+      },
+    },
+    "/resume.pdf": {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition":
+          'inline; filename="Christopher-Santana-Resume.pdf"',
+      },
+    },
     // Heal a bad www→apex rule that captured the hostname as a path:
     // www.chsantana.com → https://chsantana.com/chsantana.com/
     "/chsantana.com": { redirect: { to: "/", statusCode: 301 } },

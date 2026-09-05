@@ -150,6 +150,7 @@ function roleProjects(role: ExperienceRole): ProjectPreview[] {
               <li v-for="project in roleProjects(item)" :key="project.slug">
                 <NuxtLink
                   :to="projectHref(project)"
+                  :external="isExternalProjectHref(project)"
                   :target="
                     isExternalProjectHref(project) ? '_blank' : undefined
                   "

@@ -9,7 +9,7 @@ import {
   projectPagerIsWalkable,
   useProjectPager,
 } from "~/composables/useProjectSheet";
-import { EMAIL_URL, LINKEDIN_URL } from "~/utils/site";
+import { EMAIL_URL, LINKEDIN_URL, RESUME_PATH } from "~/utils/site";
 
 const router = useRouter();
 const route = useRoute();
@@ -82,7 +82,7 @@ const arrowTarget = computed(() =>
 
 // ── Tab / page navigation ────────────────────────────────────────
 /**
- * One tab hop at a time.
+ * One tab hop at a time, and not before the previous one has finished moving.
  *
  * `currentIndex` reads the route, and the route only moves once the incoming
  * page has resolved — so a second press inside that window stepped off the
@@ -92,33 +92,64 @@ const arrowTarget = computed(() =>
  * re-push's flicker to show for it. Same failure, and the same gate, as the
  * dossier pager in `useProjectSheet`.
  *
+ * Opening the gate on `page:finish` was still too early. That hook fires when
+ * the incoming page has rendered, which is when the view transition *starts*
+ * its 340ms slide, not when it ends. A queued hop then opened a second
+ * transition over the first: pages ghosted through each other, and the
+ * underline could sit on a tab the slide had not reached yet.
+ *
  * Presses that land mid-hop keep exactly one, latest wins, so holding an arrow
  * walks the tabs at the speed the swap can carry and letting go stops one hop
  * later rather than playing out a run you can no longer call back.
  */
-const TAB_HOP_TIMEOUT_MS = 900;
+// Past the view-transition stall-guard (1200ms) so a hung swap can still
+// land and play the queued hop instead of dropping it on a stale index.
+const TAB_HOP_TIMEOUT_MS = 1600;
+const TAB_HOP_ANIM_FALLBACK_MS = 340;
 let tabHopInFlight = false;
+let tabHopDest: string | null = null;
 let tabHopTimer: ReturnType<typeof setTimeout> | undefined;
 let queuedTabHop: -1 | 1 | null = null;
 
+function normalizeTabPath(path: string) {
+  return path.replace(/\/+$/, "") || "/";
+}
+
+function tabHopAnimMs() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return 0;
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue("--page-slide-dur")
+    .trim();
+  const n = Number.parseFloat(raw);
+  if (!Number.isFinite(n)) return TAB_HOP_ANIM_FALLBACK_MS;
+  return /[0-9]s$/.test(raw) ? n * 1000 : n;
+}
+
 function commitTabHop(offset: -1 | 1) {
+  const dest = pages[(currentIndex.value + offset + pages.length) % pages.length];
   tabHopInFlight = true;
+  tabHopDest = dest;
   clearTimeout(tabHopTimer);
-  tabHopTimer = setTimeout(settleTabHop, TAB_HOP_TIMEOUT_MS);
-  router.push(
-    pages[(currentIndex.value + offset + pages.length) % pages.length],
-  );
+  tabHopTimer = setTimeout(onTabHopWatchdog, TAB_HOP_TIMEOUT_MS);
+  router.push(dest);
 }
 
 /**
- * Opens the gate once the page has rendered — the first moment `currentIndex`
- * reports where we actually are, which is what the queued hop steps from. The
- * timer above is the backstop for the arrivals that never fire `page:finish`.
+ * Opens the gate once the hop has finished moving — the first moment
+ * `currentIndex` is both correct *and* safe to step from without tearing
+ * the slide that just landed.
  */
 function settleTabHop() {
   if (!tabHopInFlight) return;
+  if (
+    tabHopDest &&
+    normalizeTabPath(route.path) !== normalizeTabPath(tabHopDest)
+  ) {
+    return;
+  }
   clearTimeout(tabHopTimer);
   tabHopInFlight = false;
+  tabHopDest = null;
 
   const queued = queuedTabHop;
   queuedTabHop = null;
@@ -133,8 +164,33 @@ function stepTab(offset: -1 | 1) {
   commitTabHop(offset);
 }
 
-const stopTabHopSettle = useNuxtApp().hook("page:finish", settleTabHop);
-onUnmounted(() => stopTabHopSettle());
+function armTabHopSettle() {
+  if (!tabHopInFlight || !tabHopDest) return;
+  if (normalizeTabPath(route.path) !== normalizeTabPath(tabHopDest)) return;
+  clearTimeout(tabHopTimer);
+  tabHopTimer = setTimeout(settleTabHop, tabHopAnimMs());
+}
+
+function onTabHopWatchdog() {
+  if (!tabHopInFlight) return;
+  if (
+    tabHopDest &&
+    normalizeTabPath(route.path) !== normalizeTabPath(tabHopDest)
+  ) {
+    tabHopInFlight = false;
+    tabHopDest = null;
+    queuedTabHop = null;
+    return;
+  }
+  settleTabHop();
+}
+
+const stopTabHopPageFinish = useNuxtApp().hook("page:finish", armTabHopSettle);
+const stopTabHopAfterEach = router.afterEach(armTabHopSettle);
+onUnmounted(() => {
+  stopTabHopPageFinish();
+  stopTabHopAfterEach();
+});
 
 // The header key only flashes for the presses it actually owns — a step
 // through the dossier pager lights the rails instead. It flashes for a press
@@ -309,6 +365,13 @@ const showDesignSystemLink = computed(
 
 const mainRef = ref<HTMLElement | null>(null);
 
+// Focus the landmark directly. Following href="#main" is a same-path
+// router hop, and that is the case `page:finish` never fires for — the
+// view transition hangs, and the next arrow key is what finally tears it.
+function skipToMain() {
+  mainRef.value?.focus({ preventScroll: true });
+}
+
 function scrollMainToTopOnMobile() {
   if (window.innerWidth >= 1280) return;
   nextTick(() => {
@@ -343,9 +406,9 @@ watch(normalizedPath, (to, from) => {
        nav. Sizing to the dynamic viewport removes the overlap at the source. -->
   <div class="relative h-dvh overflow-hidden bg-canvas text-body">
     <!-- Off-screen until focused. Without it the first Tab on every page walks
-         the logo, both arrow keys, the three tabs and two social links before
+         the logo, both arrow keys, the three tabs, resume, and two social links before
          reaching any content. -->
-    <a href="#main" class="skip-link">Skip to content</a>
+    <a href="#main" class="skip-link" @click.prevent="skipToMain">Skip to content</a>
 
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
 
@@ -490,6 +553,15 @@ watch(normalizedPath, (to, from) => {
       </div>
 
       <div class="flex items-center gap-2 shrink-0 z-10">
+        <a
+          :href="RESUME_PATH"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-label-ui inline-flex h-8 items-center px-2 uppercase tracking-[0.2em] text-muted transition-colors duration-150 hover:bg-surface hover:text-white"
+          aria-label="Resume (opens in a new tab)"
+        >
+          RESUME
+        </a>
         <a
           :href="EMAIL_URL"
           class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"

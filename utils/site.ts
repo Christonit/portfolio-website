@@ -19,6 +19,8 @@ export const GITHUB_URL = "https://github.com/chrisalesant";
 export const X_URL = "https://x.com/chrisalesant";
 export const EMAIL_ADDRESS = "hello@chsantana.com";
 export const EMAIL_URL = `mailto:${EMAIL_ADDRESS}`;
+export const RESUME_PATH = "/resume.pdf";
+export const RESUME_FILENAME = "Christopher-Santana-Resume.pdf";
 export const GA_MEASUREMENT_ID = "G-24DBCT825P";
 export const IDENTITY_ID = `${SITE_URL}/#identity`;
 

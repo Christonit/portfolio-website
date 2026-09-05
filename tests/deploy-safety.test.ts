@@ -105,6 +105,18 @@ test("stable public asset URLs revalidate instead of remaining fresh", async () 
   }
 });
 
+test("videos are served for inline byte-range streaming", async () => {
+  const netlify = await readFile(path.join(root, "netlify.toml"), "utf8");
+  const block = netlify.match(
+    /\[\[headers\]\]\s+for = "\/videos\/\*"[^]*?(?=\n\[\[headers\]\]|$)/,
+  )?.[0];
+
+  assert.ok(block, "expected a /videos/* header block");
+  assert.match(block, /Accept-Ranges = "bytes"/);
+  assert.match(block, /Content-Disposition = "inline"/);
+  assert.doesNotMatch(block, /Content-Disposition = "attachment/);
+});
+
 test("icon coverage detects quoted fallbacks inside interpolated spans", async () => {
   const fixture = await mkdtemp(path.join(os.tmpdir(), "icon-coverage-"));
 

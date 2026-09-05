@@ -24,7 +24,7 @@ const featuredOrder = [
   "canopy-super-app",
   "stockstotrade",
   "timothy-sykes",
-  "content-automation-ai",
+  "pulseara",
 ];
 const featuredProjects = featuredOrder
   .map((slug) => projects.find((project) => project.slug === slug))
@@ -145,7 +145,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
                 <span class="identity-mission__lead">
                   AI SYSTEMS, FRONTEND ARCHITECTURE, SEO &amp; DATA PIPELINES
                 </span>
-                <NuxtLink to="https://stockstotrade.com/">
+                <NuxtLink
+                  to="https://stockstotrade.com/"
+                  external
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   @STOCKSTOTRADE
                 </NuxtLink>
               </p>
@@ -297,7 +302,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
      one continuous surface instead of copy-panel-plus-photo. */
   background:
     var(--identity-grain),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%), var(--color-panel);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
+    var(--color-panel);
   background-size:
     180px 180px,
     auto,
@@ -681,7 +687,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-portrait::after {
-    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 42%, var(--color-panel) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(16, 16, 16, 0) 42%,
+      var(--color-panel) 100%
+    );
   }
 
   .identity-copy {
