@@ -729,6 +729,20 @@ html[data-nav-dir="modal-out"]::view-transition-new(hud-page) {
   filter: blur(var(--page-blur));
 }
 
+/* A brief slide/fade keeps mobile tab changes legible without holding a
+   frozen snapshot over the navigation or blurring the entire page. */
+@media (max-width: 1279.98px) {
+  .hud-forward-enter-active,
+  .hud-forward-leave-active,
+  .hud-back-enter-active,
+  .hud-back-leave-active {
+    transition:
+      transform var(--duration-quick) var(--page-slide-ease),
+      opacity var(--duration-quick) var(--page-fade-ease);
+    filter: none;
+  }
+}
+
 /* The dossier hop. There is nothing to animate — the page under the sheet is
    the same page — so this name carries no keyframes; it exists only so the
    transition can be switched off without switching the <Transition> itself
