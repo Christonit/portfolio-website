@@ -24,6 +24,15 @@ export default defineNuxtRouteMiddleware((to, from) => {
     return;
   }
 
+  // Below xl the bottom bar is how you change tabs. A view transition that
+  // never reaches `page:finish` freezes a snapshot over that bar and eats
+  // the next tap — the failure the stall-guard exists for. The desktop HUD
+  // can wait out the slide; a thumb on the bar cannot.
+  if (window.matchMedia("(max-width: 1279.98px)").matches) {
+    to.meta.viewTransition = false;
+    return;
+  }
+
   // On a cold load of a prerendered route, Nuxt replaces the route twice to
   // line the URL up with the path its payload was rendered at (see
   // `isSamePathIgnoringTrailingSlash`). The second replace re-renders nothing —

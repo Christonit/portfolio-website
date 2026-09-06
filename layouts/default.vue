@@ -101,15 +101,25 @@ const arrowTarget = computed(() =>
  * Presses that land mid-hop keep exactly one, latest wins, so holding an arrow
  * walks the tabs at the speed the swap can carry and letting go stops one hop
  * later rather than playing out a run you can no longer call back.
+ *
+ * Desktop only. The header keys and the physical arrows are the desktop HUD;
+ * below xl the bottom bar owns the tabs. A hop left in-flight on a phone is
+ * a router.push the next tap has to wait out — and a hung view transition
+ * makes that wait look like a dead nav.
  */
 // Past the view-transition stall-guard (1200ms) so a hung swap can still
 // land and play the queued hop instead of dropping it on a stale index.
 const TAB_HOP_TIMEOUT_MS = 1600;
 const TAB_HOP_ANIM_FALLBACK_MS = 340;
+const DESKTOP_HUD = "(min-width: 1280px)";
 let tabHopInFlight = false;
 let tabHopDest: string | null = null;
 let tabHopTimer: ReturnType<typeof setTimeout> | undefined;
 let queuedTabHop: -1 | 1 | null = null;
+
+function isDesktopHud() {
+  return window.matchMedia(DESKTOP_HUD).matches;
+}
 
 function normalizeTabPath(path: string) {
   return path.replace(/\/+$/, "") || "/";
@@ -127,6 +137,16 @@ function tabHopAnimMs() {
 
 function commitTabHop(offset: -1 | 1) {
   const dest = pages[(currentIndex.value + offset + pages.length) % pages.length];
+
+  // Direction is normally inferred from the tab index difference (see
+  // `navDirectionForPath`), which gets it backwards right where wrapping
+  // matters most: right-arrow from ABOUT (index 2) lands on HOME (index 0),
+  // a *lower* index, so the inference reads it as "back" and the slide plays
+  // the wrong way even though the destination is right. The arrow you
+  // pressed already knows the direction; hand it to the router explicitly
+  // instead of letting the index comparison guess.
+  useNavDirectionHint().value = offset === 1 ? "forward" : "back";
+
   tabHopInFlight = true;
   tabHopDest = dest;
   clearTimeout(tabHopTimer);
@@ -156,7 +176,15 @@ function settleTabHop() {
   if (queued) commitTabHop(queued);
 }
 
+function resetTabHop() {
+  clearTimeout(tabHopTimer);
+  tabHopInFlight = false;
+  tabHopDest = null;
+  queuedTabHop = null;
+}
+
 function stepTab(offset: -1 | 1) {
+  if (!isDesktopHud()) return;
   if (tabHopInFlight) {
     queuedTabHop = offset;
     return;
@@ -185,12 +213,21 @@ function onTabHopWatchdog() {
   settleTabHop();
 }
 
-const stopTabHopPageFinish = useNuxtApp().hook("page:finish", armTabHopSettle);
-const stopTabHopAfterEach = router.afterEach(armTabHopSettle);
-onUnmounted(() => {
-  stopTabHopPageFinish();
-  stopTabHopAfterEach();
-});
+let stopTabHopPageFinish: (() => void) | undefined;
+let stopTabHopAfterEach: (() => void) | undefined;
+
+function bindTabHopSettle() {
+  if (stopTabHopPageFinish) return;
+  stopTabHopPageFinish = useNuxtApp().hook("page:finish", armTabHopSettle);
+  stopTabHopAfterEach = router.afterEach(armTabHopSettle);
+}
+
+function unbindTabHopSettle() {
+  stopTabHopPageFinish?.();
+  stopTabHopAfterEach?.();
+  stopTabHopPageFinish = undefined;
+  stopTabHopAfterEach = undefined;
+}
 
 // The header key only flashes for the presses it actually owns — a step
 // through the dossier pager lights the rails instead. It flashes for a press
@@ -239,10 +276,12 @@ function onKeydown(e: KeyboardEvent) {
 
   switch (e.key) {
     case "ArrowLeft":
+      if (!isDesktopHud() && !sheetPath.value) break;
       e.preventDefault();
       prevPage();
       break;
     case "ArrowRight":
+      if (!isDesktopHud() && !sheetPath.value) break;
       e.preventDefault();
       nextPage();
       break;
@@ -272,14 +311,29 @@ function onGlobalClick(e: MouseEvent) {
   }
 }
 
+let desktopHudQuery: MediaQueryList | undefined;
+function onDesktopHudChange(event: MediaQueryListEvent) {
+  if (event.matches) {
+    bindTabHopSettle();
+    return;
+  }
+  resetTabHop();
+  unbindTabHopSettle();
+}
+
 onMounted(() => {
   window.addEventListener("keydown", onKeydown);
   window.addEventListener("click", onGlobalClick);
+  desktopHudQuery = window.matchMedia(DESKTOP_HUD);
+  desktopHudQuery.addEventListener("change", onDesktopHudChange);
+  if (desktopHudQuery.matches) bindTabHopSettle();
 });
 
 onUnmounted(() => {
   window.removeEventListener("keydown", onKeydown);
   window.removeEventListener("click", onGlobalClick);
+  desktopHudQuery?.removeEventListener("change", onDesktopHudChange);
+  unbindTabHopSettle();
 });
 
 // ── Desktop nav items ─────────────────────────────────────────────

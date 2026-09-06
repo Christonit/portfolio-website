@@ -87,6 +87,16 @@ function tone(path: string) {
   if (isPending(path)) return "text-white bg-surface";
   return "text-muted hover:text-white hover:bg-surface";
 }
+
+/**
+ * The real component, not the string `"NuxtLink"`. A dynamic `:is="'NuxtLink'"`
+ * SSR's as a literal `<NuxtLink to="…">` with no href — so a tap before
+ * hydration (and a client render that never resolves the name) is a dead
+ * control. The header's `<NuxtLink>` compiles to `<a href>`, which is what
+ * the pre-hydration click bridge and the phone both need.
+ */
+const Link = resolveComponent("NuxtLink");
+const itemTag = computed(() => (props.preview ? "span" : Link));
 </script>
 
 <template>
@@ -101,7 +111,7 @@ function tone(path: string) {
     :inert="(!preview && dossierClosing) || undefined"
   >
     <component
-      :is="preview ? 'span' : 'NuxtLink'"
+      :is="itemTag"
       v-for="item in items"
       :key="item.path"
       :to="preview ? undefined : item.path"
