@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ExperienceOrg } from "~/components/ExperienceTimeline.vue";
 import { IDENTITY_ID, pageTitle } from "~/utils/site";
 
 usePageSeo({
@@ -15,113 +14,10 @@ usePageSeo({
   ],
 });
 
-const origin = [
-  { label: "ORIGIN", value: "PUNTA CANA // DOMINICAN REPUBLIC" },
-  { label: "STATION", value: "MANHATTAN, NY" },
-  { label: "VECTOR", value: "FRONTEND → FULLSTACK" },
-];
-
-const education = [
-  {
-    degree: "Master’s in Information Systems",
-    school: "BARUCH COLLEGE",
-    year: "AUG 2025 — PRESENT",
-    active: true,
-    status: "CURRENT",
-    note: "",
-  },
-  {
-    degree: "Bachelor’s in Advertising",
-    school: "APEC UNIVERSITY",
-    year: "MAY 2015 – AUG 2018",
-    active: false,
-    status: "",
-    note: "",
-  },
-  {
-    degree: "Associate’s in Multimedia Technology",
-    school: "ITLA",
-    year: "AUG 2012 – APR 2014",
-    active: false,
-    status: "",
-    note: "",
-  },
-];
-
-const timeline: ExperienceOrg[] = [
-  {
-    company: "StocksToTrade",
-    span: "NOV 2020 — PRESENT",
-    logo: "/images/logos/stockstotrade.png",
-    active: true,
-    roles: [
-      {
-        period: "NOV 2023 — PRESENT",
-        role: "Senior Full Stack Engineer",
-        tags: "NUXT // AWS // NODE.JS // AI // WORDPRESS",
-        note: "Architecture, Systems Development and SEO for the Timothy Sykes and StocksToTrade websites — high-traffic financial educational and news platform and trading tools.",
-        current: true,
-        projects: ["timothy-sykes", "stockstotrade", "content-automation-ai"],
-      },
-      /* Kept as a bare line: the point it makes is the step up from
-         contractor frontend to senior full stack, not the work itself. */
-      {
-        period: "NOV 2020 — OCT 2023",
-        role: "Frontend Engineer",
-        type: "CONTRACTOR",
-        current: false,
-      },
-    ],
-  },
-  {
-    company: "BairesDev",
-    span: "NOV 2021 — OCT 2023",
-    logo: "/images/logos/bairesdev.png",
-    active: false,
-    roles: [
-      {
-        period: "NOV 2021 — OCT 2023",
-        role: "React Developer",
-        type: "CONTRACTOR",
-        tags: "REACT 18 // MICRO-FRONTEND // MONOREPO",
-        note: "Implemented a headless CMS (Builder) into a React app. Worked on the core frontend team for a webapp comprising 60+ micro-frontends, collaborating with a small team on technical debt and core feature development.",
-        current: false,
-      },
-    ],
-  },
-  {
-    company: "Claro RD",
-    span: "SEP 2019 — OCT 2021",
-    logo: "/images/logos/claro.png",
-    active: false,
-    location: "Santo Domingo, DR",
-    roles: [
-      {
-        period: "SEP 2019 — OCT 2021",
-        role: "UX Engineer",
-        tags: "REACT // HTML // SASS",
-        note: "Created and maintained the first version of the inhouse design language and React UI library. Also helped the full stack developers implementing the user flows using the official UI library.",
-        current: false,
-      },
-    ],
-  },
-  {
-    company: "StateTrust Group",
-    span: "DEC 2017 — SEP 2019",
-    logo: "/images/logos/statetrust.png",
-    location: "Santo Domingo, DR",
-    active: false,
-    roles: [
-      {
-        period: "DEC 2017 — SEP 2019",
-        role: "Front End Developer",
-        tags: "HTML // CSS // JS",
-        note: "Email marketing and dashboards for private wealth management and trading products.",
-        current: false,
-      },
-    ],
-  },
-];
+const portfolio = usePortfolio();
+const about = computed(() => portfolio.value.about);
+const education = computed(() => about.value.education);
+const timeline = computed(() => portfolio.value.experience);
 </script>
 
 <template>
@@ -132,9 +28,7 @@ const timeline: ExperienceOrg[] = [
       <span class="hud-label">// BIO</span>
       <h1 class="hud-title">ABOUT ME</h1>
       <p class="bio-lede text-body-compact text-muted">
-        Manhattan-based Senior Full Stack Engineer with over a decade of
-        experience building interfaces and lately systems for high-traffic web
-        products.
+        {{ about.subtitle }}
       </p>
     </header>
 
@@ -143,21 +37,8 @@ const timeline: ExperienceOrg[] = [
         <div class="relative border-l-[3px] border-white pl-4 lg:pr-3 lg:py-2">
           <HudCorners :corners="['tr', 'br']" />
           <div class="text-body-prose space-y-3 text-prose">
-            <p>
-              Originally from Punta Cana, Dominican Republic, I moved to the
-              United States to pursue a Master’s in Information Systems at
-              Baruch College and to expand my technical knowledge.
-            </p>
-            <p>
-              My recent work centers on scalable systems for fintech and
-              financial education. Products I’ve shipped handle 25K+ concurrent
-              users and serve more than 1M unique visitors each month.
-            </p>
-
-            <p>
-              In the near future, I want to keep moving toward different and
-              bigger problems than the ones I have faced before and collaborate
-              with new people and keep growing as an engineer.
+            <p v-for="(paragraph, index) in about.paragraphs" :key="index">
+              {{ paragraph }}
             </p>
           </div>
         </div>
@@ -202,18 +83,22 @@ const timeline: ExperienceOrg[] = [
 
           <div class="mt-6 border-t border-rule/40 pt-6">
             <h3 class="hud-label mb-3">AWARDS</h3>
-            <div class="flex items-stretch gap-3">
+            <div
+              v-for="award in about.awards"
+              :key="award.title"
+              class="flex items-stretch gap-3"
+            >
               <div class="w-[2px] shrink-0 bg-white/40" aria-hidden="true" />
               <div class="flex flex-col gap-1">
                 <span
                   class="text-sm font-semibold uppercase leading-snug tracking-wider text-body"
                 >
-                  1ST PLACE — BRANDING DESIGN CONTEST
+                  {{ award.title }}
                 </span>
                 <span
                   class="font-mono text-xs leading-snug tracking-wide text-muted"
                 >
-                  MINISTRY OF FOREIGN AFFAIRS // DOMINICAN REPUBLIC // NOV 2017
+                  {{ award.detail }}
                 </span>
               </div>
             </div>

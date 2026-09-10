@@ -16,6 +16,9 @@ export function pageUrl(path = "/") {
 
 export const LINKEDIN_URL = "https://www.linkedin.com/in/chrisalesant/";
 export const GITHUB_URL = "https://github.com/chrisalesant";
+/** The source of this site, not the profile — the header links to it so the
+ *  site can be forked. */
+export const GITHUB_REPO_URL = "https://github.com/Christonit/portfolio-website";
 export const X_URL = "https://x.com/chrisalesant";
 export const EMAIL_ADDRESS = "hello@chsantana.com";
 export const EMAIL_URL = `mailto:${EMAIL_ADDRESS}`;

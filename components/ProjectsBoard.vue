@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
-import projectsJson from "~/data/projects.json";
 import {
   rememberBoardScroll,
   takeBoardScroll,
@@ -21,8 +20,9 @@ const props = withDefaults(
   },
 );
 
-const projects = projectsJson as ProjectPreview[];
-const totalWork = projects.length;
+const portfolio = usePortfolio();
+const projects = computed(() => portfolio.value.works);
+const totalWork = computed(() => projects.value.length);
 
 const hudKey = useHudNav();
 const focusedIndex = ref<number | null>(null);
@@ -47,11 +47,11 @@ function activateCard(i: number) {
 // jumps would skip a card every time the grid is two columns wide.
 function moveCardFocus(direction: number) {
   if (focusedIndex.value === null) {
-    focusedIndex.value = direction > 0 ? 0 : totalWork - 1;
+    focusedIndex.value = direction > 0 ? 0 : totalWork.value - 1;
   } else {
     focusedIndex.value = Math.min(
       Math.max(focusedIndex.value + direction, 0),
-      totalWork - 1,
+      totalWork.value - 1,
     );
   }
 

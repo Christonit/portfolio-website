@@ -37,6 +37,9 @@ const demoSrc = computed(
   () => props.project.video?.replace(/\.webm$/i, ".mp4") ?? "",
 );
 const galleryCount = computed(() => frames.value.length);
+const hasGalleryPager = computed(
+  () => !hasVideo.value && galleryCount.value > 1,
+);
 const counter = computed(
   () => `${activeIndex.value + 1}/${galleryCount.value}`,
 );
@@ -51,6 +54,8 @@ const dossierCopy = computed(() => {
 const dossierBeats = computed(() =>
   dossierCopy.value.map((text, index) => ({ index, text })),
 );
+
+const links = computed(() => props.project.links ?? []);
 
 function resetForProject() {
   frames.value = buildProjectGallery(
@@ -209,7 +214,7 @@ onBeforeUnmount(() => {
   <div class="relative flex flex-col">
     <section
       class="relative flex flex-col border-b border-white/15"
-      :aria-roledescription="hasVideo ? undefined : 'carousel'"
+      :aria-roledescription="hasGalleryPager ? 'carousel' : undefined"
       :aria-label="hasVideo ? 'Project demo video' : 'Project image gallery'"
     >
       <div
@@ -286,7 +291,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-        v-if="!hasVideo"
+        v-if="hasGalleryPager"
         class="flex shrink-0 items-stretch border-t border-white/20"
       >
         <button
@@ -395,6 +400,30 @@ onBeforeUnmount(() => {
                 </li>
               </ul>
             </section>
+
+            <!-- Outbound proof the work shipped — listings, write-ups, repos.
+                 The dossier copy is plain text, so references live here as
+                 links rather than inline. -->
+            <section
+              v-if="links.length"
+              class="project-dossier-beat flex flex-col gap-3"
+              aria-label="References"
+            >
+              <h2 class="hud-label">Links</h2>
+              <ul class="flex flex-col gap-2" role="list">
+                <li v-for="link in links" :key="link.url">
+                  <a
+                    :href="link.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="project-dossier-link inline-flex items-start gap-2 font-mono text-sm uppercase leading-relaxed tracking-wide text-body transition-colors hover:text-signal focus-visible:text-signal"
+                  >
+                    <span class="mt-px text-signal" aria-hidden="true">↗</span>
+                    <span>{{ link.label }}</span>
+                  </a>
+                </li>
+              </ul>
+            </section>
           </div>
         </div>
       </div>
@@ -441,6 +470,19 @@ onBeforeUnmount(() => {
 
 .project-dossier-beat {
   padding-bottom: var(--space-8);
+}
+
+/* Underlined so a reference reads as a link before it is hovered — the tasks
+   above it use the same mono face and would otherwise be indistinguishable. */
+.project-dossier-link span:last-child {
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: 4px;
+}
+
+.project-dossier-link:hover span:last-child,
+.project-dossier-link:focus-visible span:last-child {
+  text-decoration-color: currentColor;
 }
 
 /* Media band: capped so the written record stays reachable below it. */

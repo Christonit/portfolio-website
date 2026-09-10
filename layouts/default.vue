@@ -9,7 +9,12 @@ import {
   projectPagerIsWalkable,
   useProjectPager,
 } from "~/composables/useProjectSheet";
-import { EMAIL_URL, LINKEDIN_URL, RESUME_PATH } from "~/utils/site";
+import {
+  EMAIL_URL,
+  GITHUB_REPO_URL,
+  LINKEDIN_URL,
+  RESUME_PATH,
+} from "~/utils/site";
 
 const router = useRouter();
 const route = useRoute();
@@ -75,7 +80,7 @@ const { step: stepProject } = useProjectPager();
 // What the header keys actually do from here, so the labels don't promise a
 // page change while the dossier is open.
 const arrowTarget = computed(() =>
-  sheetPath.value && projectPagerIsWalkable
+  sheetPath.value && projectPagerIsWalkable()
     ? { prev: "Previous project", next: "Next project" }
     : { prev: "Previous page", next: "Next page" },
 );
@@ -635,6 +640,42 @@ watch(normalizedPath, (to, from) => {
             />
           </svg>
         </a>
+        <!-- The only header control that carries a tooltip: the mark says
+             "GitHub", not "this site is the repo, take it". The card hangs off
+             the icon's right edge rather than its centre so it can't run past
+             the header's padding. -->
+        <div class="group relative flex items-center">
+          <a
+            :href="GITHUB_REPO_URL"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
+            aria-label="This website's source on GitHub (opens in a new tab)"
+            aria-describedby="github-repo-tip"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="-2 -2 28 28"
+              fill="currentColor"
+              class="h-6 w-6 shrink-0"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+              />
+            </svg>
+          </a>
+          <!-- Opacity, not v-if: `aria-describedby` needs a target in the tree
+               at all times, and the delay on open is only on the hover state so
+               closing stays on the shorter clock. -->
+          <span
+            id="github-repo-tip"
+            role="tooltip"
+            class="text-label-data pointer-events-none absolute right-0 top-full mt-1 origin-top-right scale-[var(--tt-scale)] whitespace-nowrap border border-rule bg-panel px-2 py-1 text-body opacity-0 transition-[opacity,transform] duration-[var(--tt-out-dur)] ease-out group-hover:scale-100 group-hover:opacity-100 group-hover:delay-[var(--tt-delay)] group-hover:duration-[var(--tt-in-dur)] group-focus-within:scale-100 group-focus-within:opacity-100 motion-reduce:transition-none"
+          >
+            You can fork this website
+          </span>
+        </div>
         <!--
         <a
           :href="X_URL"

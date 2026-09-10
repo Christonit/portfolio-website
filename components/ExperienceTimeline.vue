@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
-import projectsJson from "~/data/projects.json";
 import {
   isExternalProjectHref,
   projectHref,
@@ -17,7 +16,7 @@ export interface ExperienceRole {
   tags?: string;
   note?: string;
   current: boolean;
-  /** Project slugs from data/projects.json shipped during this role. */
+  /** Slugs of related project/article documents shipped during this role. */
   projects?: string[];
 }
 
@@ -31,11 +30,12 @@ export interface ExperienceOrg {
   roles: ExperienceRole[];
 }
 
-defineProps<{
+const props = defineProps<{
   orgs: ExperienceOrg[];
 }>();
 
-const projects = projectsJson as ProjectPreview[];
+const portfolio = usePortfolio();
+const projects = computed(() => portfolio.value.works);
 
 /* A single-role org repeats its own date span on the role line. Drop the
    duplicate so the block reads as one date, not two identical ones. */
@@ -56,7 +56,7 @@ function orgInitials(org: ExperienceOrg): string {
 function roleProjects(role: ExperienceRole): ProjectPreview[] {
   if (!role.projects?.length) return [];
   return role.projects
-    .map((slug) => projects.find((project) => project.slug === slug))
+    .map((slug) => projects.value.find((project) => project.slug === slug))
     .filter((project): project is ProjectPreview => Boolean(project?.image));
 }
 </script>

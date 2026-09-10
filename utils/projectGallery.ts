@@ -1,7 +1,5 @@
 const FRAME_HUES = [210, 198, 32, 268, 152, 8, 48, 318, 186, 24, 222, 140];
 
-export const PROJECT_GALLERY_COUNT = 12;
-
 export interface GalleryFrame {
   index: number;
   label: string;
@@ -33,24 +31,35 @@ function svgPlaceholder(slug: string, index: number, title: string): string {
   <text x="72" y="110" fill="#67F57A" font-family="ui-monospace,monospace" font-size="22" letter-spacing="6">FRAME_${n}</text>
   <text x="72" y="168" fill="#e2e2e2" font-family="ui-monospace,monospace" font-size="36" font-weight="700">${safeTitle}</text>
   <text x="72" y="214" fill="#919191" font-family="ui-monospace,monospace" font-size="16" letter-spacing="4">${slug.toUpperCase()} // PLACEHOLDER_CAPTURE</text>
-  <text x="72" y="940" fill="#474747" font-family="ui-monospace,monospace" font-size="14" letter-spacing="3">ARCHIVE_STILL // ${n}/12</text>
+  <text x="72" y="940" fill="#474747" font-family="ui-monospace,monospace" font-size="14" letter-spacing="3">ARCHIVE_STILL // ${n}</text>
 </svg>`;
 
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
+// A project carries as many stills as it has on record — today that is the one
+// cover image, so the dossier renders a single frame and the pager chrome
+// stands down. Projects with no still at all fall back to one generated card.
 export function buildProjectGallery(
   slug: string,
   name: string,
-  cover?: string,
+  ...covers: (string | undefined)[]
 ): GalleryFrame[] {
-  return Array.from({ length: PROJECT_GALLERY_COUNT }, (_, index) => {
-    const useCover = index === 0 && Boolean(cover);
-    return {
-      index,
-      label: `FRAME_${String(index + 1).padStart(2, "0")}`,
-      src: useCover ? cover! : svgPlaceholder(slug, index, name),
-      isPlaceholder: !useCover,
-    };
-  });
+  const stills = covers.filter((src): src is string => Boolean(src));
+  if (!stills.length) {
+    return [
+      {
+        index: 0,
+        label: "FRAME_01",
+        src: svgPlaceholder(slug, 0, name),
+        isPlaceholder: true,
+      },
+    ];
+  }
+  return stills.map((src, index) => ({
+    index,
+    label: `FRAME_${String(index + 1).padStart(2, "0")}`,
+    src,
+    isPlaceholder: false,
+  }));
 }

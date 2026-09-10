@@ -9,7 +9,7 @@
  * Three ways an icon name reaches the DOM, all covered below:
  *   <span class="material-symbols-outlined">close</span>   literal in a template
  *   { label: "HOME", icon: "analytics" }                   a nav/config object
- *   "icon": "hexagon"                                      data/projects.json
+ *   "icon": "hexagon"                                      public/data/portfolio.json
  */
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 import { ICON_NAMES } from "./icon-names.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const ROOTS = ["layouts", "pages", "components", "data"];
+const ROOTS = ["layouts", "pages", "components", "public/data"];
 const EXTENSIONS = new Set([".vue", ".ts", ".json"]);
 
 async function sourceFiles(dir) {

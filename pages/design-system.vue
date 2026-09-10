@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
-import projectsJson from "~/data/projects.json";
+import { localPortfolio } from "~/sanity/localPortfolio";
 import { ICON_NAMES } from "~/scripts/icon-names.mjs";
 import { pageTitle } from "~/utils/site";
 import { typography, type TypographyStyleKey } from "~/utils/typography";
@@ -134,7 +133,7 @@ const iconUsage: Record<string, string> = {
 
 const iconInventory = ICON_NAMES.map((name: string) => ({
   name,
-  usage: iconUsage[name] ?? "Project icon, set per entry in data/projects.json.",
+  usage: iconUsage[name] ?? "Project icon, managed in Sanity.",
 }));
 
 /* Each row renders the icon that actually uses that size, at that size. Both
@@ -294,7 +293,7 @@ const swatchCount = String(colors.length).padStart(2, "0");
 /* PARTS mounts the real card against the real first project rather than a
    fixture, so a change to the card or to its data shows up here the same way
    it shows up on the board. */
-const sampleProject = (projectsJson as ProjectPreview[])[0];
+const sampleProject = localPortfolio().works[0];
 
 /* ── Live values ─────────────────────────────────────────────── */
 

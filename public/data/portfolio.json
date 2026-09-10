@@ -1,0 +1,897 @@
+{
+  "about": {
+    "_updatedAt": "2026-09-10T05:31:30Z",
+    "awards": [
+      {
+        "_key": "award-0",
+        "location": "DOMINICAN REPUBLIC",
+        "org": "MINISTRY OF FOREIGN AFFAIRS",
+        "period": "NOV 2017",
+        "title": "1ST PLACE — BRANDING DESIGN CONTEST"
+      }
+    ],
+    "body": [
+      {
+        "_key": "about-p1",
+        "_type": "block",
+        "children": [
+          {
+            "_key": "about-p1-span",
+            "_type": "span",
+            "marks": [],
+            "text": "Originally from Punta Cana, Dominican Republic, I moved to the United States to pursue a Master’s in Information Systems at Baruch College and to expand my technical knowledge."
+          }
+        ],
+        "markDefs": [],
+        "style": "normal"
+      },
+      {
+        "_key": "about-p2",
+        "_type": "block",
+        "children": [
+          {
+            "_key": "about-p2-span",
+            "_type": "span",
+            "marks": [],
+            "text": "My recent work centers on scalable systems for fintech and financial education. Products I’ve shipped handle 25K+ concurrent users and serve more than 1M unique visitors each month."
+          }
+        ],
+        "markDefs": [],
+        "style": "normal"
+      },
+      {
+        "_key": "about-p3",
+        "_type": "block",
+        "children": [
+          {
+            "_key": "about-p3-span",
+            "_type": "span",
+            "marks": [],
+            "text": "In the near future, I want to keep moving toward different and bigger problems than the ones I have faced before and collaborate with new people and keep growing as an engineer."
+          }
+        ],
+        "markDefs": [],
+        "style": "normal"
+      }
+    ],
+    "education": [
+      {
+        "_key": "edu-0",
+        "degree": "Master’s in Information Systems",
+        "isCurrent": true,
+        "note": "",
+        "period": "AUG 2025 — PRESENT",
+        "school": "BARUCH COLLEGE",
+        "status": "CURRENT"
+      },
+      {
+        "_key": "edu-1",
+        "degree": "Bachelor’s in Advertising",
+        "isCurrent": false,
+        "note": "",
+        "period": "MAY 2015 – AUG 2018",
+        "school": "APEC UNIVERSITY",
+        "status": ""
+      },
+      {
+        "_key": "edu-2",
+        "degree": "Associate’s in Multimedia Technology",
+        "isCurrent": false,
+        "note": "",
+        "period": "AUG 2012 – APR 2014",
+        "school": "ITLA",
+        "status": ""
+      }
+    ],
+    "subtitle": "Manhattan-based Senior Full Stack Engineer with over a decade of experience building interfaces and lately systems for high-traffic web products."
+  },
+  "experience": [
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "company": "StocksToTrade",
+      "isCurrent": true,
+      "location": null,
+      "logoUrl": "/images/logos/stockstotrade.png",
+      "period": "NOV 2020 — PRESENT",
+      "roles": [
+        {
+          "_key": "role-0",
+          "employmentType": null,
+          "isCurrent": true,
+          "note": "Architecture, Systems Development and SEO for the Timothy Sykes and StocksToTrade websites — high-traffic financial educational and news platform and trading tools.",
+          "period": "NOV 2023 — PRESENT",
+          "projects": [
+            "timothy-sykes",
+            "stockstotrade",
+            "headless-wordpress-architect",
+            "content-automation-ai"
+          ],
+          "role": "Senior Full Stack Engineer",
+          "tags": [
+            "NUXT",
+            "AWS",
+            "NODE.JS",
+            "AI",
+            "WORDPRESS"
+          ]
+        },
+        {
+          "_key": "role-1",
+          "employmentType": "CONTRACTOR",
+          "isCurrent": false,
+          "note": null,
+          "period": "NOV 2020 — OCT 2023",
+          "projects": null,
+          "role": "Frontend Engineer",
+          "tags": null
+        }
+      ]
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "company": "BairesDev",
+      "isCurrent": false,
+      "location": null,
+      "logoUrl": "/images/logos/bairesdev.png",
+      "period": "NOV 2021 — OCT 2023",
+      "roles": [
+        {
+          "_key": "role-0",
+          "employmentType": "CONTRACTOR",
+          "isCurrent": false,
+          "note": "Implemented a headless CMS (Builder) into a React app. Worked on the core frontend team for a webapp comprising 60+ micro-frontends, collaborating with a small team on technical debt and core feature development.",
+          "period": "NOV 2021 — OCT 2023",
+          "projects": null,
+          "role": "React Developer",
+          "tags": [
+            "REACT 18",
+            "MICRO-FRONTEND",
+            "MONOREPO"
+          ]
+        }
+      ]
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "company": "Claro RD",
+      "isCurrent": false,
+      "location": "Santo Domingo, DR",
+      "logoUrl": "/images/logos/claro.png",
+      "period": "SEP 2019 — OCT 2021",
+      "roles": [
+        {
+          "_key": "role-0",
+          "employmentType": null,
+          "isCurrent": false,
+          "note": "Created and maintained the first version of the inhouse design language and React UI library. Also helped the full stack developers implementing the user flows using the official UI library.",
+          "period": "SEP 2019 — OCT 2021",
+          "projects": null,
+          "role": "UX Engineer",
+          "tags": [
+            "REACT",
+            "HTML",
+            "SASS"
+          ]
+        }
+      ]
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "company": "StateTrust Group",
+      "isCurrent": false,
+      "location": "Santo Domingo, DR",
+      "logoUrl": "/images/logos/statetrust.png",
+      "period": "DEC 2017 — SEP 2019",
+      "roles": [
+        {
+          "_key": "role-0",
+          "employmentType": null,
+          "isCurrent": false,
+          "note": "Email marketing and dashboards for private wealth management and trading products.",
+          "period": "DEC 2017 — SEP 2019",
+          "projects": null,
+          "role": "Front End Developer",
+          "tags": [
+            "HTML",
+            "CSS",
+            "JS"
+          ]
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "_updatedAt": "2026-09-10T05:31:30Z",
+    "displayName": "CHRISTOPHER SANTANA",
+    "employerLabel": "@STOCKSTOTRADE",
+    "employerUrl": "https://stockstotrade.com/",
+    "featuredProjects": [
+      {
+        "_id": "project-canopy-super-app",
+        "_type": "project",
+        "_updatedAt": "2026-09-10T05:31:30Z",
+        "cardDescription": "Founding Frontend Engineer for Canopy Network — zero-to-one architecture for a Web3 super app that held 25K+ concurrent users at testnet launch.",
+        "category": "Web3",
+        "dossier": [
+          "I joined Canopy Network as Founding Frontend Engineer and owned the end-to-end frontend for a decentralized L1 that lets teams launch nested chains with their own business logic and tokenomics. I designed and shipped the launchpad's user flow, DEX, and chain explorer. The testnet launched with more than 25,000 concurrent users in the first week, and that architecture is still the foundation of the app.",
+          "Every foundational decision had to be made from scratch against just a product specification and always fluid PRDs against a fixed launch date. I set the stack — React, Next.js, and Node.js — and sequenced delivery around the products need: launchpad first so teams could discover and create chains, then the DEX, then the explorer for transactions and other  chain and token related data.",
+          "I treated blockchain integration, reliability, and SEO as launch constraints, not later work. The frontend stayed stable through testnet traffic at that scale and did not require a rewrite afterward. Most of that original frontend groundwork is still in production."
+        ],
+        "externalUrl": null,
+        "icon": "hexagon",
+        "imageAlt": "Canopy Super App: Web3 super app with launchpad, DEX, and chain explorer that scaled to 25K concurrent users at testnet.",
+        "imageHeight": 395,
+        "imageTone": "dark",
+        "imageUrl": "/images/canopy-image.webp",
+        "imageWidth": 756,
+        "link": "https://testnet.app.canopynetwork.org/",
+        "links": null,
+        "metric": {
+          "_type": "projectMetric",
+          "label": "Concurrent users",
+          "progress": 100,
+          "value": "25K+"
+        },
+        "name": "Canopy Super App",
+        "role": "Founding Frontend Engineer",
+        "slug": "canopy-super-app",
+        "sortOrder": 0,
+        "tags": [
+          "Frontend architecture",
+          "Web3",
+          "Next.JS"
+        ],
+        "tasks": [
+          "Zero-to-launch frontend architecture",
+          "Created the frontend for launchpad, DEX, and explorer experience",
+          "SEO groundwork"
+        ],
+        "tech": [
+          "React",
+          "Next.js",
+          "Node.js",
+          "Web3",
+          "UI/UX",
+          "SEO"
+        ],
+        "title": null,
+        "videoUrl": "/videos/canopy-superapp-demo.webm"
+      },
+      {
+        "_id": "project-stockstotrade",
+        "_type": "project",
+        "_updatedAt": "2026-09-10T05:58:10Z",
+        "cardDescription": "Lead Full-Stack Engineer for StocksToTrade — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
+        "category": "Fintech",
+        "dossier": [
+          "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
+          "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
+          "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
+        ],
+        "externalUrl": null,
+        "icon": "candlestick_chart",
+        "imageAlt": "StocksToTrade: trading platform with live market data, scanners, news, and request-time architecture for 1M+ monthly users.",
+        "imageHeight": 395,
+        "imageTone": null,
+        "imageUrl": "/images/stockstotade-image.webp",
+        "imageWidth": 756,
+        "link": "https://stockstotrade.com/",
+        "links": null,
+        "metric": {
+          "_type": "projectMetric",
+          "label": "Monthly uniques",
+          "progress": 100,
+          "value": "1M+"
+        },
+        "name": "StocksToTrade",
+        "role": "Lead Full-Stack Engineer",
+        "slug": "stockstotrade",
+        "sortOrder": 1,
+        "tags": [
+          "Nuxt",
+          "WordPress",
+          "AWS",
+          "WebSockets",
+          "AI"
+        ],
+        "tasks": [
+          "Headless Wordpress Nuxt architecture",
+          "Live stock data ingestion, quotes, and news pipeline",
+          "AI automation for QA, SEO, and ops"
+        ],
+        "tech": [
+          "Nuxt 3",
+          "TypeScript",
+          "AWS",
+          "WebSockets",
+          "WordPress",
+          "LLMs"
+        ],
+        "title": null,
+        "videoUrl": "/videos/stocks-to-trade-demo.webm"
+      },
+      {
+        "_id": "project-headless-wordpress-architect",
+        "_type": "project",
+        "_updatedAt": "2026-09-10T05:58:10Z",
+        "cardDescription": "I authored an open-source AI skill that encodes how I design, develop, maintain and take decisions related for high-traffic websites  and  platforms that leverage WordPress as a Headless CMS.",
+        "category": "Web",
+        "dossier": [
+          "I created this skill to share the ideas I have used over the years both pre and post AI on how to create applications that can scale under heavy traffic leveraging Wordpress as a Headless CMS.",
+          "The skill is not a generic CMS checklist. It classifies a request into review, design, or implementation, then applies only the guidance that matches measured scale — static generation, SSR, webhook-backed storage, and multi-site content services.",
+          "It details the patters for managing state or critical  data for the initial page load, meassures to keep Core Web Vitals up, REST versus GraphQL, cache TTL, and whether to split a shared content service are adaptable choices, among other ideas."
+        ],
+        "externalUrl": null,
+        "icon": "auto_awesome",
+        "imageAlt": "Headless WordPress Architect: open-source AI skill for designing and developing scalable websites using Wordpress as a Headless CMS.",
+        "imageHeight": 907,
+        "imageTone": "dark",
+        "imageUrl": "/images/ai-skill-headless-wordpress.webp",
+        "imageWidth": 1734,
+        "link": "https://github.com/Christonit/headless-wordpress-architect",
+        "links": null,
+        "metric": null,
+        "name": "Headless WordPress Architect AI Skill ",
+        "role": "Author",
+        "slug": "headless-wordpress-architect",
+        "sortOrder": 2,
+        "tags": [
+          "AI Skill",
+          "WordPress",
+          "Architecture"
+        ],
+        "tasks": [
+          "Encode production architecture as an agent skill with review, design, and implementation contracts",
+          "Scale-aware content delivery: build-time, SSR, webhooks, frontend state, and shared content services",
+          "Operational guards: idempotent webhooks, SEO snapshots, Core Web Vitals, and failure recovery"
+        ],
+        "tech": [
+          "WordPress",
+          "REST",
+          "GraphQL",
+          "AWS",
+          "S3",
+          "DYNAMODB",
+          "AI",
+          "SEO",
+          "Webhooks"
+        ],
+        "title": null,
+        "videoUrl": null
+      },
+      {
+        "_id": "project-timothy-sykes",
+        "_type": "project",
+        "_updatedAt": "2026-09-10T05:58:10Z",
+        "cardDescription": "Lead Full-Stack Engineer for TimothySykes.com — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
+        "category": "Web",
+        "dossier": [
+          "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
+          "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
+          "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
+        ],
+        "externalUrl": null,
+        "icon": "auto_awesome",
+        "imageAlt": "Timothy Sykes: trading-education website with news, quotes, webinars, and a headless Nuxt and WordPress architecture.",
+        "imageHeight": 395,
+        "imageTone": null,
+        "imageUrl": "/images/timothysykes-image.webp",
+        "imageWidth": 756,
+        "link": "https://www.timothysykes.com/",
+        "links": null,
+        "metric": {
+          "_type": "projectMetric",
+          "label": "Build",
+          "progress": 72,
+          "value": "72%"
+        },
+        "name": "Timothy Sykes",
+        "role": "Lead Full-Stack Engineer",
+        "slug": "timothy-sykes",
+        "sortOrder": 3,
+        "tags": [
+          "Nuxt",
+          "WordPress",
+          "AWS",
+          "AI",
+          "SEO"
+        ],
+        "tasks": [
+          "Headless Wordpress Nuxt architecture",
+          "Live stock data ingestion, quotes, and news pipeline",
+          "AI automation for QA, SEO, and ops"
+        ],
+        "tech": [
+          "Nuxt 3",
+          "TypeScript",
+          "AWS",
+          "WordPress",
+          "SEO",
+          "AI"
+        ],
+        "title": null,
+        "videoUrl": "/videos/timothy-sykes-demo.webm"
+      },
+      {
+        "_id": "project-pulseara",
+        "_type": "project",
+        "_updatedAt": "2026-09-10T05:58:10Z",
+        "cardDescription": "Frontend Engineer (Contract) for Pulseara — clinical EHR frontend for patient histories, prescriptions, and consultations. Made with  Electron, React and GraphQL.",
+        "category": "Healthcare",
+        "dossier": [
+          "Collaborated as a Frontend Engineer. Pulseara is an electronic health record platform for  the Dominican Republic. I owned the clinical frontend: the screens doctors use to manage patient histories, prescriptions, consultations, and waitlists, plus the  history-tracking flows for both doctors and patients.",
+          "My involement was first helping with the development of features for it's Electron desktop app to later transition into porting the webapp to a responsive web app using React and GraphQL, keeping the same clinical workflows."
+        ],
+        "externalUrl": null,
+        "icon": "deployed_code",
+        "imageAlt": "Pulseara: patient summary in a Spanish-language EHR, with vitals, consultations, and an AI diagnosis tab.",
+        "imageHeight": 540,
+        "imageTone": "light",
+        "imageUrl": "/images/pulseara-image.webp",
+        "imageWidth": 960,
+        "link": null,
+        "links": null,
+        "metric": null,
+        "name": "Pulseara",
+        "role": "Frontend Engineer (Contract)",
+        "slug": "pulseara",
+        "sortOrder": 4,
+        "tags": [
+          "React",
+          "GraphQL",
+          "Electron",
+          "AI",
+          "AWS"
+        ],
+        "tasks": [
+          "Clinical frontend for histories, prescriptions, consultations, and waitlists",
+          "History-tracking for doctors and patients",
+          "Responsive design implementation",
+          "Maintained the Electron offline desktop app",
+          "Led the desktop-to-web port on React and GraphQL"
+        ],
+        "tech": [
+          "React",
+          "GraphQL",
+          "Electron",
+          "AI",
+          "AWS"
+        ],
+        "title": null,
+        "videoUrl": "/videos/pulseara.mp4"
+      }
+    ],
+    "location": "NYC",
+    "mission": "AI SYSTEMS, FRONTEND ARCHITECTURE, SEO & DATA PIPELINES",
+    "role": "FULL_STACK_ENGINEER"
+  },
+  "techStack": [
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/typescript-svgrepo-com.svg",
+      "name": "TYPESCRIPT"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/react-svgrepo-com.svg",
+      "name": "REACT"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/nextjs-svgrepo-com.svg",
+      "name": "NEXT.JS"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/vuejs-svgrepo-com.svg",
+      "name": "VUE.JS"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/nuxt-js-svgrepo-com.svg",
+      "name": "NUXT"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/nodejs-svgrepo-com.svg",
+      "name": "NODE.JS"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/aws-lambda-svgrepo-com.svg",
+      "name": "AWS"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/google-cloud-svgrepo-com.svg",
+      "name": "GOOGLE CLOUD PLATFORM"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/figma-svgrepo-com.svg",
+      "name": "FIGMA / UI DESIGN"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/graphql-svgrepo-com.svg",
+      "name": "GRAPHQL / REST APIS"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/python-127-svgrepo-com.svg",
+      "name": "PYTHON"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/database-svgrepo-com.svg",
+      "name": "DATABASES"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/headless.svg",
+      "name": "WORDPRESS / HEADLESS CMS"
+    },
+    {
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "iconUrl": "/images/css.svg",
+      "name": "CSS / TAILWIND"
+    }
+  ],
+  "works": [
+    {
+      "_id": "project-canopy-super-app",
+      "_type": "project",
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "cardDescription": "Founding Frontend Engineer for Canopy Network — zero-to-one architecture for a Web3 super app that held 25K+ concurrent users at testnet launch.",
+      "category": "Web3",
+      "dossier": [
+        "I joined Canopy Network as Founding Frontend Engineer and owned the end-to-end frontend for a decentralized L1 that lets teams launch nested chains with their own business logic and tokenomics. I designed and shipped the launchpad's user flow, DEX, and chain explorer. The testnet launched with more than 25,000 concurrent users in the first week, and that architecture is still the foundation of the app.",
+        "Every foundational decision had to be made from scratch against just a product specification and always fluid PRDs against a fixed launch date. I set the stack — React, Next.js, and Node.js — and sequenced delivery around the products need: launchpad first so teams could discover and create chains, then the DEX, then the explorer for transactions and other  chain and token related data.",
+        "I treated blockchain integration, reliability, and SEO as launch constraints, not later work. The frontend stayed stable through testnet traffic at that scale and did not require a rewrite afterward. Most of that original frontend groundwork is still in production."
+      ],
+      "externalUrl": null,
+      "icon": "hexagon",
+      "imageAlt": "Canopy Super App: Web3 super app with launchpad, DEX, and chain explorer that scaled to 25K concurrent users at testnet.",
+      "imageHeight": 395,
+      "imageTone": "dark",
+      "imageUrl": "/images/canopy-image.webp",
+      "imageWidth": 756,
+      "link": "https://testnet.app.canopynetwork.org/",
+      "links": null,
+      "metric": {
+        "_type": "projectMetric",
+        "label": "Concurrent users",
+        "progress": 100,
+        "value": "25K+"
+      },
+      "name": "Canopy Super App",
+      "role": "Founding Frontend Engineer",
+      "slug": "canopy-super-app",
+      "sortOrder": 0,
+      "tags": [
+        "Frontend architecture",
+        "Web3",
+        "Next.JS"
+      ],
+      "tasks": [
+        "Zero-to-launch frontend architecture",
+        "Created the frontend for launchpad, DEX, and explorer experience",
+        "SEO groundwork"
+      ],
+      "tech": [
+        "React",
+        "Next.js",
+        "Node.js",
+        "Web3",
+        "UI/UX",
+        "SEO"
+      ],
+      "title": null,
+      "videoUrl": "/videos/canopy-superapp-demo.webm"
+    },
+    {
+      "_id": "project-stockstotrade",
+      "_type": "project",
+      "_updatedAt": "2026-09-10T05:58:10Z",
+      "cardDescription": "Lead Full-Stack Engineer for StocksToTrade — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
+      "category": "Fintech",
+      "dossier": [
+        "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
+        "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
+        "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
+      ],
+      "externalUrl": null,
+      "icon": "candlestick_chart",
+      "imageAlt": "StocksToTrade: trading platform with live market data, scanners, news, and request-time architecture for 1M+ monthly users.",
+      "imageHeight": 395,
+      "imageTone": null,
+      "imageUrl": "/images/stockstotade-image.webp",
+      "imageWidth": 756,
+      "link": "https://stockstotrade.com/",
+      "links": null,
+      "metric": {
+        "_type": "projectMetric",
+        "label": "Monthly uniques",
+        "progress": 100,
+        "value": "1M+"
+      },
+      "name": "StocksToTrade",
+      "role": "Lead Full-Stack Engineer",
+      "slug": "stockstotrade",
+      "sortOrder": 1,
+      "tags": [
+        "Nuxt",
+        "WordPress",
+        "AWS",
+        "WebSockets",
+        "AI"
+      ],
+      "tasks": [
+        "Headless Wordpress Nuxt architecture",
+        "Live stock data ingestion, quotes, and news pipeline",
+        "AI automation for QA, SEO, and ops"
+      ],
+      "tech": [
+        "Nuxt 3",
+        "TypeScript",
+        "AWS",
+        "WebSockets",
+        "WordPress",
+        "LLMs"
+      ],
+      "title": null,
+      "videoUrl": "/videos/stocks-to-trade-demo.webm"
+    },
+    {
+      "_id": "project-headless-wordpress-architect",
+      "_type": "project",
+      "_updatedAt": "2026-09-10T05:58:10Z",
+      "cardDescription": "I authored an open-source AI skill that encodes how I design, develop, maintain and take decisions related for high-traffic websites  and  platforms that leverage WordPress as a Headless CMS.",
+      "category": "Web",
+      "dossier": [
+        "I created this skill to share the ideas I have used over the years both pre and post AI on how to create applications that can scale under heavy traffic leveraging Wordpress as a Headless CMS.",
+        "The skill is not a generic CMS checklist. It classifies a request into review, design, or implementation, then applies only the guidance that matches measured scale — static generation, SSR, webhook-backed storage, and multi-site content services.",
+        "It details the patters for managing state or critical  data for the initial page load, meassures to keep Core Web Vitals up, REST versus GraphQL, cache TTL, and whether to split a shared content service are adaptable choices, among other ideas."
+      ],
+      "externalUrl": null,
+      "icon": "auto_awesome",
+      "imageAlt": "Headless WordPress Architect: open-source AI skill for designing and developing scalable websites using Wordpress as a Headless CMS.",
+      "imageHeight": 907,
+      "imageTone": "dark",
+      "imageUrl": "/images/ai-skill-headless-wordpress.webp",
+      "imageWidth": 1734,
+      "link": "https://github.com/Christonit/headless-wordpress-architect",
+      "links": null,
+      "metric": null,
+      "name": "Headless WordPress Architect AI Skill ",
+      "role": "Author",
+      "slug": "headless-wordpress-architect",
+      "sortOrder": 2,
+      "tags": [
+        "AI Skill",
+        "WordPress",
+        "Architecture"
+      ],
+      "tasks": [
+        "Encode production architecture as an agent skill with review, design, and implementation contracts",
+        "Scale-aware content delivery: build-time, SSR, webhooks, frontend state, and shared content services",
+        "Operational guards: idempotent webhooks, SEO snapshots, Core Web Vitals, and failure recovery"
+      ],
+      "tech": [
+        "WordPress",
+        "REST",
+        "GraphQL",
+        "AWS",
+        "S3",
+        "DYNAMODB",
+        "AI",
+        "SEO",
+        "Webhooks"
+      ],
+      "title": null,
+      "videoUrl": null
+    },
+    {
+      "_id": "project-timothy-sykes",
+      "_type": "project",
+      "_updatedAt": "2026-09-10T05:58:10Z",
+      "cardDescription": "Lead Full-Stack Engineer for TimothySykes.com — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
+      "category": "Web",
+      "dossier": [
+        "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
+        "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
+        "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
+      ],
+      "externalUrl": null,
+      "icon": "auto_awesome",
+      "imageAlt": "Timothy Sykes: trading-education website with news, quotes, webinars, and a headless Nuxt and WordPress architecture.",
+      "imageHeight": 395,
+      "imageTone": null,
+      "imageUrl": "/images/timothysykes-image.webp",
+      "imageWidth": 756,
+      "link": "https://www.timothysykes.com/",
+      "links": null,
+      "metric": {
+        "_type": "projectMetric",
+        "label": "Build",
+        "progress": 72,
+        "value": "72%"
+      },
+      "name": "Timothy Sykes",
+      "role": "Lead Full-Stack Engineer",
+      "slug": "timothy-sykes",
+      "sortOrder": 3,
+      "tags": [
+        "Nuxt",
+        "WordPress",
+        "AWS",
+        "AI",
+        "SEO"
+      ],
+      "tasks": [
+        "Headless Wordpress Nuxt architecture",
+        "Live stock data ingestion, quotes, and news pipeline",
+        "AI automation for QA, SEO, and ops"
+      ],
+      "tech": [
+        "Nuxt 3",
+        "TypeScript",
+        "AWS",
+        "WordPress",
+        "SEO",
+        "AI"
+      ],
+      "title": null,
+      "videoUrl": "/videos/timothy-sykes-demo.webm"
+    },
+    {
+      "_id": "project-pulseara",
+      "_type": "project",
+      "_updatedAt": "2026-09-10T05:58:10Z",
+      "cardDescription": "Frontend Engineer (Contract) for Pulseara — clinical EHR frontend for patient histories, prescriptions, and consultations. Made with  Electron, React and GraphQL.",
+      "category": "Healthcare",
+      "dossier": [
+        "Collaborated as a Frontend Engineer. Pulseara is an electronic health record platform for  the Dominican Republic. I owned the clinical frontend: the screens doctors use to manage patient histories, prescriptions, consultations, and waitlists, plus the  history-tracking flows for both doctors and patients.",
+        "My involement was first helping with the development of features for it's Electron desktop app to later transition into porting the webapp to a responsive web app using React and GraphQL, keeping the same clinical workflows."
+      ],
+      "externalUrl": null,
+      "icon": "deployed_code",
+      "imageAlt": "Pulseara: patient summary in a Spanish-language EHR, with vitals, consultations, and an AI diagnosis tab.",
+      "imageHeight": 540,
+      "imageTone": "light",
+      "imageUrl": "/images/pulseara-image.webp",
+      "imageWidth": 960,
+      "link": null,
+      "links": null,
+      "metric": null,
+      "name": "Pulseara",
+      "role": "Frontend Engineer (Contract)",
+      "slug": "pulseara",
+      "sortOrder": 4,
+      "tags": [
+        "React",
+        "GraphQL",
+        "Electron",
+        "AI",
+        "AWS"
+      ],
+      "tasks": [
+        "Clinical frontend for histories, prescriptions, consultations, and waitlists",
+        "History-tracking for doctors and patients",
+        "Responsive design implementation",
+        "Maintained the Electron offline desktop app",
+        "Led the desktop-to-web port on React and GraphQL"
+      ],
+      "tech": [
+        "React",
+        "GraphQL",
+        "Electron",
+        "AI",
+        "AWS"
+      ],
+      "title": null,
+      "videoUrl": "/videos/pulseara.mp4"
+    },
+    {
+      "_id": "article-content-automation-ai",
+      "_type": "article",
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "cardDescription": "How I automated featured images for a Nuxt + headless WordPress publisher — Lambda, Canvas, and OpenAI instead of a daily CMS chore.",
+      "category": null,
+      "dossier": [
+        "I was building a Nuxt SSG on headless WordPress for a tech publisher that had already moved article drafting onto AI. The remaining bottleneck was me: every post still needed a featured image, and I was updating them by hand every day.",
+        "Image-generation APIs were too slow and too expensive to run on Lambda, so I composed the art instead. ChatGPT wrote the tagline and scored sentiment from the post; a Node canvas job layered branded templates, textures, and blend modes; WordPress REST uploaded the file as media.",
+        "Editorial stopped publishing empty-looking posts, and the designer went back to actual brand work. When a specific image missed, the next step was a WordPress plugin so they could regenerate one post without paging me."
+      ],
+      "externalUrl": "https://dev.to/christonit/aws-javascript-wordpress-fun-content-automation-strategies-using-artificial-intelligence-1gl1",
+      "icon": "article",
+      "imageAlt": "Article: automating featured images for Nuxt and headless WordPress with AWS Lambda, Canvas, and OpenAI.",
+      "imageHeight": 319,
+      "imageTone": null,
+      "imageUrl": "/images/content-automation-ai.webp",
+      "imageWidth": 760,
+      "link": null,
+      "links": null,
+      "metric": {
+        "_type": "projectMetric",
+        "label": "Read time",
+        "progress": 63,
+        "value": "9m"
+      },
+      "name": null,
+      "role": null,
+      "slug": "content-automation-ai",
+      "sortOrder": 5,
+      "tags": [
+        "Article",
+        "AWS",
+        "AI"
+      ],
+      "tasks": [
+        "Blueprint for a zero-touch AI content pipeline",
+        "Generating branded art on Lambda, not image APIs",
+        "Wiring OpenAI into headless WordPress publishing"
+      ],
+      "tech": [
+        "AWS Lambda",
+        "Node.js",
+        "Canvas",
+        "OpenAI",
+        "WordPress",
+        "Nuxt"
+      ],
+      "title": "Content automation with AWS, JavaScript, and WordPress",
+      "videoUrl": null
+    },
+    {
+      "_id": "article-website-performance",
+      "_type": "article",
+      "_updatedAt": "2026-09-10T05:31:30Z",
+      "cardDescription": "After a Nuxt redesign, I cut post-navigation load time 45% — preconnect, deferred embeds, and REST instead of GraphQL for above-the-fold post data.",
+      "category": null,
+      "dossier": [
+        "After a two-month Nuxt redesign went live, Lighthouse and Core Web Vitals flagged FCP and Total Blocking Time on post navigation. I traced it to GraphQL on flagship pages, request waterfalls, and iframes that could not defer.",
+        "I preconnected fonts and the CMS origin so first-time visitors were not paying connection cost at render. Above-the-fold embeds — a live scanner SPA and an audio player — moved behind a delayed mount so they stopped competing with LCP.",
+        "Above-the-fold post data moved from GraphQL to REST, with a slug-to-ID dictionary for SPA navigation. Comments, tags, and related posts stay on GraphQL in onMounted. Initial load dropped about 45%."
+      ],
+      "externalUrl": "https://dev.to/christonit/how-to-improve-page-load-times-and-web-core-vitals-in-nuxt-websites-j3l",
+      "icon": "article",
+      "imageAlt": "Article: improving Nuxt page load times and Core Web Vitals with preconnect, deferred embeds, and REST.",
+      "imageHeight": 553,
+      "imageTone": null,
+      "imageUrl": "/images/nuxt-core-web-vitals.webp",
+      "imageWidth": 900,
+      "link": null,
+      "links": null,
+      "metric": {
+        "_type": "projectMetric",
+        "label": "Read time",
+        "progress": 42,
+        "value": "6m"
+      },
+      "name": null,
+      "role": null,
+      "slug": "website-performance",
+      "sortOrder": 6,
+      "tags": [
+        "Article",
+        "Nuxt",
+        "CWV"
+      ],
+      "tasks": [
+        "Strategies to slash website load times",
+        "GraphQL and REST tradeoffs for Server Side Rendering",
+        "How to  protect and improve LCP and TBT"
+      ],
+      "tech": [
+        "Nuxt",
+        "Vue",
+        "WordPress",
+        "REST",
+        "GraphQL"
+      ],
+      "title": "How to improve page load times and Web Core Vitals",
+      "videoUrl": null
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 .output
 .data
 .nuxt
+.nuxt-e2e
 .nitro
 .cache
 dist
@@ -12,3 +13,6 @@ logs
 .env.*
 !.env.example
 .playwright-mcp
+test-results
+playwright-report
+blob-report
