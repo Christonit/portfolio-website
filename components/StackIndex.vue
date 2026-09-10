@@ -11,7 +11,7 @@ defineProps<{
 
 <template>
   <ul class="stack-index" role="list">
-    <li v-for="skill in skills" :key="skill.name">
+    <li v-for="skill in skills" :key="skill.name" class="scroll-reveal">
       <span class="stack-index__row">
         <span class="stack-index__label">
           <img :src="skill.iconSrc" alt="" width="18" height="18" />
@@ -39,6 +39,9 @@ defineProps<{
   height: 0;
 }
 
+/* No column stagger here, unlike the card grids: the two cells of a row meet
+   at one continuous rule, and offsetting them fades half of it a step behind
+   the other — the rule reads as broken rather than as two cells arriving. */
 .stack-index li {
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);

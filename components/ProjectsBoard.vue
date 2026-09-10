@@ -8,8 +8,9 @@ import {
 /**
  * The selected-work grid. Owns the arrow-key focus ring when it is the page
  * you are on, and renders inert and unmarked when it is only sitting behind an
- * open dossier sheet. Cards never reveal on their own — the page transition
- * already carries them in.
+ * open dossier sheet. Cards you scroll down to rise in on their own view
+ * timeline; the ones already on screen when the board arrives are past that
+ * range, so the page transition still carries them in unaided.
  */
 const props = withDefaults(
   defineProps<{
@@ -152,7 +153,7 @@ onUnmounted(() => {
         <li
           v-for="(project, i) in projects"
           :key="project.slug"
-          class="min-h-0"
+          class="projects-grid__cell scroll-reveal min-h-0"
           :ref="(el) => bindCard(el as Element | null, i)"
         >
           <ProjectsCard
@@ -175,6 +176,14 @@ onUnmounted(() => {
 
 .projects-rail::-webkit-scrollbar {
   display: none;
+}
+
+/* Right-hand card trails by one stagger step — only where the grid is
+   two columns wide. Drops to 0 on single-column (mobile) layouts. */
+@media (min-width: 768px) {
+  .projects-grid__cell:nth-child(even) {
+    --scroll-reveal-index: 1;
+  }
 }
 
 @media (max-width: 639px) {

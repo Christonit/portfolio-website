@@ -149,6 +149,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           <li
             v-for="(project, index) in featuredProjects"
             :key="project.slug"
+            class="scroll-reveal"
             :ref="(el) => bindCard(el as Element | null, index)"
           >
             <NuxtLink
@@ -419,6 +420,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .featured-grid > li {
   min-width: 0;
+}
+
+/* Right-hand card of each row trails by one stagger step. Index 1 is
+   multiplied by --scroll-reveal-stagger (60ms) in the CSS transition-delay. */
+.featured-grid > li:nth-child(even) {
+  --scroll-reveal-index: 1;
 }
 
 .dossier-card {
@@ -706,6 +713,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   .featured-grid {
     grid-template-columns: 1fr;
     gap: var(--space-6);
+  }
+
+  /* Single-column at phone widths — no row to stagger, drop the index. */
+  .featured-grid > li:nth-child(even) {
+    --scroll-reveal-index: 0;
   }
 
   .dossier-card {

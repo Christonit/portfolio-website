@@ -297,6 +297,18 @@
     --page-modal-blur: 3px;
     --page-modal-ease: cubic-bezier(0.32, 0.72, 0, 1);
 
+    /* Scroll reveal — list items fade + slide into place as they enter the
+       scrollport, driven by IntersectionObserver. Items are hidden at rest
+       (opacity 0, translateY up by --scroll-reveal-distance) and the plugin
+       in plugins/scroll-reveal.client.ts adds `.is-visible` once they cross
+       the threshold, triggering the transition below.
+       --scroll-reveal-dur is also used by the design-system REVEAL stage. */
+    --scroll-reveal-dur: 300ms;
+    --scroll-reveal-ease: var(--ease-smooth-out);
+    --scroll-reveal-distance: 10px;
+    /* Stagger between the two columns of a grid row, in ms. */
+    --scroll-reveal-stagger: 60ms;
+
     /* Tooltip open / close */
     --tt-in-dur: 150ms;
     --tt-out-dur: 50ms;
@@ -464,6 +476,37 @@
 
 
 
+}
+
+/* ── Scroll reveal ──────────────────────────────────────────────
+   Items start hidden and slide up 10px. The plugin
+   plugins/scroll-reveal.client.ts adds `.is-visible` once the element
+   crosses its scroll threshold, firing the transition below.
+
+   Rules live outside @layer so Tailwind's purge pass can't drop them —
+   the class is only added at runtime. Content is never stranded invisible:
+   without JS (or in SSR), no `.is-visible` is ever written and no hiding
+   class is applied either — the plugin gates its own setup on `onMounted`. */
+.scroll-reveal {
+  /* Stagger index set per column in the template or parent CSS. */
+  --scroll-reveal-index: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal.is-hiding {
+    opacity: 0;
+    transition: none;
+  }
+
+  .scroll-reveal.is-hiding.is-visible {
+    opacity: 1;
+    transition: opacity var(--scroll-reveal-dur) var(--scroll-reveal-ease);
+    transition-delay: calc(var(--scroll-reveal-index) * var(--scroll-reveal-stagger));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Content is already visible with no hiding class applied. */
 }
 
 /* ── Named regions for View Transitions ─────────────────────────── */
