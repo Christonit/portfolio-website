@@ -8,8 +8,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
   if (import.meta.server) return;
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce || typeof document.startViewTransition === "function") {
-    to.meta.pageTransition = false;
+  const mobile = window.matchMedia("(max-width: 1279.98px)").matches;
+  // Mobile uses a short Vue transition so the bottom bar stays interactive.
+  // Desktop uses native View Transitions when available.
+  if (mobile || reduce || typeof document.startViewTransition === "function") {
+    to.meta.pageTransition = mobile && !reduce ? {} : false;
     to.meta.layoutTransition = false;
   }
 
@@ -20,6 +23,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // stall-guard then has to force-skip it ~1.2s later, swallowing taps in the
   // meantime. While hydrating, take the instant hard swap instead.
   if (useNuxtApp().isHydrating) {
+    to.meta.pageTransition = false;
     to.meta.viewTransition = false;
     return;
   }
@@ -28,7 +32,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // never reaches `page:finish` freezes a snapshot over that bar and eats
   // the next tap — the failure the stall-guard exists for. The desktop HUD
   // can wait out the slide; a thumb on the bar cannot.
-  if (window.matchMedia("(max-width: 1279.98px)").matches) {
+  if (mobile) {
     to.meta.viewTransition = false;
     return;
   }

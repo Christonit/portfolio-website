@@ -490,20 +490,26 @@ onBeforeUnmount(() => {
   aspect-ratio: 16 / 9;
 }
 
-/* Phones get the reel at its native aspect; the wide crop is a desktop-only cap. */
+/* Phones get the reel at its native aspect. */
 .project-gallery-stage--video {
   aspect-ratio: 960 / 690;
-}
-
-@media (min-width: 1280px) {
-  .project-gallery-stage--video {
-    aspect-ratio: 16 / 9;
-  }
 }
 
 .project-gallery-stage--images,
 .project-gallery-stage--video {
   max-height: min(52vh, 520px);
+}
+
+@media (min-width: 1280px) {
+  .project-gallery-stage--video {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* Give desktop previews more vertical room before cropping the demo. */
+  .project-gallery-stage--images,
+  .project-gallery-stage--video {
+    max-height: min(62vh, 640px);
+  }
 }
 
 .project-gallery-track {

@@ -8,6 +8,7 @@ import {
 useIdentitySchema();
 
 const route = useRoute();
+const router = useRouter();
 const navDir = useNavDirection();
 
 const TRANSITION_NAMES: Record<NavDir, string> = {
@@ -29,6 +30,11 @@ const TRANSITION_NAMES: Record<NavDir, string> = {
  */
 const pageTransition = computed(() => ({
   name: TRANSITION_NAMES[navDir.value] ?? "hud-forward",
+  // This explicit prop takes precedence over route.meta.pageTransition in
+  // NuxtPage. Honor the middleware's opt-out without removing the wrapper
+  // and remounting the page pinned under a dossier. Read the router's incoming
+  // route: useRoute() still describes the outgoing page until the swap ends.
+  css: router.currentRoute.value.meta.pageTransition !== false,
 }));
 
 /**
