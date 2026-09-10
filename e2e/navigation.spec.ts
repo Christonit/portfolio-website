@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 import {
   articles,
   caseStudies,
-  EMAIL_URL,
   featuredProjects,
   LINKEDIN_URL,
   RESUME_PATH,
@@ -58,11 +57,9 @@ test.describe("navigation shell", () => {
     }
   });
 
-  test("keeps the wordmark, resume and contact links in the header", async ({
+  test("keeps the wordmark, resume and contact controls in the header", async ({
     page,
   }) => {
-    // Exact, or the case-insensitive substring match also claims the
-    // "Email Christopher Santana" icon link next to it.
     await expect(
       header(page).getByRole("link", {
         name: "CHRISTOPHER SANTANA",
@@ -78,12 +75,63 @@ test.describe("navigation shell", () => {
     await expect(resume).toHaveAttribute("rel", /noopener/);
 
     await expect(
-      header(page).getByRole("link", { name: "Email Christopher Santana" }),
-    ).toHaveAttribute("href", EMAIL_URL);
+      header(page).getByRole("button", { name: "Open contact form" }),
+    ).toHaveAttribute("aria-haspopup", "dialog");
 
     const linkedin = header(page).getByRole("link", { name: "LinkedIn profile" });
     await expect(linkedin).toHaveAttribute("href", LINKEDIN_URL);
     await expect(linkedin).toHaveAttribute("target", "_blank");
+  });
+
+  test("opens and sends the contact form in a responsive sheet", async ({
+    page,
+    isMobile,
+  }) => {
+    await page.route("**/api/contact", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ message: "Message sent." }),
+      });
+    });
+
+    await header(page)
+      .getByRole("button", { name: "Open contact form" })
+      .click();
+
+    const sheet = page.getByRole("dialog", { name: "Get in touch." });
+    await expect(sheet).toBeVisible();
+    await expect(sheet).toHaveCSS("transform", "none");
+    await expect(
+      sheet.getByRole("link", { name: "hello@chsantana.com" }),
+    ).toHaveAttribute("href", "mailto:hello@chsantana.com");
+
+    const box = await sheet.boundingBox();
+    expect(box).not.toBeNull();
+    if (isMobile) {
+      expect(box?.x).toBe(0);
+      expect(box?.y).toBe(0);
+      expect(box?.width).toBe(page.viewportSize()?.width);
+      expect(box?.height).toBe(page.viewportSize()?.height);
+    } else {
+      expect(box?.width).toBe(512);
+      expect(box?.x).toBe((page.viewportSize()?.width ?? 0) - 512);
+    }
+
+    await sheet.getByLabel("Name *").fill("Ada Lovelace");
+    await sheet.getByLabel("Email *").fill("ada@example.com");
+    await sheet
+      .getByLabel("LinkedIn *")
+      .fill("https://www.linkedin.com/in/ada-lovelace");
+    await sheet
+      .getByLabel("What are you working on? *")
+      .fill("A real-time publishing system.");
+    await sheet.getByRole("button", { name: /SEND_MESSAGE/ }).click();
+
+    await expect(sheet).toBeHidden();
+    await expect(page.getByRole("status")).toHaveText(
+      "Message sent. I’ll get back to you soon.",
+    );
   });
 
   test("walks HOME → PROJECTS → ABOUT and back, marking the active tab", async ({

@@ -149,8 +149,10 @@
     --color-body-rgb: 226 226 226; /*   UI strings                   */
     /* Above --color-body the ramp ends at plain `white` — headings, emphasis. */
 
-    /* Accent — the only chromatic value in the system. */
+    /* Accent — the primary chromatic value in the system. */
     --color-signal-rgb: 103 245 122;
+    /* Status — reserved for destructive/error feedback. */
+    --color-error-rgb: 248 113 113;
 
     --color-panel: rgb(var(--color-panel-rgb));
     --color-canvas: rgb(var(--color-canvas-rgb));
@@ -160,6 +162,7 @@
     --color-prose: rgb(var(--color-prose-rgb));
     --color-body: rgb(var(--color-body-rgb));
     --color-signal: rgb(var(--color-signal-rgb));
+    --color-error: rgb(var(--color-error-rgb));
 
     /* ── Type ────────────────────────────────────────────────────
        Two faces: Tomorrow carries everything readable (display,
@@ -259,7 +262,9 @@
     --z-sheet: 55; /*      dossier sheet panel, over the header */
     --z-sheet-rail: 56; /* pager rails, just over the panel     */
     --z-nav-mobile: 60; /* bottom nav — stays reachable above   */
+    --z-contact-sheet: 65; /* contact drawer — covers all nav    */
     --z-skip-link: 70; /*  first Tab target                     */
+    --z-toast: 75; /*      submission feedback                 */
     --z-tooltip: 80; /*    follows the cursor, clears the rest  */
 
     /* transitions-dev motion tokens */

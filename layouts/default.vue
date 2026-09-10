@@ -10,7 +10,7 @@ import {
   useProjectPager,
 } from "~/composables/useProjectSheet";
 import {
-  EMAIL_URL,
+  EMAIL_ADDRESS,
   GITHUB_REPO_URL,
   LINKEDIN_URL,
   RESUME_PATH,
@@ -25,6 +25,10 @@ const playHaptic = () => {
     navigator.vibrate(15);
   }
 };
+
+function openContact(event: MouseEvent) {
+  openContactSheet(event.currentTarget as HTMLElement);
+}
 
 const pages = ["/", "/projects", "/bio"];
 
@@ -624,29 +628,43 @@ watch(normalizedPath, (to, from) => {
         >
           RESUME
         </a>
-        <a
-          :href="EMAIL_URL"
-          class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
-          aria-label="Email Christopher Santana"
-        >
-          <!-- Icons share an h-6 w-6 box; each viewBox is padded so the glyphs
-               inside it land on the same optical size (see X / LinkedIn below). -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0.15 0.15 23.7 23.7"
-            fill="currentColor"
-            class="h-6 w-6 shrink-0"
-            aria-hidden="true"
+        <!-- The address is worth having before you commit to the form: hovering
+             the icon reads it out for anyone who would rather write from their
+             own mail client. -->
+        <div class="group relative flex items-center">
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
+            aria-label="Open contact form"
+            aria-haspopup="dialog"
+            aria-describedby="contact-email-tip"
+            @click="openContact"
           >
-            <path
-              d="M2 4h20a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm18.238 2H3.762L12 12.29 20.238 6zM21 8.443l-8.386 6.4a1 1 0 0 1-1.228 0L3 8.443V18h18V8.443z"
-            />
-          </svg>
-        </a>
-        <!-- The only header control that carries a tooltip: the mark says
-             "GitHub", not "this site is the repo, take it". The card hangs off
-             the icon's right edge rather than its centre so it can't run past
-             the header's padding. -->
+            <!-- Icons share an h-6 w-6 box; each viewBox is padded so the glyphs
+                 inside it land on the same optical size (see X / LinkedIn below). -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0.15 0.15 23.7 23.7"
+              fill="currentColor"
+              class="h-6 w-6 shrink-0"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 4h20a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm18.238 2H3.762L12 12.29 20.238 6zM21 8.443l-8.386 6.4a1 1 0 0 1-1.228 0L3 8.443V18h18V8.443z"
+              />
+            </svg>
+          </button>
+          <span
+            id="contact-email-tip"
+            role="tooltip"
+            class="text-label-data pointer-events-none absolute right-0 top-full mt-1 origin-top-right scale-[var(--tt-scale)] whitespace-nowrap border border-rule bg-panel px-2 py-1 text-body opacity-0 transition-[opacity,transform] duration-[var(--tt-out-dur)] ease-out group-hover:scale-100 group-hover:opacity-100 group-hover:delay-[var(--tt-delay)] group-hover:duration-[var(--tt-in-dur)] group-focus-within:scale-100 group-focus-within:opacity-100 motion-reduce:transition-none"
+          >
+            {{ EMAIL_ADDRESS }}
+          </span>
+        </div>
+        <!-- The mark says "GitHub", not "this site is the repo, take it". The
+             card hangs off the icon's right edge rather than its centre so it
+             can't run past the header's padding. -->
         <div class="group relative flex items-center">
           <a
             :href="GITHUB_REPO_URL"

@@ -52,14 +52,20 @@ const background = useDossierBackground();
 /* Mounted only while the URL is a dossier, so the sheet's head — title,
    canonical, schema — lasts exactly as long as the sheet does. */
 const sheetIsUp = computed(() => isDossierPath(route.path));
+const contactSheetOpen = useContactSheetOpen();
 </script>
 
 <template>
-  <NuxtLayout>
+  <NuxtLayout :inert="contactSheetOpen || undefined">
     <NuxtPage :route="background ?? undefined" :transition="pageTransition" />
   </NuxtLayout>
 
-  <ProjectDossierOverlay v-if="sheetIsUp" />
+  <ProjectDossierOverlay
+    v-if="sheetIsUp"
+    :inert="contactSheetOpen || undefined"
+  />
+
+  <ContactSheet />
 
   <DevOnly>
     <DevAgentation />
