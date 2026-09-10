@@ -141,7 +141,8 @@ function tabHopAnimMs() {
 }
 
 function commitTabHop(offset: -1 | 1) {
-  const dest = pages[(currentIndex.value + offset + pages.length) % pages.length];
+  const dest =
+    pages[(currentIndex.value + offset + pages.length) % pages.length];
 
   // Direction is normally inferred from the tab index difference (see
   // `navDirectionForPath`), which gets it backwards right where wrapping
@@ -467,7 +468,9 @@ watch(normalizedPath, (to, from) => {
     <!-- Off-screen until focused. Without it the first Tab on every page walks
          the logo, both arrow keys, the three tabs, resume, and two social links before
          reaching any content. -->
-    <a href="#main" class="skip-link" @click.prevent="skipToMain">Skip to content</a>
+    <a href="#main" class="skip-link" @click.prevent="skipToMain"
+      >Skip to content</a
+    >
 
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
 
@@ -484,7 +487,7 @@ watch(normalizedPath, (to, from) => {
           to="/"
           class="text-title-ui inline-flex h-8 items-center px-1 select-none uppercase tracking-tighter text-white"
         >
-          CHRISTOPHER SANTANA
+          CHRIS<span class="lg:block hidden">TOPHER</span>&nbsp;SANTANA
         </NuxtLink>
 
         <!-- Reserves its width at rest so revealing it can't shift the
