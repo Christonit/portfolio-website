@@ -25,17 +25,36 @@ const videoFailed = ref(false);
 const needsGesture = ref(false);
 const activeIndex = ref(0);
 const demoVideo = ref<HTMLVideoElement | null>(null);
+const clientReady = ref(false);
 
 const hasVideo = computed(
   () => Boolean(props.project.video) && !videoFailed.value,
 );
-// Safari (and every iOS browser) advertises WebM in canPlayType, then
-// stalls on the VP9 file — especially these reels, which were encoded
-// with alpha. A single H.264 src on the <video> itself skips that
-// source-selection bug entirely; Chromium still plays the MP4 fine.
-const demoSrc = computed(
-  () => props.project.video?.replace(/\.webm$/i, ".mp4") ?? "",
-);
+
+/**
+ * iOS WebKit and desktop Safari advertise WebM in canPlayType, then stall on
+ * these VP9+alpha reels. Force the H.264 sibling there (and during SSR).
+ * Chromium/Firefox get the restored 1920-wide WebM after mount.
+ */
+function mustUseMp4Demo() {
+  if (typeof navigator === "undefined") return true;
+  const ua = navigator.userAgent;
+  if (/iP(ad|hone|od)/.test(ua)) return true;
+  const safari = /Safari/i.test(ua);
+  const otherEngine = /Chrome|Chromium|CriOS|Edg|OPR|Firefox|FxiOS|Android/i.test(
+    ua,
+  );
+  return safari && !otherEngine;
+}
+
+const demoSrc = computed(() => {
+  const src = props.project.video ?? "";
+  if (!src) return "";
+  if (!clientReady.value || mustUseMp4Demo()) {
+    return src.replace(/\.webm$/i, ".mp4");
+  }
+  return src;
+});
 const galleryCount = computed(() => frames.value.length);
 const hasGalleryPager = computed(
   () => !hasVideo.value && galleryCount.value > 1,
@@ -196,8 +215,10 @@ watch(hudKey, (key) => {
 
 watch(() => props.project.slug, startDemoIfReady);
 watch(sheetEntered, startDemoIfReady);
+watch(demoSrc, startDemoIfReady);
 
 onMounted(() => {
+  clientReady.value = true;
   window.addEventListener("keydown", onKeydown);
   startDemoIfReady();
 });
