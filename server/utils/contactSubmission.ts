@@ -130,6 +130,8 @@ function originIsAllowed(origin: string | null) {
       (protocol === "https:" &&
         (hostname === "chsantana.com" ||
           hostname === "www.chsantana.com" ||
+          hostname.endsWith(".pages.dev") ||
+          hostname.endsWith(".workers.dev") ||
           hostname.endsWith(".netlify.app"))) ||
       (protocol === "http:" &&
         (hostname === "localhost" || hostname === "127.0.0.1"))

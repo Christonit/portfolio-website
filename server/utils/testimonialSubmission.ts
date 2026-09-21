@@ -1,4 +1,4 @@
-type TestimonialEnvironment = {
+export type TestimonialEnvironment = {
   NUXT_PUBLIC_SANITY_PROJECT_ID?: string;
   NUXT_PUBLIC_SANITY_DATASET?: string;
   SANITY_API_WRITE_TOKEN?: string;
@@ -40,6 +40,61 @@ function validUrl(raw: string, hostname?: RegExp) {
   }
 }
 
+function firstPresent(...values: Array<string | undefined>) {
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+}
+
+function stringEnv(source: unknown): Record<string, string | undefined> {
+  if (!source || typeof source !== "object") return {};
+  const env: Record<string, string | undefined> = {};
+  for (const [key, value] of Object.entries(source)) {
+    if (typeof value === "string" && value.trim()) env[key] = value;
+  }
+  return env;
+}
+
+export function envFromRequest(event?: { context?: object }) {
+  const context = event?.context as
+    | {
+        cloudflare?: { env?: unknown };
+        _platform?: { cloudflare?: { env?: unknown } };
+      }
+    | undefined;
+  const cloudflare =
+    context?.cloudflare?.env ??
+    context?._platform?.cloudflare?.env ??
+    (globalThis as { __env__?: unknown }).__env__;
+
+  return {
+    ...stringEnv(process.env),
+    ...stringEnv(cloudflare),
+  };
+}
+
+export function resolveTestimonialEnvironment(
+  overrides: TestimonialEnvironment = {},
+  runtimeEnv: Record<string, string | undefined> = {},
+): TestimonialEnvironment {
+  return {
+    NUXT_PUBLIC_SANITY_PROJECT_ID: firstPresent(
+      overrides.NUXT_PUBLIC_SANITY_PROJECT_ID,
+      runtimeEnv.NUXT_PUBLIC_SANITY_PROJECT_ID,
+    ),
+    NUXT_PUBLIC_SANITY_DATASET: firstPresent(
+      overrides.NUXT_PUBLIC_SANITY_DATASET,
+      runtimeEnv.NUXT_PUBLIC_SANITY_DATASET,
+    ),
+    SANITY_API_WRITE_TOKEN: firstPresent(
+      overrides.SANITY_API_WRITE_TOKEN,
+      runtimeEnv.SANITY_API_WRITE_TOKEN,
+      runtimeEnv.NUXT_SANITY_API_WRITE_TOKEN,
+    ),
+  };
+}
+
 function originIsAllowed(origin: string | null) {
   if (!origin) return false;
   try {
@@ -48,6 +103,8 @@ function originIsAllowed(origin: string | null) {
       (protocol === "https:" &&
         (hostname === "chsantana.com" ||
           hostname === "www.chsantana.com" ||
+          hostname.endsWith(".pages.dev") ||
+          hostname.endsWith(".workers.dev") ||
           hostname.endsWith(".netlify.app"))) ||
       (protocol === "http:" &&
         (hostname === "localhost" || hostname === "127.0.0.1"))
@@ -250,7 +307,11 @@ export async function processTestimonialSubmission(
   const dataset = environment.NUXT_PUBLIC_SANITY_DATASET;
   const token = environment.SANITY_API_WRITE_TOKEN;
   if (!projectId || !dataset || !token) {
-    console.error("Testimonial form: Sanity write configuration is missing.");
+    console.error("Testimonial form: Sanity write configuration is missing.", {
+      hasProjectId: Boolean(projectId),
+      hasDataset: Boolean(dataset),
+      hasToken: Boolean(token),
+    });
     return {
       status: 503,
       body: { message: "Testimonials are temporarily unavailable. Please try again." },

@@ -1,4 +1,8 @@
-import { processTestimonialSubmission } from "../utils/testimonialSubmission";
+import {
+  envFromRequest,
+  processTestimonialSubmission,
+  resolveTestimonialEnvironment,
+} from "../utils/testimonialSubmission";
 
 export default defineEventHandler(async (event) => {
   const parts = await readMultipartFormData(event);
@@ -23,15 +27,19 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  const config = useRuntimeConfig(event);
+  const sanity = config.public.sanity;
   const result = await processTestimonialSubmission(
     form,
     getHeader(event, "origin") ?? null,
-    {
-      NUXT_PUBLIC_SANITY_PROJECT_ID:
-        process.env.NUXT_PUBLIC_SANITY_PROJECT_ID,
-      NUXT_PUBLIC_SANITY_DATASET: process.env.NUXT_PUBLIC_SANITY_DATASET,
-      SANITY_API_WRITE_TOKEN: process.env.SANITY_API_WRITE_TOKEN,
-    },
+    resolveTestimonialEnvironment(
+      {
+        NUXT_PUBLIC_SANITY_PROJECT_ID: sanity?.projectId,
+        NUXT_PUBLIC_SANITY_DATASET: sanity?.dataset,
+        SANITY_API_WRITE_TOKEN: config.sanityApiWriteToken,
+      },
+      envFromRequest(event),
+    ),
   );
   setResponseStatus(event, result.status);
   return result.body;

@@ -232,6 +232,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Override at runtime with NUXT_SANITY_API_WRITE_TOKEN (Cloudflare secret).
+    sanityApiWriteToken: "",
     public: {
       gaMeasurementId,
       googleSiteVerification:

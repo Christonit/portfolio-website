@@ -506,30 +506,36 @@ onBeforeUnmount(() => {
   text-decoration-color: currentColor;
 }
 
-/* Media band: capped so the written record stays reachable below it. */
+/* Media band: full sheet width, height min(native aspect, cap) so the
+   written record stays reachable below it.
+
+   Height is set directly rather than `aspect-ratio` + `max-height`. Firefox
+   transfers that cap back onto width and the reel sits in a letterboxed
+   column; Chrome keeps the used width at 100%. `100cqw` is the dossier
+   container (`.project-sheet__body`), which is the same measure as the band. */
+.project-gallery-stage--images,
+.project-gallery-stage--video {
+  width: 100%;
+  min-width: 100%;
+}
+
 .project-gallery-stage--images {
-  aspect-ratio: 16 / 9;
+  height: min(calc(100cqw * 9 / 16), 52vh, 520px);
 }
 
 /* Phones get the reel at its native aspect. */
 .project-gallery-stage--video {
-  aspect-ratio: 960 / 690;
-}
-
-.project-gallery-stage--images,
-.project-gallery-stage--video {
-  max-height: min(52vh, 520px);
+  height: min(calc(100cqw * 690 / 960), 52vh, 520px);
 }
 
 @media (min-width: 1280px) {
-  .project-gallery-stage--video {
-    aspect-ratio: 16 / 10;
+  .project-gallery-stage--images {
+    height: min(calc(100cqw * 9 / 16), 62vh, 640px);
   }
 
   /* Give desktop previews more vertical room before cropping the demo. */
-  .project-gallery-stage--images,
   .project-gallery-stage--video {
-    max-height: min(62vh, 640px);
+    height: min(calc(100cqw * 10 / 16), 62vh, 640px);
   }
 }
 
@@ -563,6 +569,8 @@ onBeforeUnmount(() => {
   display: block;
   width: 100%;
   height: 100%;
+  min-width: 100%;
+  min-height: 100%;
   object-fit: cover;
   object-position: center top;
   background: var(--color-panel);

@@ -1,4 +1,7 @@
-import { processTestimonialSubmission } from "../../server/utils/testimonialSubmission";
+import {
+  processTestimonialSubmission,
+  resolveTestimonialEnvironment,
+} from "../../server/utils/testimonialSubmission";
 
 export default async function testimonials(request: Request) {
   let form: FormData;
@@ -14,12 +17,7 @@ export default async function testimonials(request: Request) {
   const result = await processTestimonialSubmission(
     form,
     request.headers.get("origin"),
-    {
-      NUXT_PUBLIC_SANITY_PROJECT_ID:
-        process.env.NUXT_PUBLIC_SANITY_PROJECT_ID,
-      NUXT_PUBLIC_SANITY_DATASET: process.env.NUXT_PUBLIC_SANITY_DATASET,
-      SANITY_API_WRITE_TOKEN: process.env.SANITY_API_WRITE_TOKEN,
-    },
+    resolveTestimonialEnvironment({}, process.env),
   );
   return Response.json(result.body, { status: result.status });
 }

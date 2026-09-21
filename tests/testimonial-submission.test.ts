@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  envFromRequest,
   inspectImage,
   processTestimonialSubmission,
+  resolveTestimonialEnvironment,
 } from "../server/utils/testimonialSubmission.ts";
 
 function png(width = 512, height = 512) {
@@ -93,6 +95,73 @@ test("rejects image files outside the dimension limits", async () => {
 
   assert.equal(result.status, 400);
   assert.equal(called, false);
+});
+
+test("returns unavailable when Sanity write configuration is missing", async () => {
+  let called = false;
+
+  const result = await processTestimonialSubmission(
+    validForm(),
+    "https://chsantana.com",
+    {
+      NUXT_PUBLIC_SANITY_PROJECT_ID: "",
+      NUXT_PUBLIC_SANITY_DATASET: "",
+      SANITY_API_WRITE_TOKEN: "",
+    },
+    async () => {
+      called = true;
+      return new Response();
+    },
+  );
+
+  assert.equal(result.status, 503);
+  assert.equal(called, false);
+});
+
+test("resolves write config from Cloudflare request bindings", () => {
+  assert.deepEqual(
+    resolveTestimonialEnvironment(
+      {},
+      {
+        NUXT_PUBLIC_SANITY_PROJECT_ID: "runtime-project",
+        NUXT_PUBLIC_SANITY_DATASET: "runtime-dataset",
+        SANITY_API_WRITE_TOKEN: "runtime-token",
+      },
+    ),
+    {
+      NUXT_PUBLIC_SANITY_PROJECT_ID: "runtime-project",
+      NUXT_PUBLIC_SANITY_DATASET: "runtime-dataset",
+      SANITY_API_WRITE_TOKEN: "runtime-token",
+    },
+  );
+  assert.equal(
+    resolveTestimonialEnvironment(
+      {},
+      { NUXT_SANITY_API_WRITE_TOKEN: "nuxt-token" },
+    ).SANITY_API_WRITE_TOKEN,
+    "nuxt-token",
+  );
+  assert.equal(
+    envFromRequest({
+      context: { cloudflare: { env: { SANITY_API_WRITE_TOKEN: "cf-token" } } },
+    }).SANITY_API_WRITE_TOKEN,
+    "cf-token",
+  );
+});
+
+test("accepts Cloudflare Pages preview origins", async () => {
+  const result = await processTestimonialSubmission(
+    validForm(),
+    "https://site.pages.dev",
+    {
+      NUXT_PUBLIC_SANITY_PROJECT_ID: "",
+      NUXT_PUBLIC_SANITY_DATASET: "",
+      SANITY_API_WRITE_TOKEN: "",
+    },
+    async () => new Response(),
+  );
+
+  assert.equal(result.status, 503);
 });
 
 test("the testimonial honeypot accepts bots without uploading", async () => {
