@@ -40,6 +40,7 @@ const contentDocuments = [
   portfolio.about,
   ...portfolio.techStack,
   ...portfolio.works,
+  ...((portfolio as { testimonials?: SnapshotDocument[] }).testimonials ?? []),
   ...portfolio.experience,
 ] as SnapshotDocument[];
 
@@ -197,7 +198,7 @@ export default defineNuxtConfig({
   },
 
   sitemap: {
-    exclude: ["/og-export", "/design-system"],
+    exclude: ["/og-export", "/design-system", "/testimonial"],
     // URLs and `lastmod` values come from the published Sanity snapshot.
     urls: sitemapUrls,
     discoverImages: false,
@@ -210,6 +211,7 @@ export default defineNuxtConfig({
     "/sitemap.xml": { prerender: true },
     "/og-export": { robots: false },
     "/design-system": { robots: false },
+    "/testimonial": { robots: false },
     "/videos/**": {
       headers: {
         "Accept-Ranges": "bytes",

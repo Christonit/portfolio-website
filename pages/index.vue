@@ -21,6 +21,7 @@ const featuredProjects = computed(() => portfolio.value.featured);
 const articles = computed(() =>
   portfolio.value.works.filter((project) => isArticle(project)),
 );
+const testimonials = computed(() => portfolio.value.testimonials);
 const featuredSkills = computed(() => portfolio.value.techStack);
 const settings = computed(() => portfolio.value.settings);
 const displayParts = computed(() => settings.value.displayName.split(/\s+/));
@@ -237,6 +238,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
         <ArticlesIndex :articles="articles" />
       </section>
+
+      <!-- <TestimonialCarousel :testimonials="testimonials" /> -->
     </div>
   </div>
 </template>

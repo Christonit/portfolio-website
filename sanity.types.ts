@@ -64,6 +64,12 @@ export type EducationEntry = {
   note?: string;
 };
 
+export type ProjectLink = {
+  _type: "projectLink";
+  label?: string;
+  url?: string;
+};
+
 export type ProjectMetric = {
   _type: "projectMetric";
   label?: string;
@@ -107,6 +113,51 @@ export type Slug = {
   _type: "slug";
   current?: string;
   source?: string;
+};
+
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type Testimonial = {
+  _id: string;
+  _type: "testimonial";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  quote?: string;
+  role?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  sortOrder?: number;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
 };
 
 export type TechItemReference = {
@@ -170,6 +221,11 @@ export type Project = {
     } & TechItemReference
   >;
   dossier?: Array<string>;
+  links?: Array<
+    {
+      _key: string;
+    } & ProjectLink
+  >;
   metric?: ProjectMetric;
   sortOrder?: number;
 };
@@ -268,22 +324,6 @@ export type SanityImageMetadata = {
   isOpaque?: boolean;
 };
 
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
 export type SanityFileAsset = {
   _id: string;
   _type: "sanity.fileAsset";
@@ -349,10 +389,15 @@ export type AllSanitySchemaTypes =
   | ExperienceRole
   | AwardEntry
   | EducationEntry
+  | ProjectLink
   | ProjectMetric
   | ExperienceOrg
   | TechItem
   | Slug
+  | SanityImageAssetReference
+  | Testimonial
+  | SanityImageCrop
+  | SanityImageHotspot
   | TechItemReference
   | Article
   | Project
@@ -362,8 +407,6 @@ export type AllSanitySchemaTypes =
   | SanityImagePalette
   | SanityImageDimensions
   | SanityImageMetadata
-  | SanityImageHotspot
-  | SanityImageCrop
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset
@@ -371,7 +414,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../sanity/queries.ts
 // Variable: PORTFOLIO_QUERY
-// Query: {  "settings": *[_id == "siteSettings"][0]{    _updatedAt,    displayName,    role,    location,    mission,    employerLabel,    employerUrl,    featuredProjects[]->{      _id,      _type,      _updatedAt,      name,      title,      "slug": slug.current,      category,      role,      link,      externalUrl,      imageUrl,      imageAlt,      imageWidth,      imageHeight,      imageTone,      videoUrl,      icon,      cardDescription,      tags,      tasks,      dossier,      "tech": tech[]->name,      links[]{label, url},      metric,      sortOrder    }  },  "about": *[_id == "aboutPage"][0]{    _updatedAt,    subtitle,    body,    education[]{      _key,      degree,      school,      period,      isCurrent,      status,      note    },    awards[]{      _key,      title,      org,      location,      period    }  },  "techStack": *[_type == "techItem" && showOnHome == true] | order(sortOrder asc){    _updatedAt,    name,    iconUrl  },  "works": *[_type in ["project", "article"]] | order(sortOrder asc){    _id,    _type,    _updatedAt,    name,    title,    "slug": slug.current,    category,    role,    link,    externalUrl,    imageUrl,    imageAlt,    imageWidth,    imageHeight,    imageTone,    videoUrl,    icon,    cardDescription,    tags,    tasks,    dossier,    "tech": tech[]->name,    links[]{label, url},    metric,    sortOrder  },  "experience": *[_type == "experienceOrg"] | order(sortOrder asc){    _updatedAt,    company,    period,    isCurrent,    location,    logoUrl,    roles[]{      _key,      role,      period,      employmentType,      isCurrent,      tags,      note,      "projects": relatedWork[]->slug.current    }  }}
+// Query: {  "settings": *[_id == "siteSettings"][0]{    _updatedAt,    displayName,    role,    location,    mission,    employerLabel,    employerUrl,    featuredProjects[]->{      _id,      _type,      _updatedAt,      name,      title,      "slug": slug.current,      category,      role,      link,      externalUrl,      imageUrl,      imageAlt,      imageWidth,      imageHeight,      imageTone,      videoUrl,      icon,      cardDescription,      tags,      tasks,      dossier,      "tech": tech[]->name,      links[]{label, url},      metric,      sortOrder    }  },  "about": *[_id == "aboutPage"][0]{    _updatedAt,    subtitle,    body,    education[]{      _key,      degree,      school,      period,      isCurrent,      status,      note    },    awards[]{      _key,      title,      org,      location,      period    }  },  "techStack": *[_type == "techItem" && showOnHome == true] | order(sortOrder asc){    _updatedAt,    name,    iconUrl  },  "works": *[_type in ["project", "article"]] | order(sortOrder asc){    _id,    _type,    _updatedAt,    name,    title,    "slug": slug.current,    category,    role,    link,    externalUrl,    imageUrl,    imageAlt,    imageWidth,    imageHeight,    imageTone,    videoUrl,    icon,    cardDescription,    tags,    tasks,    dossier,    "tech": tech[]->name,    links[]{label, url},    metric,    sortOrder  },  "testimonials": *[_type == "testimonial"] | order(sortOrder asc, _createdAt desc){    _id,    _updatedAt,    name,    quote,    role,    linkedinUrl,    websiteUrl,    "photoUrl": photo.asset->url,    "photoAlt": photo.alt,    "photoWidth": photo.asset->metadata.dimensions.width,    "photoHeight": photo.asset->metadata.dimensions.height,    sortOrder  },  "experience": *[_type == "experienceOrg"] | order(sortOrder asc){    _updatedAt,    company,    period,    isCurrent,    location,    logoUrl,    roles[]{      _key,      role,      period,      employmentType,      isCurrent,      tags,      note,      "projects": relatedWork[]->slug.current    }  }}
 export type PORTFOLIO_QUERY_RESULT = {
   settings:
     | {
@@ -435,7 +478,10 @@ export type PORTFOLIO_QUERY_RESULT = {
           tasks: Array<string> | null;
           dossier: Array<string> | null;
           tech: Array<string | null> | null;
-          links: null;
+          links: Array<{
+            label: string | null;
+            url: string | null;
+          }> | null;
           metric: ProjectMetric | null;
           sortOrder: number | null;
         }> | null;
@@ -545,11 +591,28 @@ export type PORTFOLIO_QUERY_RESULT = {
         tasks: Array<string> | null;
         dossier: Array<string> | null;
         tech: Array<string | null> | null;
-        links: null;
+        links: Array<{
+          label: string | null;
+          url: string | null;
+        }> | null;
         metric: ProjectMetric | null;
         sortOrder: number | null;
       }
   >;
+  testimonials: Array<{
+    _id: string;
+    _updatedAt: string;
+    name: string | null;
+    quote: string | null;
+    role: string | null;
+    linkedinUrl: string | null;
+    websiteUrl: string | null;
+    photoUrl: string | null;
+    photoAlt: string | null;
+    photoWidth: number | null;
+    photoHeight: number | null;
+    sortOrder: number | null;
+  }>;
   experience: Array<{
     _updatedAt: string;
     company: string | null;
@@ -573,7 +636,7 @@ export type PORTFOLIO_QUERY_RESULT = {
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "settings": *[_id == "siteSettings"][0]{\n    _updatedAt,\n    displayName,\n    role,\n    location,\n    mission,\n    employerLabel,\n    employerUrl,\n    featuredProjects[]->{\n      _id,\n      _type,\n      _updatedAt,\n      name,\n      title,\n      "slug": slug.current,\n      category,\n      role,\n      link,\n      externalUrl,\n      imageUrl,\n      imageAlt,\n      imageWidth,\n      imageHeight,\n      imageTone,\n      videoUrl,\n      icon,\n      cardDescription,\n      tags,\n      tasks,\n      dossier,\n      "tech": tech[]->name,\n      links[]{label, url},\n      metric,\n      sortOrder\n    }\n  },\n  "about": *[_id == "aboutPage"][0]{\n    _updatedAt,\n    subtitle,\n    body,\n    education[]{\n      _key,\n      degree,\n      school,\n      period,\n      isCurrent,\n      status,\n      note\n    },\n    awards[]{\n      _key,\n      title,\n      org,\n      location,\n      period\n    }\n  },\n  "techStack": *[_type == "techItem" && showOnHome == true] | order(sortOrder asc){\n    _updatedAt,\n    name,\n    iconUrl\n  },\n  "works": *[_type in ["project", "article"]] | order(sortOrder asc){\n    _id,\n    _type,\n    _updatedAt,\n    name,\n    title,\n    "slug": slug.current,\n    category,\n    role,\n    link,\n    externalUrl,\n    imageUrl,\n    imageAlt,\n    imageWidth,\n    imageHeight,\n    imageTone,\n    videoUrl,\n    icon,\n    cardDescription,\n    tags,\n    tasks,\n    dossier,\n    "tech": tech[]->name,\n    links[]{label, url},\n    metric,\n    sortOrder\n  },\n  "experience": *[_type == "experienceOrg"] | order(sortOrder asc){\n    _updatedAt,\n    company,\n    period,\n    isCurrent,\n    location,\n    logoUrl,\n    roles[]{\n      _key,\n      role,\n      period,\n      employmentType,\n      isCurrent,\n      tags,\n      note,\n      "projects": relatedWork[]->slug.current\n    }\n  }\n}': PORTFOLIO_QUERY_RESULT;
+    '{\n  "settings": *[_id == "siteSettings"][0]{\n    _updatedAt,\n    displayName,\n    role,\n    location,\n    mission,\n    employerLabel,\n    employerUrl,\n    featuredProjects[]->{\n      _id,\n      _type,\n      _updatedAt,\n      name,\n      title,\n      "slug": slug.current,\n      category,\n      role,\n      link,\n      externalUrl,\n      imageUrl,\n      imageAlt,\n      imageWidth,\n      imageHeight,\n      imageTone,\n      videoUrl,\n      icon,\n      cardDescription,\n      tags,\n      tasks,\n      dossier,\n      "tech": tech[]->name,\n      links[]{label, url},\n      metric,\n      sortOrder\n    }\n  },\n  "about": *[_id == "aboutPage"][0]{\n    _updatedAt,\n    subtitle,\n    body,\n    education[]{\n      _key,\n      degree,\n      school,\n      period,\n      isCurrent,\n      status,\n      note\n    },\n    awards[]{\n      _key,\n      title,\n      org,\n      location,\n      period\n    }\n  },\n  "techStack": *[_type == "techItem" && showOnHome == true] | order(sortOrder asc){\n    _updatedAt,\n    name,\n    iconUrl\n  },\n  "works": *[_type in ["project", "article"]] | order(sortOrder asc){\n    _id,\n    _type,\n    _updatedAt,\n    name,\n    title,\n    "slug": slug.current,\n    category,\n    role,\n    link,\n    externalUrl,\n    imageUrl,\n    imageAlt,\n    imageWidth,\n    imageHeight,\n    imageTone,\n    videoUrl,\n    icon,\n    cardDescription,\n    tags,\n    tasks,\n    dossier,\n    "tech": tech[]->name,\n    links[]{label, url},\n    metric,\n    sortOrder\n  },\n  "testimonials": *[_type == "testimonial"] | order(sortOrder asc, _createdAt desc){\n    _id,\n    _updatedAt,\n    name,\n    quote,\n    role,\n    linkedinUrl,\n    websiteUrl,\n    "photoUrl": photo.asset->url,\n    "photoAlt": photo.alt,\n    "photoWidth": photo.asset->metadata.dimensions.width,\n    "photoHeight": photo.asset->metadata.dimensions.height,\n    sortOrder\n  },\n  "experience": *[_type == "experienceOrg"] | order(sortOrder asc){\n    _updatedAt,\n    company,\n    period,\n    isCurrent,\n    location,\n    logoUrl,\n    roles[]{\n      _key,\n      role,\n      period,\n      employmentType,\n      isCurrent,\n      tags,\n      note,\n      "projects": relatedWork[]->slug.current\n    }\n  }\n}': PORTFOLIO_QUERY_RESULT;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

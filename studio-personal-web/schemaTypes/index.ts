@@ -4,6 +4,7 @@ import {experienceOrg} from './documents/experience-org'
 import {project} from './documents/project'
 import {siteSettings} from './documents/site-settings'
 import {techItem} from './documents/tech-item'
+import {testimonial} from './documents/testimonial'
 import {awardEntry} from './objects/award-entry'
 import {educationEntry} from './objects/education-entry'
 import {experienceRole} from './objects/experience-role'
@@ -15,6 +16,7 @@ export const schemaTypes = [
   aboutPage,
   project,
   article,
+  testimonial,
   techItem,
   experienceOrg,
   projectMetric,

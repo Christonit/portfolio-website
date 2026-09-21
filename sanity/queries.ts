@@ -90,6 +90,20 @@ export const PORTFOLIO_QUERY = defineQuery(`{
     metric,
     sortOrder
   },
+  "testimonials": *[_type == "testimonial"] | order(sortOrder asc, _createdAt desc){
+    _id,
+    _updatedAt,
+    name,
+    quote,
+    role,
+    linkedinUrl,
+    websiteUrl,
+    "photoUrl": photo.asset->url,
+    "photoAlt": photo.alt,
+    "photoWidth": photo.asset->metadata.dimensions.width,
+    "photoHeight": photo.asset->metadata.dimensions.height,
+    sortOrder
+  },
   "experience": *[_type == "experienceOrg"] | order(sortOrder asc){
     _updatedAt,
     company,

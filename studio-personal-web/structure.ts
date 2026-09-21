@@ -3,6 +3,7 @@ import {CaseIcon} from '@sanity/icons/Case'
 import {CogIcon} from '@sanity/icons/Cog'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {BoltIcon} from '@sanity/icons/Bolt'
+import {DoubleQuoteIcon} from '@sanity/icons/DoubleQuote'
 import {UserIcon} from '@sanity/icons/User'
 import type {StructureResolver} from 'sanity/structure'
 
@@ -27,6 +28,14 @@ export const structure: StructureResolver = (S) =>
         .title('Articles')
         .icon(DocumentTextIcon)
         .child(S.documentTypeList('article').title('Articles').defaultOrdering([{field: 'sortOrder', direction: 'asc'}])),
+      S.listItem()
+        .title('Testimonials')
+        .icon(DoubleQuoteIcon)
+        .child(
+          S.documentTypeList('testimonial')
+            .title('Testimonials')
+            .defaultOrdering([{field: 'sortOrder', direction: 'asc'}]),
+        ),
       S.listItem()
         .title('Tech stack')
         .icon(BoltIcon)

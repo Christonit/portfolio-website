@@ -206,6 +206,16 @@ test.describe("SEO — indexing rules", () => {
     await expectMetaName(page, "robots", "noindex, nofollow");
   });
 
+  test("the testimonial form is published but not indexed", async ({
+    page,
+  }) => {
+    const response = await page.goto("/testimonial/");
+
+    expect(response?.status()).toBe(200);
+    await expect(page).toHaveTitle(`${SITE_NAME} - Share Feedback`);
+    await expectMetaName(page, "robots", "noindex, nofollow");
+  });
+
   test("an article slug is not a project route", async ({ page }) => {
     // `pages/project/[slug].vue` validates against the case studies only —
     // articles live on dev.to, and a second indexable copy here would be

@@ -85,6 +85,18 @@ test.describe("home page", () => {
     );
   });
 
+  test("offers a private testimonial form from the empty module", async ({
+    page,
+  }) => {
+    const module = page.locator(".testimonial-module");
+    await expect(module.getByRole("heading", { name: "TESTIMONIALS" })).toHaveCount(
+      0,
+    );
+    await expect(
+      module.getByRole("link", { name: "SUBMIT_A_TESTIMONIAL" }),
+    ).toHaveAttribute("href", "/testimonial/");
+  });
+
   test("links out to both articles", async ({ page }) => {
     const section = page.locator("#articles-list");
     await expect(section.getByRole("heading", { level: 2 })).toHaveText(

@@ -78,6 +78,19 @@ export type PortfolioQueryData = {
     iconUrl?: string | null;
   }[] | null;
   works?: (SanityWork | null)[] | null;
+  testimonials?: {
+    _id?: string | null;
+    _updatedAt?: string | null;
+    name?: string | null;
+    quote?: string | null;
+    role?: string | null;
+    linkedinUrl?: string | null;
+    websiteUrl?: string | null;
+    photoUrl?: string | null;
+    photoAlt?: string | null;
+    photoWidth?: number | null;
+    photoHeight?: number | null;
+  }[] | null;
   experience?: {
     _updatedAt?: string | null;
     company?: string | null;
@@ -123,6 +136,19 @@ export type AboutContent = {
   }[];
 };
 
+export type TestimonialContent = {
+  id: string;
+  name: string;
+  quote: string;
+  role?: string;
+  linkedinUrl: string;
+  websiteUrl?: string;
+  photoUrl: string;
+  photoAlt: string;
+  photoWidth?: number;
+  photoHeight?: number;
+};
+
 export type Portfolio = {
   source: "sanity" | "json";
   settings: SiteSettingsContent;
@@ -130,6 +156,7 @@ export type Portfolio = {
   techStack: FeaturedSkill[];
   works: ProjectPreview[];
   featured: ProjectPreview[];
+  testimonials: TestimonialContent[];
   experience: ExperienceOrg[];
 };
 
@@ -241,6 +268,29 @@ export function mapPortfolio(data: PortfolioQueryData | null): Portfolio | null 
     })),
     works,
     featured: featured.length ? featured : works.filter((work) => work.category !== "Article").slice(0, 4),
+    testimonials: (data.testimonials ?? []).flatMap((testimonial) => {
+      if (
+        !testimonial.name ||
+        !testimonial.quote ||
+        !testimonial.linkedinUrl ||
+        !testimonial.photoUrl
+      ) {
+        return [];
+      }
+
+      return [{
+        id: testimonial._id ?? testimonial.linkedinUrl,
+        name: testimonial.name,
+        quote: testimonial.quote,
+        role: testimonial.role ?? undefined,
+        linkedinUrl: testimonial.linkedinUrl,
+        websiteUrl: testimonial.websiteUrl ?? undefined,
+        photoUrl: testimonial.photoUrl,
+        photoAlt: testimonial.photoAlt ?? `${testimonial.name} portrait`,
+        photoWidth: testimonial.photoWidth ?? undefined,
+        photoHeight: testimonial.photoHeight ?? undefined,
+      }];
+    }),
     experience: (data.experience ?? []).map((org) => ({
       company: org.company ?? "",
       span: org.period ?? "",
