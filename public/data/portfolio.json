@@ -537,7 +537,22 @@
       "name": "CSS / TAILWIND"
     }
   ],
-  "testimonials": [],
+  "testimonials": [
+    {
+      "_id": "1c7cba39-5a99-4959-8f6d-3566065b581e",
+      "_updatedAt": "2026-09-21T17:08:15Z",
+      "linkedinUrl": "https://www.linkedin.com/in/christopher-alejandro-santana-550985423/",
+      "name": "Chris Test",
+      "photoAlt": "Chris Test portrait",
+      "photoHeight": 1903,
+      "photoUrl": "https://cdn.sanity.io/images/s0w6jpzs/production/5079bb8afd46fd108c41f4d1adc87f9ad6f2ca12-1320x1903.jpg",
+      "photoWidth": 1320,
+      "quote": "This is a test",
+      "role": "STT",
+      "sortOrder": null,
+      "websiteUrl": null
+    }
+  ],
   "works": [
     {
       "_id": "project-canopy-super-app",
