@@ -1,6 +1,4 @@
 import type { InjectionKey, Ref } from "vue";
-import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
-import projectsJson from "~/data/projects.json";
 import { isArticle } from "~/utils/projects";
 import { dossierPagerNavigation } from "~/composables/useDossierBackground";
 
@@ -104,12 +102,14 @@ const PAGER_PRESS_MS = 160;
 let pagerPressTimer: ReturnType<typeof setTimeout> | undefined;
 
 /* Articles live off-site, so the pager only walks the case-study pages. */
-const caseStudies = (projectsJson as ProjectPreview[]).filter(
-  (project) => !isArticle(project),
-);
+function caseStudies() {
+  return usePortfolio().value.works.filter((project) => !isArticle(project));
+}
 
 /** True once there is more than one dossier to walk between. */
-export const projectPagerIsWalkable = caseStudies.length > 1;
+export function projectPagerIsWalkable() {
+  return caseStudies().length > 1;
+}
 
 function pagerSlugFromPath(path: string) {
   const normalized = path.replace(/\/+$/, "");
@@ -120,11 +120,12 @@ function pagerSlugFromPath(path: string) {
 
 /** The project one step either side of `slug`, wrapping at both ends. */
 export function projectPagerNeighbour(slug: string, offset: number) {
-  if (!projectPagerIsWalkable) return null;
-  const index = caseStudies.findIndex((project) => project.slug === slug);
+  const studies = caseStudies();
+  if (studies.length <= 1) return null;
+  const index = studies.findIndex((project) => project.slug === slug);
   if (index === -1) return null;
-  const total = caseStudies.length;
-  return caseStudies[(index + offset + total) % total];
+  const total = studies.length;
+  return studies[(index + offset + total) % total];
 }
 
 /**
@@ -255,7 +256,7 @@ export function useProjectPager() {
 
   /** Steps the pager. Reports whether it handled the press. */
   function step(direction: PagerDirection) {
-    if (!projectPagerIsWalkable || !pagerSlugFromPath(route.path)) return false;
+    if (!projectPagerIsWalkable() || !pagerSlugFromPath(route.path)) return false;
 
     // The rails answer every press, held or not: a control that looks dead is
     // worse than one that answers a beat late.

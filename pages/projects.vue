@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
 import { useDossierOpen } from "~/composables/useDossierBackground";
-import projectsJson from "~/data/projects.json";
 import { projectListItems } from "~/utils/projectSchema";
 import { pageTitle, pageUrl } from "~/utils/site";
 
 const PROJECTS_LIST_ID = `${pageUrl("/projects")}#itemlist`;
-const projects = projectsJson as ProjectPreview[];
+const portfolio = usePortfolio();
+const projects = computed(() => portfolio.value.works);
 
 usePageSeo({
   title: pageTitle("Selected Work"),
@@ -22,8 +21,8 @@ usePageSeo({
       "@id": PROJECTS_LIST_ID,
       name: "Selected work",
       itemListOrder: "Unordered",
-      numberOfItems: projects.length,
-      itemListElement: projectListItems(projects),
+      numberOfItems: projects.value.length,
+      itemListElement: projectListItems(projects.value),
     }),
   ],
 });

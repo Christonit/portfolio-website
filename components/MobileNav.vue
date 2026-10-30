@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { LINKEDIN_URL } from "~/utils/site";
-
 /**
  * The bottom bar below the xl breakpoint. Lifted out of `layouts/default.vue`
  * so the design system can mount the real one rather than restate its classes
@@ -24,14 +22,6 @@ const items = [
   { label: "HOME", path: "/", icon: "analytics" },
   { label: "PROJECTS", path: "/projects", icon: "grid_view" },
   { label: "ABOUT", path: "/bio", icon: "fingerprint" },
-  {
-    label: "CONNECT",
-    path: LINKEDIN_URL,
-    iconSrc: "/images/paper-airplane-svgrepo-com.svg",
-    // Opens a new tab, like the LinkedIn icon in the header does. It used to
-    // navigate away in-tab on mobile only.
-    external: true,
-  },
 ];
 
 /* The page the bar is really showing: the one under the sheet when a dossier
@@ -87,6 +77,16 @@ function tone(path: string) {
   if (isPending(path)) return "text-white bg-surface";
   return "text-muted hover:text-white hover:bg-surface";
 }
+
+/**
+ * The real component, not the string `"NuxtLink"`. A dynamic `:is="'NuxtLink'"`
+ * SSR's as a literal `<NuxtLink to="…">` with no href — so a tap before
+ * hydration (and a client render that never resolves the name) is a dead
+ * control. The header's `<NuxtLink>` compiles to `<a href>`, which is what
+ * the pre-hydration click bridge and the phone both need.
+ */
+const Link = resolveComponent("NuxtLink");
+const itemTag = computed(() => (props.preview ? "span" : Link));
 </script>
 
 <template>
@@ -101,43 +101,22 @@ function tone(path: string) {
     :inert="(!preview && dossierClosing) || undefined"
   >
     <component
-      :is="preview ? 'span' : 'NuxtLink'"
+      :is="itemTag"
       v-for="item in items"
       :key="item.path"
       :to="preview ? undefined : item.path"
-      :target="!preview && item.external ? '_blank' : undefined"
-      :rel="!preview && item.external ? 'noopener noreferrer' : undefined"
-      :aria-label="
-        !preview && item.external ? `${item.label} (opens in a new tab)` : undefined
-      "
       :class="[
         'group flex-1 flex flex-col items-center justify-center gap-1 transition-all duration-150',
         tone(item.path),
       ]"
       @click="markPending($event, item.path)"
     >
-      <!-- alt="" — the label below it already says CONNECT, and naming the
-           icon too had screen readers announce the link twice. -->
-      <img
-        v-if="item.iconSrc"
-        :src="item.iconSrc"
-        alt=""
-        class="h-4 w-4 shrink-0"
-        :class="
-          isActive(item.path)
-            ? 'brightness-0'
-            : isPending(item.path)
-              ? 'brightness-0 invert opacity-100'
-              : 'brightness-0 invert opacity-60 group-hover:opacity-100'
-        "
-        draggable="false"
-      />
-      <span v-else class="material-symbols-outlined icon-md leading-none">{{
+      <span class="material-symbols-outlined icon-md leading-none">{{
         item.icon
       }}</span>
-      <span class="text-label-ui uppercase tracking-widest">{{
-        item.label
-      }}</span>
+      <span class="text-label-ui uppercase tracking-widest">
+        {{ item.label }}
+      </span>
     </component>
   </nav>
 </template>

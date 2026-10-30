@@ -25,18 +25,40 @@ const videoFailed = ref(false);
 const needsGesture = ref(false);
 const activeIndex = ref(0);
 const demoVideo = ref<HTMLVideoElement | null>(null);
+const clientReady = ref(false);
 
 const hasVideo = computed(
   () => Boolean(props.project.video) && !videoFailed.value,
 );
-// Safari (and every iOS browser) advertises WebM in canPlayType, then
-// stalls on the VP9 file — especially these reels, which were encoded
-// with alpha. A single H.264 src on the <video> itself skips that
-// source-selection bug entirely; Chromium still plays the MP4 fine.
-const demoSrc = computed(
-  () => props.project.video?.replace(/\.webm$/i, ".mp4") ?? "",
-);
+
+/**
+ * iOS WebKit and desktop Safari advertise WebM in canPlayType, then stall on
+ * these VP9+alpha reels. Force the H.264 sibling there (and during SSR).
+ * Chromium/Firefox get the restored 1920-wide WebM after mount.
+ */
+function mustUseMp4Demo() {
+  if (typeof navigator === "undefined") return true;
+  const ua = navigator.userAgent;
+  if (/iP(ad|hone|od)/.test(ua)) return true;
+  const safari = /Safari/i.test(ua);
+  const otherEngine = /Chrome|Chromium|CriOS|Edg|OPR|Firefox|FxiOS|Android/i.test(
+    ua,
+  );
+  return safari && !otherEngine;
+}
+
+const demoSrc = computed(() => {
+  const src = props.project.video ?? "";
+  if (!src) return "";
+  if (!clientReady.value || mustUseMp4Demo()) {
+    return src.replace(/\.webm$/i, ".mp4");
+  }
+  return src;
+});
 const galleryCount = computed(() => frames.value.length);
+const hasGalleryPager = computed(
+  () => !hasVideo.value && galleryCount.value > 1,
+);
 const counter = computed(
   () => `${activeIndex.value + 1}/${galleryCount.value}`,
 );
@@ -51,6 +73,8 @@ const dossierCopy = computed(() => {
 const dossierBeats = computed(() =>
   dossierCopy.value.map((text, index) => ({ index, text })),
 );
+
+const links = computed(() => props.project.links ?? []);
 
 function resetForProject() {
   frames.value = buildProjectGallery(
@@ -191,8 +215,10 @@ watch(hudKey, (key) => {
 
 watch(() => props.project.slug, startDemoIfReady);
 watch(sheetEntered, startDemoIfReady);
+watch(demoSrc, startDemoIfReady);
 
 onMounted(() => {
+  clientReady.value = true;
   window.addEventListener("keydown", onKeydown);
   startDemoIfReady();
 });
@@ -209,7 +235,7 @@ onBeforeUnmount(() => {
   <div class="relative flex flex-col">
     <section
       class="relative flex flex-col border-b border-white/15"
-      :aria-roledescription="hasVideo ? undefined : 'carousel'"
+      :aria-roledescription="hasGalleryPager ? 'carousel' : undefined"
       :aria-label="hasVideo ? 'Project demo video' : 'Project image gallery'"
     >
       <div
@@ -222,7 +248,9 @@ onBeforeUnmount(() => {
       >
         <!-- No `autoplay`: playback is started from script once the sheet has
              finished its entrance, and the attribute would pull the fetch and
-             the first decode back into the middle of it. -->
+             the first decode back into the middle of it. `preload="auto"`
+             would download the whole reel on open; metadata is enough to
+             start, and the rest streams on Range requests as it plays. -->
         <video
           v-if="hasVideo"
           ref="demoVideo"
@@ -232,7 +260,7 @@ onBeforeUnmount(() => {
           muted
           loop
           playsinline
-          :preload="sheetEntered ? 'auto' : 'none'"
+          :preload="sheetEntered ? 'metadata' : 'none'"
           :aria-label="`${project.name} product demo`"
           @canplay="onCanPlay"
           @playing="needsGesture = false"
@@ -284,7 +312,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-        v-if="!hasVideo"
+        v-if="hasGalleryPager"
         class="flex shrink-0 items-stretch border-t border-white/20"
       >
         <button
@@ -393,6 +421,30 @@ onBeforeUnmount(() => {
                 </li>
               </ul>
             </section>
+
+            <!-- Outbound proof the work shipped — listings, write-ups, repos.
+                 The dossier copy is plain text, so references live here as
+                 links rather than inline. -->
+            <section
+              v-if="links.length"
+              class="project-dossier-beat flex flex-col gap-3"
+              aria-label="References"
+            >
+              <h2 class="hud-label">Links</h2>
+              <ul class="flex flex-col gap-2" role="list">
+                <li v-for="link in links" :key="link.url">
+                  <a
+                    :href="link.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="project-dossier-link inline-flex items-start gap-2 font-mono text-sm uppercase leading-relaxed tracking-wide text-body transition-colors hover:text-signal focus-visible:text-signal"
+                  >
+                    <span class="mt-px text-signal" aria-hidden="true">↗</span>
+                    <span>{{ link.label }}</span>
+                  </a>
+                </li>
+              </ul>
+            </section>
           </div>
         </div>
       </div>
@@ -441,25 +493,50 @@ onBeforeUnmount(() => {
   padding-bottom: var(--space-8);
 }
 
-/* Media band: capped so the written record stays reachable below it. */
-.project-gallery-stage--images {
-  aspect-ratio: 16 / 9;
+/* Underlined so a reference reads as a link before it is hovered — the tasks
+   above it use the same mono face and would otherwise be indistinguishable. */
+.project-dossier-link span:last-child {
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: 4px;
 }
 
-/* Phones get the reel at its native aspect; the wide crop is a desktop-only cap. */
+.project-dossier-link:hover span:last-child,
+.project-dossier-link:focus-visible span:last-child {
+  text-decoration-color: currentColor;
+}
+
+/* Media band: full sheet width, height min(native aspect, cap) so the
+   written record stays reachable below it.
+
+   Height is set directly rather than `aspect-ratio` + `max-height`. Firefox
+   transfers that cap back onto width and the reel sits in a letterboxed
+   column; Chrome keeps the used width at 100%. `100cqw` is the dossier
+   container (`.project-sheet__body`), which is the same measure as the band. */
+.project-gallery-stage--images,
 .project-gallery-stage--video {
-  aspect-ratio: 960 / 690;
+  width: 100%;
+  min-width: 100%;
+}
+
+.project-gallery-stage--images {
+  height: min(calc(100cqw * 9 / 16), 52vh, 520px);
+}
+
+/* Phones get the reel at its native aspect. */
+.project-gallery-stage--video {
+  height: min(calc(100cqw * 690 / 960), 52vh, 520px);
 }
 
 @media (min-width: 1280px) {
-  .project-gallery-stage--video {
-    aspect-ratio: 16 / 9;
+  .project-gallery-stage--images {
+    height: min(calc(100cqw * 9 / 16), 62vh, 640px);
   }
-}
 
-.project-gallery-stage--images,
-.project-gallery-stage--video {
-  max-height: min(52vh, 520px);
+  /* Give desktop previews more vertical room before cropping the demo. */
+  .project-gallery-stage--video {
+    height: min(calc(100cqw * 10 / 16), 62vh, 640px);
+  }
 }
 
 .project-gallery-track {
@@ -492,6 +569,8 @@ onBeforeUnmount(() => {
   display: block;
   width: 100%;
   height: 100%;
+  min-width: 100%;
+  min-height: 100%;
   object-fit: cover;
   object-position: center top;
   background: var(--color-panel);

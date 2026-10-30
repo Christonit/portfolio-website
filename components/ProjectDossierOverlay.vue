@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
-import projectsJson from "~/data/projects.json";
 import { isArticle } from "~/utils/projects";
 import { projectCanonicalUrl, projectWorkNode } from "~/utils/projectSchema";
 import {
@@ -33,7 +32,8 @@ import { formatProjectName, pageTitle } from "~/utils/site";
  */
 const route = useRoute();
 const router = useRouter();
-const projects = projectsJson as ProjectPreview[];
+const portfolio = usePortfolio();
+const projects = computed(() => portfolio.value.works);
 const background = useDossierBackground();
 const closing = useDossierClosing();
 closing.value = false;
@@ -48,7 +48,7 @@ const slug = computed(() => {
 });
 
 const project = computed(() =>
-  projects.find((item) => item.slug === slug.value && !isArticle(item)),
+  projects.value.find((item) => item.slug === slug.value && !isArticle(item)),
 );
 
 /* Unknown slugs are turned away by the page's `validate`, so by the time this

@@ -9,7 +9,11 @@ defineProps<{
 
 <template>
   <ul class="articles-index-list" role="list">
-    <li v-for="(article, index) in articles" :key="article.slug">
+    <li
+      v-for="(article, index) in articles"
+      :key="article.slug"
+      class="scroll-reveal"
+    >
       <NuxtLink
         :to="projectHref(article)"
         :external="isExternalProjectHref(article)"

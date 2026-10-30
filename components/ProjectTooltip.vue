@@ -12,6 +12,12 @@ export interface ProjectTechGroup {
   items: string[];
 }
 
+/** An outbound reference listed on the dossier — a listing, a write-up, a repo. */
+export interface ProjectLink {
+  label: string;
+  url: string;
+}
+
 export interface ProjectPreview {
   name: string;
   slug: string;
@@ -30,6 +36,7 @@ export interface ProjectPreview {
   techGroups?: ProjectTechGroup[];
   description?: string;
   dossier?: string[];
+  links?: ProjectLink[];
   icon?: string;
   metric?: ProjectMetric;
 }

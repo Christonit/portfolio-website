@@ -149,8 +149,10 @@
     --color-body-rgb: 226 226 226; /*   UI strings                   */
     /* Above --color-body the ramp ends at plain `white` — headings, emphasis. */
 
-    /* Accent — the only chromatic value in the system. */
+    /* Accent — the primary chromatic value in the system. */
     --color-signal-rgb: 103 245 122;
+    /* Status — reserved for destructive/error feedback. */
+    --color-error-rgb: 248 113 113;
 
     --color-panel: rgb(var(--color-panel-rgb));
     --color-canvas: rgb(var(--color-canvas-rgb));
@@ -160,6 +162,7 @@
     --color-prose: rgb(var(--color-prose-rgb));
     --color-body: rgb(var(--color-body-rgb));
     --color-signal: rgb(var(--color-signal-rgb));
+    --color-error: rgb(var(--color-error-rgb));
 
     /* ── Type ────────────────────────────────────────────────────
        Two faces: Tomorrow carries everything readable (display,
@@ -259,7 +262,9 @@
     --z-sheet: 55; /*      dossier sheet panel, over the header */
     --z-sheet-rail: 56; /* pager rails, just over the panel     */
     --z-nav-mobile: 60; /* bottom nav — stays reachable above   */
+    --z-contact-sheet: 65; /* contact drawer — covers all nav    */
     --z-skip-link: 70; /*  first Tab target                     */
+    --z-toast: 75; /*      submission feedback                 */
     --z-tooltip: 80; /*    follows the cursor, clears the rest  */
 
     /* transitions-dev motion tokens */
@@ -291,6 +296,18 @@
     --page-modal-scale: 0.955;
     --page-modal-blur: 3px;
     --page-modal-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* Scroll reveal — list items fade + slide into place as they enter the
+       scrollport, driven by IntersectionObserver. Items are hidden at rest
+       (opacity 0, translateY up by --scroll-reveal-distance) and the plugin
+       in plugins/scroll-reveal.client.ts adds `.is-visible` once they cross
+       the threshold, triggering the transition below.
+       --scroll-reveal-dur is also used by the design-system REVEAL stage. */
+    --scroll-reveal-dur: 300ms;
+    --scroll-reveal-ease: var(--ease-smooth-out);
+    --scroll-reveal-distance: 10px;
+    /* Stagger between the two columns of a grid row, in ms. */
+    --scroll-reveal-stagger: 60ms;
 
     /* Tooltip open / close */
     --tt-in-dur: 150ms;
@@ -461,9 +478,48 @@
 
 }
 
+/* ── Scroll reveal ──────────────────────────────────────────────
+   Items start hidden and slide up 10px. The plugin
+   plugins/scroll-reveal.client.ts adds `.is-visible` once the element
+   crosses its scroll threshold, firing the transition below.
+
+   Rules live outside @layer so Tailwind's purge pass can't drop them —
+   the class is only added at runtime. Content is never stranded invisible:
+   without JS (or in SSR), no `.is-visible` is ever written and no hiding
+   class is applied either — the plugin gates its own setup on `onMounted`. */
+.scroll-reveal {
+  /* Stagger index set per column in the template or parent CSS. */
+  --scroll-reveal-index: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal.is-hiding {
+    opacity: 0;
+    transition: none;
+  }
+
+  .scroll-reveal.is-hiding.is-visible {
+    opacity: 1;
+    transition: opacity var(--scroll-reveal-dur) var(--scroll-reveal-ease);
+    transition-delay: calc(var(--scroll-reveal-index) * var(--scroll-reveal-stagger));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Content is already visible with no hiding class applied. */
+}
+
 /* ── Named regions for View Transitions ─────────────────────────── */
 .hud-page {
   view-transition-name: hud-page;
+}
+
+/* Skip-to-content (and any other programmatic focus) lands on <main
+   tabindex="-1">. The default ring frames the whole page — it is a
+   destination, not a control, so it does not need one. */
+.hud-page:focus,
+.hud-page:focus-visible {
+  outline: none;
 }
 
 .site-nav {
@@ -719,6 +775,20 @@ html[data-nav-dir="modal-out"]::view-transition-new(hud-page) {
   transform: translateX(var(--vt-slide-distance));
   opacity: 0;
   filter: blur(var(--page-blur));
+}
+
+/* A brief slide/fade keeps mobile tab changes legible without holding a
+   frozen snapshot over the navigation or blurring the entire page. */
+@media (max-width: 1279.98px) {
+  .hud-forward-enter-active,
+  .hud-forward-leave-active,
+  .hud-back-enter-active,
+  .hud-back-leave-active {
+    transition:
+      transform var(--duration-quick) var(--page-slide-ease),
+      opacity var(--duration-quick) var(--page-fade-ease);
+    filter: none;
+  }
 }
 
 /* The dossier hop. There is nothing to animate — the page under the sheet is

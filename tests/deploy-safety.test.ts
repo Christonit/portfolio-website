@@ -50,7 +50,7 @@ test("production keeps the public design system and removes the internal OG tool
     assert.ok(config.robots && typeof config.robots === "object");
     assert.deepEqual(config.robots.disallow, ["/og-export"]);
     assert.ok(config.sitemap && typeof config.sitemap === "object");
-    assert.deepEqual(config.sitemap.exclude, ["/og-export"]);
+    assert.deepEqual(config.sitemap.exclude, ["/og-export", "/testimonial"]);
     assert.ok(
       config.nitro?.prerender?.routes?.includes("/design-system/"),
       "expected the public design system to be explicitly prerendered",
@@ -112,6 +112,18 @@ test("stable public asset URLs revalidate instead of remaining fresh", async () 
     assert.ok(block, `expected a /${assetPath}/* header block`);
     assert.match(block, /Cache-Control = "public, max-age=0, must-revalidate"/);
   }
+});
+
+test("videos are served for inline byte-range streaming", async () => {
+  const netlify = await readFile(path.join(root, "netlify.toml"), "utf8");
+  const block = netlify.match(
+    /\[\[headers\]\]\s+for = "\/videos\/\*"[^]*?(?=\n\[\[headers\]\]|$)/,
+  )?.[0];
+
+  assert.ok(block, "expected a /videos/* header block");
+  assert.match(block, /Accept-Ranges = "bytes"/);
+  assert.match(block, /Content-Disposition = "inline"/);
+  assert.doesNotMatch(block, /Content-Disposition = "attachment/);
 });
 
 test("icon coverage detects quoted fallbacks inside interpolated spans", async () => {

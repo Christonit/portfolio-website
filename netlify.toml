@@ -30,6 +30,14 @@
   for = "/videos/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+    Accept-Ranges = "bytes"
+    Content-Disposition = "inline"
+
+[[headers]]
+  for = "/resume.pdf"
+  [headers.values]
+    Content-Type = "application/pdf"
+    Content-Disposition = "inline; filename=\"Christopher-Santana-Resume.pdf\""
 
 [[headers]]
   for = "/images/*"

@@ -9,7 +9,12 @@ import {
   projectPagerIsWalkable,
   useProjectPager,
 } from "~/composables/useProjectSheet";
-import { EMAIL_URL, LINKEDIN_URL } from "~/utils/site";
+import {
+  EMAIL_ADDRESS,
+  GITHUB_REPO_URL,
+  LINKEDIN_URL,
+  RESUME_PATH,
+} from "~/utils/site";
 
 const router = useRouter();
 const route = useRoute();
@@ -20,6 +25,10 @@ const playHaptic = () => {
     navigator.vibrate(15);
   }
 };
+
+function openContact(event: MouseEvent) {
+  openContactSheet(event.currentTarget as HTMLElement);
+}
 
 const pages = ["/", "/projects", "/bio"];
 
@@ -75,14 +84,14 @@ const { step: stepProject } = useProjectPager();
 // What the header keys actually do from here, so the labels don't promise a
 // page change while the dossier is open.
 const arrowTarget = computed(() =>
-  sheetPath.value && projectPagerIsWalkable
+  sheetPath.value && projectPagerIsWalkable()
     ? { prev: "Previous project", next: "Next project" }
     : { prev: "Previous page", next: "Next page" },
 );
 
 // ── Tab / page navigation ────────────────────────────────────────
 /**
- * One tab hop at a time.
+ * One tab hop at a time, and not before the previous one has finished moving.
  *
  * `currentIndex` reads the route, and the route only moves once the incoming
  * page has resolved — so a second press inside that window stepped off the
@@ -92,40 +101,100 @@ const arrowTarget = computed(() =>
  * re-push's flicker to show for it. Same failure, and the same gate, as the
  * dossier pager in `useProjectSheet`.
  *
+ * Opening the gate on `page:finish` was still too early. That hook fires when
+ * the incoming page has rendered, which is when the view transition *starts*
+ * its 340ms slide, not when it ends. A queued hop then opened a second
+ * transition over the first: pages ghosted through each other, and the
+ * underline could sit on a tab the slide had not reached yet.
+ *
  * Presses that land mid-hop keep exactly one, latest wins, so holding an arrow
  * walks the tabs at the speed the swap can carry and letting go stops one hop
  * later rather than playing out a run you can no longer call back.
+ *
+ * Desktop only. The header keys and the physical arrows are the desktop HUD;
+ * below xl the bottom bar owns the tabs. A hop left in-flight on a phone is
+ * a router.push the next tap has to wait out — and a hung view transition
+ * makes that wait look like a dead nav.
  */
-const TAB_HOP_TIMEOUT_MS = 900;
+// Past the view-transition stall-guard (1200ms) so a hung swap can still
+// land and play the queued hop instead of dropping it on a stale index.
+const TAB_HOP_TIMEOUT_MS = 1600;
+const TAB_HOP_ANIM_FALLBACK_MS = 340;
+const DESKTOP_HUD = "(min-width: 1280px)";
 let tabHopInFlight = false;
+let tabHopDest: string | null = null;
 let tabHopTimer: ReturnType<typeof setTimeout> | undefined;
 let queuedTabHop: -1 | 1 | null = null;
 
+function isDesktopHud() {
+  return window.matchMedia(DESKTOP_HUD).matches;
+}
+
+function normalizeTabPath(path: string) {
+  return path.replace(/\/+$/, "") || "/";
+}
+
+function tabHopAnimMs() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return 0;
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue("--page-slide-dur")
+    .trim();
+  const n = Number.parseFloat(raw);
+  if (!Number.isFinite(n)) return TAB_HOP_ANIM_FALLBACK_MS;
+  return /[0-9]s$/.test(raw) ? n * 1000 : n;
+}
+
 function commitTabHop(offset: -1 | 1) {
+  const dest =
+    pages[(currentIndex.value + offset + pages.length) % pages.length];
+
+  // Direction is normally inferred from the tab index difference (see
+  // `navDirectionForPath`), which gets it backwards right where wrapping
+  // matters most: right-arrow from ABOUT (index 2) lands on HOME (index 0),
+  // a *lower* index, so the inference reads it as "back" and the slide plays
+  // the wrong way even though the destination is right. The arrow you
+  // pressed already knows the direction; hand it to the router explicitly
+  // instead of letting the index comparison guess.
+  useNavDirectionHint().value = offset === 1 ? "forward" : "back";
+
   tabHopInFlight = true;
+  tabHopDest = dest;
   clearTimeout(tabHopTimer);
-  tabHopTimer = setTimeout(settleTabHop, TAB_HOP_TIMEOUT_MS);
-  router.push(
-    pages[(currentIndex.value + offset + pages.length) % pages.length],
-  );
+  tabHopTimer = setTimeout(onTabHopWatchdog, TAB_HOP_TIMEOUT_MS);
+  router.push(dest);
 }
 
 /**
- * Opens the gate once the page has rendered — the first moment `currentIndex`
- * reports where we actually are, which is what the queued hop steps from. The
- * timer above is the backstop for the arrivals that never fire `page:finish`.
+ * Opens the gate once the hop has finished moving — the first moment
+ * `currentIndex` is both correct *and* safe to step from without tearing
+ * the slide that just landed.
  */
 function settleTabHop() {
   if (!tabHopInFlight) return;
+  if (
+    tabHopDest &&
+    normalizeTabPath(route.path) !== normalizeTabPath(tabHopDest)
+  ) {
+    return;
+  }
   clearTimeout(tabHopTimer);
   tabHopInFlight = false;
+  tabHopDest = null;
 
   const queued = queuedTabHop;
   queuedTabHop = null;
   if (queued) commitTabHop(queued);
 }
 
+function resetTabHop() {
+  clearTimeout(tabHopTimer);
+  tabHopInFlight = false;
+  tabHopDest = null;
+  queuedTabHop = null;
+}
+
 function stepTab(offset: -1 | 1) {
+  if (!isDesktopHud()) return;
   if (tabHopInFlight) {
     queuedTabHop = offset;
     return;
@@ -133,8 +202,42 @@ function stepTab(offset: -1 | 1) {
   commitTabHop(offset);
 }
 
-const stopTabHopSettle = useNuxtApp().hook("page:finish", settleTabHop);
-onUnmounted(() => stopTabHopSettle());
+function armTabHopSettle() {
+  if (!tabHopInFlight || !tabHopDest) return;
+  if (normalizeTabPath(route.path) !== normalizeTabPath(tabHopDest)) return;
+  clearTimeout(tabHopTimer);
+  tabHopTimer = setTimeout(settleTabHop, tabHopAnimMs());
+}
+
+function onTabHopWatchdog() {
+  if (!tabHopInFlight) return;
+  if (
+    tabHopDest &&
+    normalizeTabPath(route.path) !== normalizeTabPath(tabHopDest)
+  ) {
+    tabHopInFlight = false;
+    tabHopDest = null;
+    queuedTabHop = null;
+    return;
+  }
+  settleTabHop();
+}
+
+let stopTabHopPageFinish: (() => void) | undefined;
+let stopTabHopAfterEach: (() => void) | undefined;
+
+function bindTabHopSettle() {
+  if (stopTabHopPageFinish) return;
+  stopTabHopPageFinish = useNuxtApp().hook("page:finish", armTabHopSettle);
+  stopTabHopAfterEach = router.afterEach(armTabHopSettle);
+}
+
+function unbindTabHopSettle() {
+  stopTabHopPageFinish?.();
+  stopTabHopAfterEach?.();
+  stopTabHopPageFinish = undefined;
+  stopTabHopAfterEach = undefined;
+}
 
 // The header key only flashes for the presses it actually owns — a step
 // through the dossier pager lights the rails instead. It flashes for a press
@@ -183,10 +286,12 @@ function onKeydown(e: KeyboardEvent) {
 
   switch (e.key) {
     case "ArrowLeft":
+      if (!isDesktopHud() && !sheetPath.value) break;
       e.preventDefault();
       prevPage();
       break;
     case "ArrowRight":
+      if (!isDesktopHud() && !sheetPath.value) break;
       e.preventDefault();
       nextPage();
       break;
@@ -216,14 +321,29 @@ function onGlobalClick(e: MouseEvent) {
   }
 }
 
+let desktopHudQuery: MediaQueryList | undefined;
+function onDesktopHudChange(event: MediaQueryListEvent) {
+  if (event.matches) {
+    bindTabHopSettle();
+    return;
+  }
+  resetTabHop();
+  unbindTabHopSettle();
+}
+
 onMounted(() => {
   window.addEventListener("keydown", onKeydown);
   window.addEventListener("click", onGlobalClick);
+  desktopHudQuery = window.matchMedia(DESKTOP_HUD);
+  desktopHudQuery.addEventListener("change", onDesktopHudChange);
+  if (desktopHudQuery.matches) bindTabHopSettle();
 });
 
 onUnmounted(() => {
   window.removeEventListener("keydown", onKeydown);
   window.removeEventListener("click", onGlobalClick);
+  desktopHudQuery?.removeEventListener("change", onDesktopHudChange);
+  unbindTabHopSettle();
 });
 
 // ── Desktop nav items ─────────────────────────────────────────────
@@ -307,6 +427,13 @@ const showDesignSystemLink = computed(
 
 const mainRef = ref<HTMLElement | null>(null);
 
+// Focus the landmark directly. Following href="#main" is a same-path
+// router hop, and that is the case `page:finish` never fires for — the
+// view transition hangs, and the next arrow key is what finally tears it.
+function skipToMain() {
+  mainRef.value?.focus({ preventScroll: true });
+}
+
 function scrollMainToTopOnMobile() {
   if (window.innerWidth >= 1280) return;
   nextTick(() => {
@@ -341,9 +468,11 @@ watch(normalizedPath, (to, from) => {
        nav. Sizing to the dynamic viewport removes the overlap at the source. -->
   <div class="relative h-dvh overflow-hidden bg-canvas text-body">
     <!-- Off-screen until focused. Without it the first Tab on every page walks
-         the logo, both arrow keys, the three tabs and two social links before
+         the logo, both arrow keys, the three tabs, resume, and two social links before
          reaching any content. -->
-    <a href="#main" class="skip-link">Skip to content</a>
+    <a href="#main" class="skip-link" @click.prevent="skipToMain"
+      >Skip to content</a
+    >
 
     <div class="fixed inset-0 grid-bg opacity-[0.12] z-0 pointer-events-none" />
 
@@ -359,7 +488,7 @@ watch(normalizedPath, (to, from) => {
           to="/"
           class="text-title-ui inline-flex h-8 items-center px-1 select-none uppercase tracking-tighter text-white"
         >
-          CHRISTOPHER SANTANA
+          CHRIS<span class="lg:block hidden">TOPHER</span>&nbsp;SANTANA
         </NuxtLink>
 
         <!-- Reserves its width at rest so revealing it can't shift the
@@ -488,24 +617,83 @@ watch(normalizedPath, (to, from) => {
 
       <div class="flex items-center gap-2 shrink-0 z-10">
         <a
-          :href="EMAIL_URL"
-          class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
-          aria-label="Email Christopher Santana"
+          :href="RESUME_PATH"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-label-ui inline-flex h-8 items-center px-2 uppercase tracking-[0.2em] text-muted transition-colors duration-150 hover:bg-surface hover:text-white"
+          aria-label="Resume (opens in a new tab)"
         >
-          <!-- Icons share an h-6 w-6 box; each viewBox is padded so the glyphs
-               inside it land on the same optical size (see X / LinkedIn below). -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0.15 0.15 23.7 23.7"
-            fill="currentColor"
-            class="h-6 w-6 shrink-0"
-            aria-hidden="true"
-          >
-            <path
-              d="M2 4h20a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm18.238 2H3.762L12 12.29 20.238 6zM21 8.443l-8.386 6.4a1 1 0 0 1-1.228 0L3 8.443V18h18V8.443z"
-            />
-          </svg>
+          RESUME
         </a>
+        <!-- The address is worth having before you commit to the form: hovering
+             the icon reads it out for anyone who would rather write from their
+             own mail client. -->
+        <div class="group relative flex items-center">
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
+            aria-label="Open contact form"
+            aria-haspopup="dialog"
+            aria-describedby="contact-email-tip"
+            @click="openContact"
+          >
+            <!-- Icons share an h-6 w-6 box; each viewBox is padded so the glyphs
+                 inside it land on the same optical size (see X / LinkedIn below). -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0.15 0.15 23.7 23.7"
+              fill="currentColor"
+              class="h-6 w-6 shrink-0"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 4h20a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm18.238 2H3.762L12 12.29 20.238 6zM21 8.443l-8.386 6.4a1 1 0 0 1-1.228 0L3 8.443V18h18V8.443z"
+              />
+            </svg>
+          </button>
+          <span
+            id="contact-email-tip"
+            role="tooltip"
+            class="text-label-data pointer-events-none absolute right-0 top-full mt-1 origin-top-right scale-[var(--tt-scale)] whitespace-nowrap border border-rule bg-panel px-2 py-1 text-body opacity-0 transition-[opacity,transform] duration-[var(--tt-out-dur)] ease-out group-hover:scale-100 group-hover:opacity-100 group-hover:delay-[var(--tt-delay)] group-hover:duration-[var(--tt-in-dur)] group-focus-within:scale-100 group-focus-within:opacity-100 motion-reduce:transition-none"
+          >
+            {{ EMAIL_ADDRESS }}
+          </span>
+        </div>
+        <!-- The mark says "GitHub", not "this site is the repo, take it". The
+             card hangs off the icon's right edge rather than its centre so it
+             can't run past the header's padding. -->
+        <div class="group relative flex items-center">
+          <a
+            :href="GITHUB_REPO_URL"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex h-8 w-8 items-center justify-center text-muted transition-all hover:bg-surface hover:text-white"
+            aria-label="This website's source on GitHub (opens in a new tab)"
+            aria-describedby="github-repo-tip"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="-2 -2 28 28"
+              fill="currentColor"
+              class="h-6 w-6 shrink-0"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+              />
+            </svg>
+          </a>
+          <!-- Opacity, not v-if: `aria-describedby` needs a target in the tree
+               at all times, and the delay on open is only on the hover state so
+               closing stays on the shorter clock. -->
+          <span
+            id="github-repo-tip"
+            role="tooltip"
+            class="text-label-data pointer-events-none absolute right-0 top-full mt-1 origin-top-right scale-[var(--tt-scale)] whitespace-nowrap border border-rule bg-panel px-2 py-1 text-body opacity-0 transition-[opacity,transform] duration-[var(--tt-out-dur)] ease-out group-hover:scale-100 group-hover:opacity-100 group-hover:delay-[var(--tt-delay)] group-hover:duration-[var(--tt-in-dur)] group-focus-within:scale-100 group-focus-within:opacity-100 motion-reduce:transition-none"
+          >
+            You can fork this website
+          </span>
+        </div>
         <!--
         <a
           :href="X_URL"

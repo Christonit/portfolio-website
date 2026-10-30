@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { FeaturedSkill } from "~/components/StackIndex.vue";
-import type { ProjectPreview } from "~/components/ProjectTooltip.vue";
-import projectsJson from "~/data/projects.json";
 import { useDossierOpen } from "~/composables/useDossierBackground";
 import {
   isArticle,
@@ -19,44 +16,16 @@ usePageSeo({
   pageType: "ProfilePage",
 });
 
-const projects = projectsJson as ProjectPreview[];
-const featuredOrder = [
-  "canopy-super-app",
-  "stockstotrade",
-  "timothy-sykes",
-  "content-automation-ai",
-];
-const featuredProjects = featuredOrder
-  .map((slug) => projects.find((project) => project.slug === slug))
-  .filter((project): project is ProjectPreview => Boolean(project));
-const articles = projects.filter(isArticle);
+const portfolio = usePortfolio();
+const featuredProjects = computed(() => portfolio.value.featured);
+const articles = computed(() =>
+  portfolio.value.works.filter((project) => isArticle(project)),
+);
+const testimonials = computed(() => portfolio.value.testimonials);
+const featuredSkills = computed(() => portfolio.value.techStack);
+const settings = computed(() => portfolio.value.settings);
+const displayParts = computed(() => settings.value.displayName.split(/\s+/));
 const hudKey = useHudNav();
-
-const featuredSkills: FeaturedSkill[] = [
-  { iconSrc: "/images/typescript-svgrepo-com.svg", name: "TYPESCRIPT" },
-  { iconSrc: "/images/react-svgrepo-com.svg", name: "REACT" },
-  { iconSrc: "/images/nextjs-svgrepo-com.svg", name: "NEXT.JS" },
-  { iconSrc: "/images/vuejs-svgrepo-com.svg", name: "VUE.JS" },
-  { iconSrc: "/images/nuxt-js-svgrepo-com.svg", name: "NUXT" },
-  { iconSrc: "/images/nodejs-svgrepo-com.svg", name: "NODE.JS" },
-  { iconSrc: "/images/aws-lambda-svgrepo-com.svg", name: "AWS" },
-  {
-    iconSrc: "/images/google-cloud-svgrepo-com.svg",
-    name: "GOOGLE CLOUD PLATFORM",
-  },
-  { iconSrc: "/images/figma-svgrepo-com.svg", name: "FIGMA / UI DESIGN" },
-  {
-    iconSrc: "/images/graphql-svgrepo-com.svg",
-    name: "GRAPHQL / REST APIS",
-  },
-  { iconSrc: "/images/python-127-svgrepo-com.svg", name: "PYTHON" },
-  { iconSrc: "/images/database-svgrepo-com.svg", name: "DATABASES" },
-  {
-    iconSrc: "/images/headless.svg",
-    name: "WORDPRESS / HEADLESS CMS",
-  },
-  { iconSrc: "/images/css.svg", name: "CSS / TAILWIND" },
-];
 
 /* The home page keeps rendering under an open dossier — that is what makes the
    sheet a sheet — so while one is up it stops answering: `inert` takes the
@@ -74,11 +43,11 @@ function bindCard(el: Element | null, index: number) {
 
 function moveCardFocus(direction: number) {
   if (focusedCard.value === null) {
-    focusedCard.value = direction > 0 ? 0 : featuredProjects.length - 1;
+    focusedCard.value = direction > 0 ? 0 : featuredProjects.value.length - 1;
   } else {
     focusedCard.value = Math.min(
       Math.max(focusedCard.value + direction, 0),
-      featuredProjects.length - 1,
+      featuredProjects.value.length - 1,
     );
   }
 
@@ -107,7 +76,7 @@ function onKeydown(event: KeyboardEvent) {
   }
 
   event.preventDefault();
-  openProject(featuredProjects[focusedCard.value]);
+  openProject(featuredProjects.value[focusedCard.value]);
 }
 
 onMounted(() => window.addEventListener("keydown", onKeydown));
@@ -129,24 +98,32 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
       >
         <div class="identity-copy">
           <h1 id="identity-name" class="identity-name">
-            CHRISTO<wbr />PHER<br />SANTANA
+            <template v-if="displayParts[0] === 'CHRISTOPHER'">
+              CHRISTO<wbr />PHER<br />{{ displayParts.slice(1).join(" ") }}
+            </template>
+            <template v-else>{{ settings.displayName }}</template>
           </h1>
 
           <div class="identity-facts">
             <div>
               <p class="identity-role text-title-ui">
-                FULL_STACK_ENGINEER<span class="identity-role__location"
-                  >// NYC</span
+                {{ settings.role }}<span class="identity-role__location"
+                  >// {{ settings.location }}</span
                 >
               </p>
             </div>
             <div>
               <p class="identity-mission text-body-compact">
                 <span class="identity-mission__lead">
-                  AI SYSTEMS, FRONTEND ARCHITECTURE, SEO &amp; DATA PIPELINES
+                  {{ settings.mission }}
                 </span>
-                <NuxtLink to="https://stockstotrade.com/">
-                  @STOCKSTOTRADE
+                <NuxtLink
+                  :to="settings.employerUrl"
+                  external
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ settings.employerLabel }}
                 </NuxtLink>
               </p>
             </div>
@@ -173,6 +150,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           <li
             v-for="(project, index) in featuredProjects"
             :key="project.slug"
+            class="scroll-reveal"
             :ref="(el) => bindCard(el as Element | null, index)"
           >
             <NuxtLink
@@ -260,6 +238,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
         <ArticlesIndex :articles="articles" />
       </section>
+
+      <!-- <TestimonialCarousel :testimonials="testimonials" /> -->
     </div>
   </div>
 </template>
@@ -297,7 +277,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
      one continuous surface instead of copy-panel-plus-photo. */
   background:
     var(--identity-grain),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%), var(--color-panel);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 70%),
+    var(--color-panel);
   background-size:
     180px 180px,
     auto,
@@ -442,6 +423,12 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
 .featured-grid > li {
   min-width: 0;
+}
+
+/* Right-hand card of each row trails by one stagger step. Index 1 is
+   multiplied by --scroll-reveal-stagger (60ms) in the CSS transition-delay. */
+.featured-grid > li:nth-child(even) {
+  --scroll-reveal-index: 1;
 }
 
 .dossier-card {
@@ -681,7 +668,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   }
 
   .identity-portrait::after {
-    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 42%, var(--color-panel) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(16, 16, 16, 0) 42%,
+      var(--color-panel) 100%
+    );
   }
 
   .identity-copy {
@@ -725,6 +716,11 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   .featured-grid {
     grid-template-columns: 1fr;
     gap: var(--space-6);
+  }
+
+  /* Single-column at phone widths — no row to stagger, drop the index. */
+  .featured-grid > li:nth-child(even) {
+    --scroll-reveal-index: 0;
   }
 
   .dossier-card {

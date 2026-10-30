@@ -1,7 +1,6 @@
 import { definePerson } from "nuxt-schema-org/schema";
-import projects from "./data/projects.json";
+import portfolio from "./public/data/portfolio.json";
 import { injectNotFoundFallback } from "./utils/notFoundFallback";
-import { withGitLastmod } from "./utils/sitemapLastmod";
 import {
   GA_MEASUREMENT_ID,
   GITHUB_URL,
@@ -12,22 +11,83 @@ import {
   SITE_URL,
 } from "./utils/site";
 
-const projectPaths = (projects as { slug: string; category: string }[])
-  .filter((project) => project.category.toLowerCase() !== "article")
+type SnapshotDocument = {
+  _updatedAt?: string;
+};
+
+type SnapshotWork = SnapshotDocument & {
+  _type: "project" | "article";
+  slug: string;
+};
+
+const works = portfolio.works as SnapshotWork[];
+const projectPaths = works
+  .filter((work) => work._type === "project")
   .map((project) => `/project/${project.slug}/`);
 
 const internalToolRoutes = new Set(["/og-export"]);
 
+function latestUpdated(documents: SnapshotDocument[]) {
+  return documents
+    .map((document) => document._updatedAt)
+    .filter((value): value is string => Boolean(value))
+    .sort()
+    .at(-1);
+}
+
+const contentDocuments = [
+  portfolio.settings,
+  portfolio.about,
+  ...portfolio.techStack,
+  ...portfolio.works,
+  ...((portfolio as { testimonials?: SnapshotDocument[] }).testimonials ?? []),
+  ...portfolio.experience,
+] as SnapshotDocument[];
+
 const sitemapUrls = [
-  "/",
-  "/bio/",
-  "/projects/",
-  "/design-system/",
-  ...projectPaths,
-].map((loc) => withGitLastmod({ loc }));
+  { loc: "/", lastmod: latestUpdated(contentDocuments) },
+  { loc: "/bio/", lastmod: portfolio.about?._updatedAt },
+  { loc: "/projects/", lastmod: latestUpdated(works) },
+  { loc: "/design-system/" },
+  ...works
+    .filter((work) => work._type === "project")
+    .map((work) => ({
+      loc: `/project/${work.slug}/`,
+      lastmod: work._updatedAt,
+    })),
+];
 
 const gaMeasurementId =
   process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || GA_MEASUREMENT_ID;
+
+/**
+ * A missing Sanity projectId does not fail on its own: the client comes up
+ * without a project, the fetch in plugins/sanity-portfolio.ts throws, and the
+ * catch there falls back to the build-time Sanity snapshot. That is the right behaviour for
+ * a transient API failure and the wrong one for a misconfigured deploy — it
+ * would ship a green build serving whatever the JSON file last said.
+ *
+ * Checked in `build:before` rather than at module scope because the CLI loads
+ * this file once for its version banner before it injects .env, so a top-level
+ * throw would reject a correctly configured build.
+ */
+function assertSanityEnv() {
+  // `nuxt prepare` fires the same build hooks, and it runs from postinstall —
+  // throwing there would leave a fresh clone unable to install dependencies
+  // before it had a chance to write a .env.
+  if (process.argv.includes("prepare")) return;
+
+  const missing = [
+    "NUXT_PUBLIC_SANITY_PROJECT_ID",
+    "NUXT_PUBLIC_SANITY_DATASET",
+  ].filter((name) => !process.env[name]);
+
+  if (!missing.length) return;
+
+  throw new Error(
+    `Sanity is not configured: ${missing.join(", ")} unset. Set them in .env locally (see .env.example) or in the deploy environment.`,
+  );
+}
 
 // Official gtag snippet in the prerendered <head> so Google's tag checker
 // (and any crawler that does not wait for Nuxt hydration) can see it.
@@ -52,6 +112,32 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
 
+  // A build and a running `nuxt dev` share `.nuxt`, and the dev server rewrites
+  // the SSR entry there while the build is bundling it. The built server then
+  // boots into Vite's dev renderer and 500s on anything it renders on demand —
+  // the 404 page, mainly. The e2e suite builds into its own directory (see
+  // playwright.config.ts) so both can run at once.
+  buildDir: process.env.NUXT_BUILD_DIR || ".nuxt",
+
+  // The Sanity Studio is a separate app that happens to sit in this directory.
+  // Its own node_modules is ~48k files, and the dev watcher opening a handle on
+  // every one of them exhausts the process's file descriptors (EMFILE).
+  ignore: ["studio-personal-web/**"],
+
+  watchers: {
+    chokidar: {
+      ignored: ["**/studio-personal-web/**"],
+    },
+  },
+
+  vite: {
+    server: {
+      watch: {
+        ignored: ["**/studio-personal-web/**"],
+      },
+    },
+  },
+
   experimental: {
     viewTransition: true,
     defaults: {
@@ -69,9 +155,12 @@ export default defineNuxtConfig({
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "nuxt-schema-org",
+    "@nuxtjs/sanity",
   ],
 
   hooks: {
+    "build:before": assertSanityEnv,
+
     // Nitro's prerender ignore list only suppresses route HTML after Vite has
     // already bundled every page. Remove internal tools from the production
     // route graph so their page code and heavy dependencies are not deployed.
@@ -110,10 +199,8 @@ export default defineNuxtConfig({
   },
 
   sitemap: {
-    exclude: ["/og-export"],
-    // Every URL listed explicitly so each one can carry a `lastmod` derived
-    // from the commits that actually changed its content — see
-    // utils/sitemapLastmod.ts for why not the build clock.
+    exclude: ["/og-export", "/testimonial"],
+    // URLs and `lastmod` values come from the published Sanity snapshot.
     urls: sitemapUrls,
     discoverImages: false,
     discoverVideos: false,
@@ -124,6 +211,20 @@ export default defineNuxtConfig({
     "/robots.txt": { prerender: true },
     "/sitemap.xml": { prerender: true },
     "/og-export": { robots: false },
+    "/testimonial": { robots: false },
+    "/videos/**": {
+      headers: {
+        "Accept-Ranges": "bytes",
+        "Content-Disposition": "inline",
+      },
+    },
+    "/resume.pdf": {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition":
+          'inline; filename="Christopher-Santana-Resume.pdf"',
+      },
+    },
     // Heal a bad www→apex rule that captured the hostname as a path:
     // www.chsantana.com → https://chsantana.com/chsantana.com/
     "/chsantana.com": { redirect: { to: "/", statusCode: 301 } },
@@ -131,13 +232,22 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Override at runtime with NUXT_SANITY_API_WRITE_TOKEN (Cloudflare secret).
+    sanityApiWriteToken: "",
     public: {
       gaMeasurementId,
       googleSiteVerification:
         process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
     },
   },
-  
+
+  sanity: {
+    projectId: process.env.NUXT_PUBLIC_SANITY_PROJECT_ID,
+    dataset: process.env.NUXT_PUBLIC_SANITY_DATASET,
+    apiVersion: "2026-09-09",
+    useCdn: true,
+  },
+
   nitro: {
     prerender: {
       crawlLinks: true,
