@@ -539,6 +539,20 @@
   ],
   "testimonials": [
     {
+      "_id": "7714aa0e-e380-4ff7-85f1-860ef1e9fe1a",
+      "_updatedAt": "2026-09-21T17:21:35Z",
+      "linkedinUrl": "https://www.linkedin.com/in/sample-priya-nandakumar",
+      "name": "Priya Nandakumar",
+      "photoAlt": "Priya Nandakumar portrait",
+      "photoHeight": 512,
+      "photoUrl": "https://cdn.sanity.io/images/s0w6jpzs/production/bd2a1634315e91df903c51b1052b5b86f929df7e-512x512.jpg",
+      "photoWidth": 512,
+      "quote": "He treats performance and SEO as launch requirements, not cleanup work. Our Core Web Vitals went green and stayed there.",
+      "role": "Head of Growth at Lumen Media",
+      "sortOrder": 3,
+      "websiteUrl": "https://example.org"
+    },
+    {
       "_id": "1c7cba39-5a99-4959-8f6d-3566065b581e",
       "_updatedAt": "2026-09-21T17:08:15Z",
       "linkedinUrl": "https://www.linkedin.com/in/christopher-alejandro-santana-550985423/",
