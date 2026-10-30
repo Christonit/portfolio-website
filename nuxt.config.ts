@@ -25,7 +25,7 @@ const projectPaths = works
   .filter((work) => work._type === "project")
   .map((project) => `/project/${project.slug}/`);
 
-const internalToolRoutes = new Set(["/og-export", "/design-system"]);
+const internalToolRoutes = new Set(["/og-export"]);
 
 function latestUpdated(documents: SnapshotDocument[]) {
   return documents
@@ -48,6 +48,7 @@ const sitemapUrls = [
   { loc: "/", lastmod: latestUpdated(contentDocuments) },
   { loc: "/bio/", lastmod: portfolio.about?._updatedAt },
   { loc: "/projects/", lastmod: latestUpdated(works) },
+  { loc: "/design-system/" },
   ...works
     .filter((work) => work._type === "project")
     .map((work) => ({
@@ -190,7 +191,7 @@ export default defineNuxtConfig({
   },
 
   robots: {
-    disallow: ["/og-export", "/design-system"],
+    disallow: ["/og-export"],
     // Default runtime handler is a Netlify function. Googlebot times that
     // out and Search Console reports "robots.txt not fetched", which blocks
     // indexing of the whole site.
@@ -198,7 +199,7 @@ export default defineNuxtConfig({
   },
 
   sitemap: {
-    exclude: ["/og-export", "/design-system", "/testimonial"],
+    exclude: ["/og-export", "/testimonial"],
     // URLs and `lastmod` values come from the published Sanity snapshot.
     urls: sitemapUrls,
     discoverImages: false,
@@ -210,7 +211,6 @@ export default defineNuxtConfig({
     "/robots.txt": { prerender: true },
     "/sitemap.xml": { prerender: true },
     "/og-export": { robots: false },
-    "/design-system": { robots: false },
     "/testimonial": { robots: false },
     "/videos/**": {
       headers: {
@@ -251,7 +251,13 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: true,
-      routes: ["/", "/sitemap.xml", "/robots.txt", ...projectPaths],
+      routes: [
+        "/",
+        "/design-system/",
+        "/sitemap.xml",
+        "/robots.txt",
+        ...projectPaths,
+      ],
     },
     hooks: {
       // See utils/notFoundFallback.ts — Nuxt renders /404.html as an empty
@@ -279,6 +285,10 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     shim: false,
+    tsConfig: {
+      // Paths are relative to the generated config in the build directory.
+      exclude: ["../studio-personal-web/**"],
+    },
   },
 
   app: {
