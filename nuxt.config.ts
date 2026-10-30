@@ -285,6 +285,10 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     shim: false,
+    tsConfig: {
+      // Paths are relative to the generated config in the build directory.
+      exclude: ["../studio-personal-web/**"],
+    },
   },
 
   app: {

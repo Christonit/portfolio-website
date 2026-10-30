@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import portfolio from "~/public/data/portfolio.json";
+import { isArticle } from "~/utils/projects";
 
 /**
  * The backdrop behind a dossier sheet — and only that.
@@ -20,10 +20,9 @@ definePageMeta({
     const slug = Array.isArray(route.params.slug)
       ? route.params.slug[0]
       : route.params.slug;
-    return portfolio.works.some(
+    return usePortfolio().value.works.some(
       (project) =>
-        project.slug === slug &&
-        project._type === "project",
+        project.slug === slug && !isArticle(project),
     );
   },
 });

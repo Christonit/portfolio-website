@@ -92,7 +92,7 @@ NUXT_PUBLIC_SANITY_DATASET=production
 NUXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 RESEND_API_KEY=re_xxxxxxxxx
 CONTACT_TO_EMAIL=hello@chsantana.com
-CONTACT_FROM_EMAIL=Christopher Santana <hello@chsantana.com>
+CONTACT_FROM_EMAIL="Christopher Santana <noreply@chsantana.com>"
 ```
 
 Analytics is disabled in dev by default. The three contact variables are

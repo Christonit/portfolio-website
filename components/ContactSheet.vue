@@ -33,6 +33,8 @@ function close() {
 }
 
 function onKeydown(event: KeyboardEvent) {
+  // The inert background still has window-level HUD keyboard listeners.
+  event.stopPropagation();
   if (event.key === "Escape") {
     event.preventDefault();
     close();
