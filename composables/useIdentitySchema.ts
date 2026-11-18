@@ -34,6 +34,7 @@ export function useIdentitySchema() {
       knowsAbout: [
         "TypeScript",
         "JavaScript",
+        "Python",
         "React",
         "Next.js",
         "Vue.js",
@@ -41,6 +42,8 @@ export function useIdentitySchema() {
         "Node.js",
         "AWS",
         "Cloudflare",
+        "Generative AI",
+        "Retrieval-Augmented Generation",
         "UI/UX Design",
         "Web Performance",
       ],

@@ -4,7 +4,7 @@ export const SITE_URL = "https://chsantana.com";
 export const SITE_NAME = "Christopher Santana";
 export const SITE_TITLE = `${SITE_NAME} - Full Stack Engineer`;
 export const SITE_DESCRIPTION =
-  "Senior Full Stack Engineer in NYC, from Punta Cana. I build systems and user interfaces for high-traffic web apps and real-time quote systems used by 1M+ monthly users.";
+  "Senior Full Stack Engineer in NYC, from Punta Cana. I build generative AI, RAG, and high-traffic fintech systems — including real-time quote platforms used by 1M+ monthly users.";
 
 /** Absolute URL in the form Netlify actually serves (trailing slash on every path except the origin root). */
 export function pageUrl(path = "/") {

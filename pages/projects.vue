@@ -10,7 +10,7 @@ const projects = computed(() => portfolio.value.works);
 usePageSeo({
   title: pageTitle("Selected Work"),
   description:
-    "Selected work by Christopher Santana — high-traffic Nuxt platforms, Cloudflare and AWS infrastructure, and technical writing on performance and automation.",
+    "Selected work by Christopher Santana — generative AI and RAG systems, high-traffic Nuxt platforms, Cloudflare and AWS infrastructure, and technical writing on performance and automation.",
   pageType: "CollectionPage",
   mainEntity: { "@id": PROJECTS_LIST_ID },
   extraSchema: () => [

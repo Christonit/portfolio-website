@@ -119,45 +119,46 @@ function hostname(url: string) {
         @click="select(index)"
       />
     </div>
-
-    <div v-if="testimonials.length" class="testimonial-module__share-row">
-      <NuxtLink to="/testimonial" class="testimonial-module__share">
-        SHARE_FEEDBACK <span aria-hidden="true">→</span>
-      </NuxtLink>
-    </div>
   </section>
 </template>
 
 <style scoped>
 .testimonial-module {
   position: relative;
+  overflow: hidden;
   margin-top: var(--space-8);
   border: 1px solid var(--color-rule);
   background:
     linear-gradient(135deg, rgb(var(--color-surface-rgb) / 14%), transparent 45%),
-    var(--color-panel);
+    rgb(16 16 16 / 50%);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 2%);
 }
 
-.testimonial-module__share-row {
-  display: flex;
-  justify-content: center;
-  border-top: 1px solid var(--color-rule);
-  padding: var(--space-3) var(--space-4) var(--space-4);
+.testimonial-module::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 5%) 0,
+    rgb(255 255 255 / 5%) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  background-size: 100% 4px;
+  opacity: 0.9;
+  animation: testimonial-scanline-scan 6s linear infinite;
 }
 
-.testimonial-module__share {
-  color: var(--color-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  letter-spacing: 0.14em;
-  transition: color 150ms ease;
-}
+@keyframes testimonial-scanline-scan {
+  from {
+    background-position: 0 0;
+  }
 
-.testimonial-module__share:hover,
-.testimonial-module__share:focus-visible {
-  color: var(--color-signal);
-  outline: none;
+  to {
+    background-position: 0 120px;
+  }
 }
 
 .testimonial-stage {
@@ -356,7 +357,6 @@ function hostname(url: string) {
 @media (prefers-reduced-motion: reduce) {
   .testimonial-swap-enter-active,
   .testimonial-swap-leave-active,
-  .testimonial-module__share,
   .testimonial-stage__arrow {
     transition: none;
   }

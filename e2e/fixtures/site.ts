@@ -17,7 +17,7 @@ export const SITE_URL = "https://chsantana.com";
 export const SITE_NAME = "Christopher Santana";
 export const SITE_TITLE = "Christopher Santana - Full Stack Engineer";
 export const SITE_DESCRIPTION =
-  "Senior Full Stack Engineer in NYC, from Punta Cana. I build systems and user interfaces for high-traffic web apps and real-time quote systems used by 1M+ monthly users.";
+  "Senior Full Stack Engineer in NYC, from Punta Cana. I build generative AI, RAG, and high-traffic fintech systems — including real-time quote platforms used by 1M+ monthly users.";
 export const OG_IMAGE = `${SITE_URL}/images/og-image.webp`;
 
 export const LINKEDIN_URL = "https://www.linkedin.com/in/chrisalesant/";
@@ -153,7 +153,7 @@ export const PROJECTS: PageUnderTest = {
   path: "/projects/",
   title: "Christopher Santana - Selected Work",
   description:
-    "Selected work by Christopher Santana — high-traffic Nuxt platforms, Cloudflare and AWS infrastructure, and technical writing on performance and automation.",
+    "Selected work by Christopher Santana — generative AI and RAG systems, high-traffic Nuxt platforms, Cloudflare and AWS infrastructure, and technical writing on performance and automation.",
   schemaType: "CollectionPage",
   breadcrumb: ["Home", "Selected Work"],
   ogImage: OG_IMAGE,
@@ -163,7 +163,7 @@ export const BIO: PageUnderTest = {
   path: "/bio/",
   title: "Christopher Santana - About",
   description:
-    "Christopher Santana — from Punta Cana to Manhattan. Senior Full Stack Engineer behind real-time news and quote systems used by 1M+ monthly users.",
+    "Christopher Santana — from Punta Cana to Manhattan. Senior Full Stack Engineer shipping generative AI, RAG, and real-time quote systems used by 1M+ monthly users.",
   schemaType: "AboutPage",
   breadcrumb: ["Home", "About"],
   ogImage: OG_IMAGE,

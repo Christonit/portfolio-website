@@ -240,7 +240,7 @@ export function mapPortfolio(data: PortfolioQueryData | null): Portfolio | null 
       location: data.settings.location ?? "NYC",
       mission:
         data.settings.mission ??
-        "AI SYSTEMS, FRONTEND ARCHITECTURE, SEO & DATA PIPELINES",
+        "GENERATIVE AI, FRONTEND ARCHITECTURE, SEO & DATA PIPELINES",
       employerLabel: data.settings.employerLabel ?? "@STOCKSTOTRADE",
       employerUrl: data.settings.employerUrl ?? "https://stockstotrade.com/",
     },

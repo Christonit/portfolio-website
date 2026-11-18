@@ -1,6 +1,6 @@
 {
   "about": {
-    "_updatedAt": "2026-09-10T05:31:30Z",
+    "_updatedAt": "2026-11-18T02:49:28Z",
     "awards": [
       {
         "_key": "award-0",
@@ -33,7 +33,7 @@
             "_key": "about-p2-span",
             "_type": "span",
             "marks": [],
-            "text": "My recent work centers on scalable systems for fintech and financial education. Products I’ve shipped handle 25K+ concurrent users and serve more than 1M unique visitors each month."
+            "text": "At StocksToTrade I lead product, engineering, design, and technical SEO for customer-facing platforms serving 1M+ monthly users — owning architecture for resilient systems, headless publishing, and production generative-AI, generative UI, RAG, and evaluation pipelines."
           }
         ],
         "markDefs": [],
@@ -83,11 +83,11 @@
         "status": ""
       }
     ],
-    "subtitle": "Manhattan-based Senior Full Stack Engineer with over a decade of experience building interfaces and lately systems for high-traffic web products."
+    "subtitle": "Manhattan-based Senior Full Stack Engineer with 10+ years shipping high-traffic fintech products — including production generative AI, generative UI, and RAG systems."
   },
   "experience": [
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T02:49:28Z",
       "company": "StocksToTrade",
       "isCurrent": true,
       "location": null,
@@ -98,7 +98,7 @@
           "_key": "role-0",
           "employmentType": null,
           "isCurrent": true,
-          "note": "Architecture, Systems Development and SEO for the Timothy Sykes and StocksToTrade websites — high-traffic financial educational and news platform and trading tools.",
+          "note": "Own architecture, product design, and generative-AI systems for the Timothy Sykes and StocksToTrade platforms — RAG market assistants, headless publishing, and SEO for products serving 1M+ monthly users.",
           "period": "NOV 2023 — PRESENT",
           "projects": [
             "timothy-sykes",
@@ -111,7 +111,8 @@
             "NUXT",
             "AWS",
             "NODE.JS",
-            "AI",
+            "GENERATIVE AI",
+            "RAG",
             "WORDPRESS"
           ]
         },
@@ -201,7 +202,7 @@
     }
   ],
   "settings": {
-    "_updatedAt": "2026-09-10T05:31:30Z",
+    "_updatedAt": "2026-11-18T03:48:18Z",
     "displayName": "CHRISTOPHER SANTANA",
     "employerLabel": "@STOCKSTOTRADE",
     "employerUrl": "https://stockstotrade.com/",
@@ -260,13 +261,13 @@
       {
         "_id": "project-stockstotrade",
         "_type": "project",
-        "_updatedAt": "2026-09-10T05:58:10Z",
-        "cardDescription": "Lead Full-Stack Engineer for StocksToTrade — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
+        "_updatedAt": "2026-11-18T02:49:28Z",
+        "cardDescription": "Lead Full-Stack Engineer for StocksToTrade — generative AI market assistants, RAG pipelines, and systems architecture for a platform serving 1M+ monthly users.",
         "category": "Fintech",
         "dossier": [
-          "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
-          "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
-          "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
+          "I own product, engineering, design, and technical SEO for StocksToTrade, the company's trading-education and market-data platform serving around 1M unique monthly users. That includes architecture for resilient systems, headless publishing, and production generative-AI work: market assistants that combine generative UI, retrieval-augmented generation (RAG), evaluation pipelines, and server-rendered data visualizations.",
+          "The site still has to show live stock quotes and market data without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com share the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites, and each site reads live data at request time instead of baking it into a static build.",
+          "Beyond product AI, I used LLMs to automate QA, SEO integrity checks, bespoke ad-serving, and comment moderation — work that previously sat on editorial and SEO teams — saving $150K+ annually in operational costs while keeping quality high."
         ],
         "externalUrl": null,
         "icon": "candlestick_chart",
@@ -289,23 +290,26 @@
         "sortOrder": 1,
         "tags": [
           "Nuxt",
-          "WordPress",
+          "Generative AI",
+          "RAG",
           "AWS",
-          "WebSockets",
-          "AI"
+          "WebSockets"
         ],
         "tasks": [
-          "Headless Wordpress Nuxt architecture",
+          "Generative AI market assistants with RAG and generative UI",
           "Live stock data ingestion, quotes, and news pipeline",
-          "AI automation for QA, SEO, and ops"
+          "Headless WordPress Nuxt architecture",
+          "AI automation and evaluation for QA, SEO, and ops"
         ],
         "tech": [
-          "Nuxt 3",
-          "TypeScript",
-          "AWS",
-          "WebSockets",
-          "WordPress",
-          "LLMs"
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
         ],
         "title": null,
         "videoUrl": "/videos/stocks-to-trade-demo.webm"
@@ -462,7 +466,7 @@
       }
     ],
     "location": "NYC",
-    "mission": "AI SYSTEMS, FRONTEND ARCHITECTURE, SEO & DATA PIPELINES",
+    "mission": "GENERATIVE AI, FRONTEND ARCHITECTURE, SEO & DATA PIPELINES",
     "role": "FULL_STACK_ENGINEER"
   },
   "techStack": [
@@ -472,72 +476,91 @@
       "name": "TYPESCRIPT"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
+      "iconUrl": "/images/generative-ai.svg",
+      "name": "GENERATIVE AI / EVALUATIONS"
+    },
+    {
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/react-svgrepo-com.svg",
       "name": "REACT"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/nextjs-svgrepo-com.svg",
       "name": "NEXT.JS"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/vuejs-svgrepo-com.svg",
       "name": "VUE.JS"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/nuxt-js-svgrepo-com.svg",
       "name": "NUXT"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/nodejs-svgrepo-com.svg",
       "name": "NODE.JS"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/aws-lambda-svgrepo-com.svg",
       "name": "AWS"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/google-cloud-svgrepo-com.svg",
       "name": "GOOGLE CLOUD PLATFORM"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/figma-svgrepo-com.svg",
       "name": "FIGMA / UI DESIGN"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/graphql-svgrepo-com.svg",
       "name": "GRAPHQL / REST APIS"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/python-127-svgrepo-com.svg",
       "name": "PYTHON"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/database-svgrepo-com.svg",
       "name": "DATABASES"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/headless.svg",
       "name": "WORDPRESS / HEADLESS CMS"
     },
     {
-      "_updatedAt": "2026-09-10T05:31:30Z",
+      "_updatedAt": "2026-11-18T03:01:13Z",
       "iconUrl": "/images/css.svg",
       "name": "CSS / TAILWIND"
     }
   ],
   "testimonials": [
+    {
+      "_id": "7714aa0e-e380-4ff7-85f1-860ef1e9fe1a",
+      "_updatedAt": "2026-09-21T17:21:35Z",
+      "linkedinUrl": "https://www.linkedin.com/in/sample-priya-nandakumar",
+      "name": "Priya Nandakumar",
+      "photoAlt": "Priya Nandakumar portrait",
+      "photoHeight": 512,
+      "photoUrl": "https://cdn.sanity.io/images/s0w6jpzs/production/bd2a1634315e91df903c51b1052b5b86f929df7e-512x512.jpg",
+      "photoWidth": 512,
+      "quote": "He treats performance and SEO as launch requirements, not cleanup work. Our Core Web Vitals went green and stayed there.",
+      "role": "Head of Growth at Lumen Media",
+      "sortOrder": 3,
+      "websiteUrl": "https://example.org"
+    },
     {
       "_id": "1c7cba39-5a99-4959-8f6d-3566065b581e",
       "_updatedAt": "2026-09-21T17:08:15Z",
@@ -608,13 +631,13 @@
     {
       "_id": "project-stockstotrade",
       "_type": "project",
-      "_updatedAt": "2026-09-10T05:58:10Z",
-      "cardDescription": "Lead Full-Stack Engineer for StocksToTrade — Frontend Architecture and Systems Development for  website serving more than 1M+ monthly users.",
+      "_updatedAt": "2026-11-18T02:49:28Z",
+      "cardDescription": "Lead Full-Stack Engineer for StocksToTrade — generative AI market assistants, RAG pipelines, and systems architecture for a platform serving 1M+ monthly users.",
       "category": "Fintech",
       "dossier": [
-        "I own the frontend and web services for StocksToTrade, the company's trading-education and market-data platform — charting, scanners, watchlists, webinars, and news. The platform reliably serves around 1M unique monthly users, with hundreds of active users on the site at any given minute.",
-        "The site needed to show live stock quotes and market data to that audience without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com both depend on the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites at once, and each site reads live data at request time instead of baking it into a static build.",
-        "The editorial and SEO team was manually handling QA checks, SEO integrity checks, and comment moderation — expensive and impossible to scale. I have designed and built LLM-powered automation tooling to take that work off their hands."
+        "I own product, engineering, design, and technical SEO for StocksToTrade, the company's trading-education and market-data platform serving around 1M unique monthly users. That includes architecture for resilient systems, headless publishing, and production generative-AI work: market assistants that combine generative UI, retrieval-augmented generation (RAG), evaluation pipelines, and server-rendered data visualizations.",
+        "The site still has to show live stock quotes and market data without sacrificing performance or reliability. I designed the real-time ingestion pipeline using WebSockets, Node.js, AWS, and NoSQL databases, and made the core architecture decisions for how data flows from source to page. StocksToTrade and TimothySykes.com share the same upstream market-data API, so I put a shared cache and fallback in front of it — one outage no longer breaks quotes on both sites, and each site reads live data at request time instead of baking it into a static build.",
+        "Beyond product AI, I used LLMs to automate QA, SEO integrity checks, bespoke ad-serving, and comment moderation — work that previously sat on editorial and SEO teams — saving $150K+ annually in operational costs while keeping quality high."
       ],
       "externalUrl": null,
       "icon": "candlestick_chart",
@@ -637,23 +660,26 @@
       "sortOrder": 1,
       "tags": [
         "Nuxt",
-        "WordPress",
+        "Generative AI",
+        "RAG",
         "AWS",
-        "WebSockets",
-        "AI"
+        "WebSockets"
       ],
       "tasks": [
-        "Headless Wordpress Nuxt architecture",
+        "Generative AI market assistants with RAG and generative UI",
         "Live stock data ingestion, quotes, and news pipeline",
-        "AI automation for QA, SEO, and ops"
+        "Headless WordPress Nuxt architecture",
+        "AI automation and evaluation for QA, SEO, and ops"
       ],
       "tech": [
-        "Nuxt 3",
-        "TypeScript",
-        "AWS",
-        "WebSockets",
-        "WordPress",
-        "LLMs"
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "title": null,
       "videoUrl": "/videos/stocks-to-trade-demo.webm"

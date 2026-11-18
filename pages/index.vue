@@ -107,7 +107,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           <div class="identity-facts">
             <div>
               <p class="identity-role text-title-ui">
-                {{ settings.role }}<span class="identity-role__location"
+                {{ settings.role
+                }}<span class="identity-role__location"
                   >// {{ settings.location }}</span
                 >
               </p>
@@ -303,6 +304,19 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   background-size: 100% 4px;
   opacity: 0.65;
   animation: scanline-scan 6s linear infinite;
+}
+
+/* Tech Stack / Articles content sits on a denser, more opaque surface than
+   the hero, so the shared scanline needs more contrast to actually read. */
+.index-module::after {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  opacity: 0.9;
 }
 
 @keyframes scanline-scan {

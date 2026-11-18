@@ -4,7 +4,7 @@ import { IDENTITY_ID, pageTitle } from "~/utils/site";
 usePageSeo({
   title: pageTitle("About"),
   description:
-    "Christopher Santana — from Punta Cana to Manhattan. Senior Full Stack Engineer behind real-time news and quote systems used by 1M+ monthly users.",
+    "Christopher Santana — from Punta Cana to Manhattan. Senior Full Stack Engineer shipping generative AI, RAG, and real-time quote systems used by 1M+ monthly users.",
   pageType: "AboutPage",
   mainEntity: { "@id": IDENTITY_ID },
   extraSchema: () => [
